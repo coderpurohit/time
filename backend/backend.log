@@ -1,0 +1,78 @@
+INFO:     Started server process [19100]
+INFO:     Waiting for application startup.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 105, in startup_event
+    print(f"\u2705 Database already initialized ({teacher_count} teachers)")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2705' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\starlette\routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\fastapi\routing.py", line 153, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\starlette\routing.py", line 571, in __aenter__
+    await self._router.startup()
+  File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\starlette\routing.py", line 671, in startup
+    await handler()
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 108, in startup_event
+    print(f"\u26a0\ufe0f  Auto-seeding failed: {e}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>
+
+ERROR:    Application startup failed. Exiting.

@@ -3,5 +3,8 @@ uvicorn
 sqlalchemy
 pydantic
 ortools
-psycopg2-binary
+# psycopg2-binary # Uncomment for PostgreSQL
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
 
