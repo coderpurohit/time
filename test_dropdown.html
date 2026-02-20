@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dropdown - No Cache</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    <h1>Class Groups Test</h1>
+    <select id="groupSelect" style="font-size: 16px; padding: 10px; width: 300px;">
+        <option value="">Loading...</option>
+    </select>
+    
+    <div id="debug" style="margin-top: 20px; font-family: monospace; white-space: pre;"></div>
+
+    <script>
+        // Add timestamp to prevent caching
+        const timestamp = new Date().getTime();
+        
+        fetch(`http://localhost:8000/api/timetables/latest?_=${timestamp}`)
+            .then(response => response.json())
+            .then(data => {
+                const groupSelect = document.getElementById('groupSelect');
+                const debug = document.getElementById('debug');
+                
+                // Extract unique groups using Map
+                const groups = new Map();
+                data.entries.forEach(entry => {
+                    if (entry.class_group) {
+                        groups.set(entry.class_group.id, entry.class_group.name);
+                    }
+                });
+                
+                // Debug output
+                debug.textContent = `Total entries: ${data.entries.length}\n`;
+                debug.textContent += `Unique groups: ${groups.size}\n\n`;
+                debug.textContent += 'Groups:\n';
+                
+                // Sort and populate
+                const sortedGroups = Array.from(groups.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+                
+                groupSelect.innerHTML = '<option value="">All Groups</option>';
+                
+                sortedGroups.forEach(([id, name]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = name;
+                    groupSelect.appendChild(option);
+                    
+                    debug.textContent += `  ID ${id}: ${name}\n`;
+                });
+                
+                debug.textContent += `\nDropdown has ${groupSelect.options.length - 1} groups`;
+            })
+            .catch(error => {
+                document.getElementById('debug').textContent = 'Error: ' + error;
+            });
+    </script>
+</body>
+</html>

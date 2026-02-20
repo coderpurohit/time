@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Modals</title>
+    <link rel="stylesheet" href="timetable_page_styles.css">
+    <style>
+        body { padding: 20px; font-family: Arial; }
+        .test-btn { 
+            padding: 10px 20px; 
+            margin: 10px; 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Modal Test Page</h1>
+    
+    <button class="test-btn" onclick="testSubjectModal()">Test Subject Modal</button>
+    <button class="test-btn" onclick="testClassModal()">Test Class Modal</button>
+    <button class="test-btn" onclick="testRoomModal()">Test Room Modal</button>
+    
+    <div id="status" style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 6px;">
+        <h3>Status:</h3>
+        <div id="statusText">Click a button to test...</div>
+    </div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Test Modal</h3>
+                <button class="modal-close" onclick="closeTestModal()">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <p id="modalContent">Modal is working!</p>
+                <button class="test-btn" onclick="closeTestModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(msg) {
+            document.getElementById('statusText').innerHTML = msg;
+        }
+
+        function testSubjectModal() {
+            updateStatus('Testing Subject Modal...<br>Looking for element: subjectModal');
+            const modal = document.getElementById('subjectModal');
+            if (modal) {
+                updateStatus('✓ subjectModal found!<br>Attempting to show...');
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    if (window.getComputedStyle(modal).display === 'flex') {
+                        updateStatus('✓ Subject modal is visible!');
+                    } else {
+                        updateStatus('✗ Modal display is: ' + window.getComputedStyle(modal).display);
+                    }
+                }, 100);
+            } else {
+                updateStatus('✗ subjectModal NOT FOUND in DOM!');
+            }
+        }
+
+        function testClassModal() {
+            updateStatus('Testing Class Modal...<br>Looking for element: classModal');
+            const modal = document.getElementById('classModal');
+            if (modal) {
+                updateStatus('✓ classModal found!<br>Attempting to show...');
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    if (window.getComputedStyle(modal).display === 'flex') {
+                        updateStatus('✓ Class modal is visible!');
+                    } else {
+                        updateStatus('✗ Modal display is: ' + window.getComputedStyle(modal).display);
+                    }
+                }, 100);
+            } else {
+                updateStatus('✗ classModal NOT FOUND in DOM!');
+            }
+        }
+
+        function testRoomModal() {
+            updateStatus('Testing Room Modal...<br>Looking for element: roomModal');
+            const modal = document.getElementById('roomModal');
+            if (modal) {
+                updateStatus('✓ roomModal found!<br>Attempting to show...');
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    if (window.getComputedStyle(modal).display === 'flex') {
+                        updateStatus('✓ Room modal is visible!');
+                    } else {
+                        updateStatus('✗ Modal display is: ' + window.getComputedStyle(modal).display);
+                    }
+                }, 100);
+            } else {
+                updateStatus('✗ roomModal NOT FOUND in DOM!');
+            }
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').style.display = 'none';
+            // Also close any other modals that might be open
+            ['subjectModal', 'classModal', 'roomModal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal) modal.style.display = 'none';
+            });
+            updateStatus('Modal closed');
+        }
+
+        // Test basic modal
+        function showTestModal() {
+            document.getElementById('testModal').style.display = 'flex';
+        }
+
+        // Check on load
+        window.addEventListener('load', () => {
+            updateStatus('Page loaded. Ready to test.<br><br>' +
+                'Checking for modal elements:<br>' +
+                '- subjectModal: ' + (document.getElementById('subjectModal') ? '✓ Found' : '✗ Not found') + '<br>' +
+                '- classModal: ' + (document.getElementById('classModal') ? '✓ Found' : '✗ Not found') + '<br>' +
+                '- roomModal: ' + (document.getElementById('roomModal') ? '✓ Found' : '✗ Not found'));
+        });
+    </script>
+</body>
+</html>

@@ -25,3 +25,51 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Database
+*.db
+*.db-journal
+
+# Logs
+*.log
+server.log
+
+# Test files
+test_*.py
+test_*.html
+*_test.py
+emergency_*.html
+diagnose_*.py
+debug_*.py
+fix_*.py
+check_*.py
+verify_*.py
+
+# Temporary files
+*.json.backup
+*.js.backup
+*.bak
+tt.json
+slots.json
+
+# Generated files
+timetable.json
+timetable_dataset.json
+
+# Sample/Demo files
+sample_*.csv
+demo_*.html
+demo_*.js
+demo_*.css
+simple_*.html
+working_*.html
+
+# Documentation (keep only README.md)
+*_SUMMARY.md
+*_GUIDE.md
+*_STATUS.md
+*_SOLUTION.md
+*_EXPLANATION.md
+ISSUES_FIXED.md
+IMPLEMENTATION_SUMMARY.md
+QUICK_REFERENCE.md

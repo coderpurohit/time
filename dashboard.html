@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TimeTabler</title>
+    <link rel="stylesheet" href="dashboard_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="logo-text">timetabler</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="#" class="nav-item active" data-page="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="timetable_page.html" class="nav-item" data-page="timetables">
+                        <i class="fas fa-file-alt"></i>
+                        <span>My Timetables</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="calendar">
+                        <i class="fas fa-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports & Analytics</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">MANAGEMENT</div>
+                    <a href="#" class="nav-item" data-page="users">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="master-data">
+                        <i class="fas fa-cube"></i>
+                        <span>Master Data</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">HELP & SUPPORT</div>
+                    <a href="#" class="nav-item" data-page="support">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="help" target="_blank">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help Docs</span>
+                        <i class="fas fa-external-link-alt external-icon"></i>
+                    </a>
+                    <a href="#" class="nav-item" data-page="demo" target="_blank">
+                        <i class="fas fa-video"></i>
+                        <span>Schedule Demo</span>
+                        <i class="fas fa-external-link-alt external-icon"></i>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">ACCOUNT</div>
+                    <div class="account-info">
+                        <div class="account-avatar">BP</div>
+                        <div class="account-details">
+                            <div class="account-name">Bharat purohit</div>
+                            <div class="account-email">bharatpurohit095@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="account-plan">
+                        <i class="fas fa-star"></i>
+                        <span>Free Plan</span>
+                        <button class="upgrade-btn">Upgrade</button>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 class="greeting">Good afternoon, Bharat</h1>
+                    <p class="organization-name">Bharat purohit's Organization</p>
+                </div>
+                <div class="header-right">
+                    <span class="role-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        Owner
+                    </span>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="content-sections">
+                <!-- Complete Institute Profile Section -->
+                <section class="profile-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-building"></i>
+                            <span>Complete Your Institute Profile</span>
+                        </div>
+                        <p class="section-description">Help us serve you better by providing your institute details.</p>
+                    </div>
+                    <div class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="instituteName">Institute Name *</label>
+                                <input type="text" id="instituteName" value="Bharat purohit's Organization" placeholder="Enter institute name">
+                            </div>
+                            <div class="form-group">
+                                <label for="instituteType">Institute Type *</label>
+                                <select id="instituteType">
+                                    <option value="">Select type</option>
+                                    <option value="school">School</option>
+                                    <option value="college">College</option>
+                                    <option value="university">University</option>
+                                    <option value="training">Training Institute</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City *</label>
+                                <input type="text" id="city" value="Lonavla" placeholder="Enter city">
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" id="website" placeholder="https://example.com">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save">
+                                <i class="fas fa-check"></i>
+                                Save Details
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Premium Features Section -->
+                <section class="premium-section">
+                    <div class="premium-content">
+                        <div class="premium-info">
+                            <div class="premium-title">
+                                <i class="fas fa-star"></i>
+                                <span>Unlock Premium Features with Pro</span>
+                            </div>
+                            <p class="premium-description">Upgrade to unlock unlimited timetables, advanced scheduling, priority support, and more.</p>
+                        </div>
+                        <button class="btn-premium">
+                            Explore Plans & Upgrade
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Quick Actions and My Schedule -->
+                <div class="actions-schedule-row">
+                    <!-- Quick Actions -->
+                    <section class="quick-actions-section">
+                        <h2 class="section-title-simple">Quick Actions</h2>
+                        <div class="quick-actions-grid">
+                            <a href="timetable_page.html" class="action-card action-blue" data-action="timetables">
+                                <i class="fas fa-file-alt"></i>
+                                <span>My Timetables</span>
+                            </a>
+                            <button class="action-card action-orange" data-action="reports">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reports & Analytics</span>
+                            </button>
+                            <button class="action-card action-green" data-action="users">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Users</span>
+                            </button>
+                            <button class="action-card action-green" data-action="calendar">
+                                <i class="fas fa-calendar"></i>
+                                <span>View Calendar</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- My Schedule -->
+                    <section class="schedule-section">
+                        <h2 class="section-title-simple">My Schedule</h2>
+                        <div id="schedulePreview" class="schedule-preview">
+                            <div class="schedule-empty">
+                                <i class="fas fa-building"></i>
+                                <p>There is no published timetable at the moment. Your schedule will appear once timetables are published.</p>
+                                <button class="btn-load-schedule" onclick="loadSchedulePreview()">
+                                    <i class="fas fa-sync"></i>
+                                    Load Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard_script.js"></script>
+</body>
+</html>

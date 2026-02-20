@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Timetable - Academic View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #9da3ab;
+        }
+
+        .class-selector {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .class-selector select {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid #9da3ab;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .timetable-header {
+            background: #9da3ab;
+            border: 2px solid #000;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .timetable-header-row {
+            padding: 0.25rem 0;
+        }
+
+        .timetable-header strong {
+            font-weight: 700;
+            color: #000;
+        }
+
+        .timetable-wrapper {
+            overflow-x: auto;
+            border: 2px solid #000;
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .timetable-table th {
+            background: #9da3ab;
+            color: #000;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 700;
+            border: 1px solid #000;
+            font-size: 0.85rem;
+        }
+
+        .timetable-table td {
+            padding: 0.6rem;
+            border: 1px solid #000;
+            vertical-align: top;
+            font-size: 0.75rem;
+            min-height: 70px;
+        }
+
+        .day-cell {
+            background: #d3d3d3;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: middle;
+            color: #000;
+            min-width: 100px;
+        }
+
+        .class-cell {
+            background: #f9f9f9;
+            min-width: 130px;
+        }
+
+        .subject-code {
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+        .teacher-name {
+            color: #333;
+            font-size: 0.7rem;
+            margin: 0.1rem 0;
+        }
+
+        .room-name {
+            color: #555;
+            font-size: 0.7rem;
+            margin: 0.1rem 0;
+        }
+
+        .lab-badge {
+            display: inline-block;
+            background: #4a5568;
+            color: white;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            margin-top: 0.2rem;
+        }
+
+        .empty-cell {
+            color: #999;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .lunch-break {
+            background: #e8e8e8;
+            text-align: center;
+            font-weight: 700;
+            vertical-align: middle;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .class-selector {
+                display: none;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .timetable-table {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎓 College Timetable - Academic Year 2025-26</h1>
+
+        <div class="class-selector">
+            <label for="classSelect"><strong>Select Class:</strong></label>
+            <select id="classSelect" onchange="displayTimetable()">
+                <option value="">-- Choose a class --</option>
+            </select>
+        </div>
+
+        <div id="timetableContainer"></div>
+    </div>
+
+    <script>
+        let timetableData = null;
+
+        // Load the JSON data
+        async function loadData() {
+            try {
+                const response = await fetch('timetable_dataset.json');
+                timetableData = await response.json();
+
+                // Populate class selector
+                const classSelect = document.getElementById('classSelect');
+                timetableData.class_groups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.name;
+                    option.textContent = `${group.name} (${group.student_count} students)`;
+                    classSelect.appendChild(option);
+                });
+            } catch (error) {
+                document.getElementById('timetableContainer').innerHTML = `
+                    <div style="text-align: center; color: #e53e3e; padding: 2rem;">
+                        <h3>⚠️ Error Loading Data</h3>
+                        <p>Could not load timetable_dataset.json</p>
+                        <p style="font-size: 0.875rem; color: #666;">Make sure the file is in the same directory as this HTML file.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayTimetable() {
+            const className = document.getElementById('classSelect').value;
+            if (!className || !timetableData) return;
+
+            const container = document.getElementById('timetableContainer');
+
+            // Get entries for this class
+            const entries = timetableData.timetable_entries.filter(e => e.class_group === className);
+
+            if (entries.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No timetable data for this class.</p>';
+                return;
+            }
+
+            // Get current date
+            const today = new Date().toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+
+            // Get teacher name (sample from first entry)
+            const teacherName = entries[0]?.teacher_name || 'To Be Assigned';
+
+            // Build schedule grid
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const periods = [1, 2, 3, 4, 5, 6];
+            const schedule = {};
+
+            days.forEach(day => {
+                schedule[day] = {};
+                periods.forEach(period => {
+                    schedule[day][period] = null;
+                });
+            });
+
+            entries.forEach(entry => {
+                schedule[entry.day][entry.period] = entry;
+            });
+
+            // Generate HTML
+            let html = `
+                <div class="timetable-header">
+                    <div class="timetable-header-row">
+                        <div><strong>Class:</strong> ${className}</div>
+                    </div>
+                    <div class="timetable-header-row">
+                        <div><strong>Division:</strong> C</div>
+                    </div>
+                    <div class="timetable-header-row">
+                        <div><strong>w.e.f:</strong> ${today}</div>
+                    </div>
+                </div>
+
+                <div class="timetable-wrapper">
+                    <table class="timetable-table">
+                        <thead>
+                            <tr>
+                                <th>Day / Time</th>
+            `;
+
+            // Time slot headers
+            periods.forEach(period => {
+                const sample = entries.find(e => e.period === period);
+                if (sample) {
+                    html += `<th>${sample.start_time}<br>to<br>${sample.end_time}</th>`;
+                } else {
+                    html += `<th>Period ${period}</th>`;
+                }
+            });
+
+            html += '</tr></thead><tbody>';
+
+            // Day rows
+            days.forEach(day => {
+                html += `<tr><td class="day-cell"><strong>${day}</strong></td>`;
+
+                periods.forEach(period => {
+                    const entry = schedule[day][period];
+
+                    if (period === 4 && !entry) {
+                        // Lunch break placeholder if no class at period 4
+                        html += '<td class="lunch-break">LUNCH<br>BREAK</td>';
+                    } else if (entry) {
+                        html += `
+                            <td class="class-cell">
+                                <div class="subject-code">${entry.subject_code}</div>
+                                <div class="teacher-name">${entry.teacher_name}</div>
+                                <div class="room-name">${entry.room_name}</div>
+                                ${entry.is_lab ? '<span class="lab-badge">LAB</span>' : ''}
+                            </td>
+                        `;
+                    } else {
+                        html += '<td class="class-cell"><div class="empty-cell">—</div></td>';
+                    }
+                });
+
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
+
+            container.innerHTML = html;
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+
+</html>

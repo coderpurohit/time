@@ -17,6 +17,7 @@ class TimetableService:
         db_rooms = db.query(models.Room).all()
         db_groups = db.query(models.ClassGroup).all()
         db_slots = db.query(models.TimeSlot).all()
+        db_lessons = db.query(models.Lesson).all()
 
         # 2. Domain conversion (Simplified)
         teachers = [Teacher(id=t.id, name=t.name, email=t.email, max_hours_per_week=t.max_hours_per_week) for t in db_teachers]
@@ -25,13 +26,46 @@ class TimetableService:
         rooms = [Room(id=r.id, name=r.name, capacity=r.capacity, type=r.type) for r in db_rooms]
         groups = [ClassGroup(id=g.id, name=g.name, student_count=g.student_count) for g in db_groups]
         slots = [TimeSlot(id=s.id, day=s.day, period=s.period, start_time=s.start_time, end_time=s.end_time, is_break=s.is_break) for s in db_slots]
+        
+        # Convert lessons to required assignments
+        # Each lesson defines: which groups need which subjects, how many times per week
+        required_assignments = []
+        assignment_id = 0  # Unique ID for each assignment occurrence
+        
+        print(f"DEBUG: Found {len(db_lessons)} lessons in database")
+        
+        for lesson in db_lessons:
+            # Handle many-to-many relationships - create assignments for ALL combinations
+            teachers_list = lesson.teachers if lesson.teachers else []
+            subjects_list = lesson.subjects if lesson.subjects else []
+            groups_list = lesson.class_groups if lesson.class_groups else []
+            
+            print(f"DEBUG: Lesson {lesson.id}: {len(teachers_list)} teachers, {len(subjects_list)} subjects, {len(groups_list)} groups, {lesson.lessons_per_week} periods/week")
+            
+            # Create assignments for each combination
+            for teacher in teachers_list:
+                for subject in subjects_list:
+                    for group in groups_list:
+                        # Add this many assignments for this lesson
+                        for occurrence in range(lesson.lessons_per_week):
+                            required_assignments.append({
+                                'assignment_id': assignment_id,
+                                'group_id': group.id,
+                                'subject_id': subject.id,
+                                'teacher_id': teacher.id,
+                                'duration': lesson.length_per_lesson,
+                                'occurrence': occurrence + 1
+                            })
+                            assignment_id += 1
+
+        print(f"DEBUG: Generated {len(required_assignments)} required assignments from {len(db_lessons)} lessons")
 
         # 3. Solver
         if method == "genetic":
-            solver = GeneticTimetableSolver(teachers, subjects, rooms, groups, slots)
+            solver = GeneticTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
             schedule = solver.solve()
         else:
-            solver = CspTimetableSolver(teachers, subjects, rooms, groups, slots)
+            solver = CspTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
             schedule = solver.solve()
 
         if not schedule:
@@ -54,7 +88,11 @@ class TimetableService:
             )
             db.add(entry)
         
+        # Mark version as active after successful generation
+        version.status = "active"
+        version.is_valid = True
         db.commit()
+        db.refresh(version)
         return version
 
     @staticmethod
@@ -119,6 +157,7 @@ class TimetableService:
             db_rooms = db.query(models.Room).all()
             db_groups = db.query(models.ClassGroup).all()
             db_slots = db.query(models.TimeSlot).all()
+            db_lessons = db.query(models.Lesson).all()  # ADDED: Query lessons
 
             teachers = [Teacher(id=t.id, name=t.name, email=t.email) for t in db_teachers]
             subjects = [Subject(id=s.id, name=s.name, code=s.code, is_lab=s.is_lab, credits=s.credits, 
@@ -127,11 +166,39 @@ class TimetableService:
             groups = [ClassGroup(id=g.id, name=g.name, student_count=g.student_count) for g in db_groups]
             slots = [TimeSlot(id=s.id, day=s.day, period=s.period, start_time=s.start_time, end_time=s.end_time, is_break=s.is_break) for s in db_slots]
 
+            # ADDED: Convert lessons to required assignments (same logic as generate_and_save)
+            required_assignments = []
+            assignment_id = 0
+            
+            print(f"DEBUG (background): Found {len(db_lessons)} lessons in database")
+            
+            for lesson in db_lessons:
+                teacher_id = lesson.teachers[0].id if lesson.teachers else None
+                subject_id = lesson.subjects[0].id if lesson.subjects else None
+                group_id = lesson.class_groups[0].id if lesson.class_groups else None
+                
+                print(f"DEBUG (background): Lesson {lesson.id}: teacher={teacher_id}, subject={subject_id}, group={group_id}, periods={lesson.lessons_per_week}")
+                
+                if teacher_id and subject_id and group_id:
+                    for occurrence in range(lesson.lessons_per_week):
+                        required_assignments.append({
+                            'assignment_id': assignment_id,
+                            'group_id': group_id,
+                            'subject_id': subject_id,
+                            'teacher_id': teacher_id,
+                            'duration': lesson.length_per_lesson,
+                            'occurrence': occurrence + 1
+                        })
+                        assignment_id += 1
+
+            print(f"DEBUG (background): Generated {len(required_assignments)} required assignments from {len(db_lessons)} lessons")
+
+            # Pass required_assignments to solver
             if method == "genetic":
-                solver = GeneticTimetableSolver(teachers, subjects, rooms, groups, slots)
+                solver = GeneticTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
                 schedule = solver.solve()
             else:
-                solver = CspTimetableSolver(teachers, subjects, rooms, groups, slots)
+                solver = CspTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
                 schedule = solver.solve()
 
             if schedule:
@@ -154,6 +221,8 @@ class TimetableService:
             db.commit()
         except Exception as e:
             print(f"Bkg Error: {e}")
+            import traceback
+            traceback.print_exc()
             if version:
                 version.status = "error"
                 db.commit()

@@ -9,11 +9,22 @@ from .. import schemas
 
 router = APIRouter()
 
+@router.get("/", response_model=List[schemas.TimetableVersionShort])
+def get_all_timetable_versions(db: Session = Depends(get_db)):
+    versions = db.query(models.TimetableVersion).order_by(models.TimetableVersion.id.desc()).all()
+    return versions
+
 @router.get("/latest", response_model=schemas.TimetableVersion)
 def get_latest_timetable(db: Session = Depends(get_db)):
     latest = TimetableService.get_latest(db)
     if not latest:
         raise HTTPException(status_code=404, detail="No timetables found")
+    
+    # Fix None available_slots to empty list
+    for entry in latest.entries:
+        if entry.teacher and entry.teacher.available_slots is None:
+            entry.teacher.available_slots = []
+    
     return latest
 
 @router.get("/{id}", response_model=schemas.TimetableVersion)
@@ -21,6 +32,12 @@ def get_timetable_by_id(id: int, db: Session = Depends(get_db)):
     version = db.query(models.TimetableVersion).filter(models.TimetableVersion.id == id).first()
     if not version:
         raise HTTPException(status_code=404, detail="Timetable version not found")
+    
+    # Fix None available_slots to empty list
+    for entry in version.entries:
+        if entry.teacher and entry.teacher.available_slots is None:
+            entry.teacher.available_slots = []
+    
     return version
 
 @router.get("/analytics/{version_id}", response_model=schemas.AnalyticsReport)

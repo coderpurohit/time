@@ -15,6 +15,19 @@ def generate_timetable(background_tasks: BackgroundTasks, method: str = "csp", n
     Generate and save a new timetable version. 
     Heavy generations can be moved to background if needed, but for now we return the version metadata.
     """
+    
+    # Validate sufficient data exists before generating
+    teachers_count = db.query(models.Teacher).count()
+    subjects_count = db.query(models.Subject).count()
+    rooms_count = db.query(models.Room).count()
+    groups_count = db.query(models.ClassGroup).count()
+
+    if teachers_count == 0 or subjects_count == 0 or rooms_count == 0 or groups_count == 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Insufficient data for generation. Teachers: {teachers_count}, Subjects: {subjects_count}, Rooms: {rooms_count}, Groups: {groups_count}. Please import data first."
+        )
+
     version = models.TimetableVersion(name=name, algorithm=method, status="processing")
     db.add(version)
     db.commit()

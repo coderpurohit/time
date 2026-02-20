@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; cursor: pointer; }
+        .result { margin: 20px 0; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Timetable Generator - Simple Test</h1>
+    
+    <button onclick="testGenerate()">Test Generate</button>
+    <button onclick="testLoadLatest()">Test Load Latest</button>
+    <button onclick="testLoadFactor()">Test Load Factor</button>
+    <button onclick="testTeachers()">Test Teachers</button>
+    
+    <div id="result" class="result">Click a button to test...</div>
+
+    <script>
+        const API = 'http://localhost:8000/api';
+        
+        async function testGenerate() {
+            document.getElementById('result').innerHTML = 'Generating timetable...';
+            try {
+                const response = await fetch(`${API}/solvers/generate?method=csp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <h3>✓ Generate Success!</h3>
+                    <p>Status: ${data.status}</p>
+                    <p>Entries: ${data.entries?.length || 0}</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<h3>✗ Error:</h3><p>${error.message}</p>`;
+            }
+        }
+        
+        async function testLoadLatest() {
+            document.getElementById('result').innerHTML = 'Loading latest timetable...';
+            try {
+                const response = await fetch(`${API}/timetables/latest`);
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <h3>✓ Load Success!</h3>
+                    <p>ID: ${data.id}</p>
+                    <p>Name: ${data.name}</p>
+                    <p>Entries: ${data.entries?.length || 0}</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<h3>✗ Error:</h3><p>${error.message}</p>`;
+            }
+        }
+        
+        async function testLoadFactor() {
+            document.getElementById('result').innerHTML = 'Loading load factor...';
+            try {
+                const response = await fetch(`${API}/analytics/load-factor`);
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <h3>✓ Load Factor Success!</h3>
+                    <p>Teachers: ${data.teacher_load?.length || 0}</p>
+                    <p>Classes: ${data.class_load?.length || 0}</p>
+                    <p>Total Periods: ${data.summary?.total_periods || 0}</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<h3>✗ Error:</h3><p>${error.message}</p>`;
+            }
+        }
+        
+        async function testTeachers() {
+            document.getElementById('result').innerHTML = 'Loading teachers...';
+            try {
+                const response = await fetch(`${API}/teachers/`);
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <h3>✓ Teachers Success!</h3>
+                    <p>Total: ${data.length}</p>
+                    <ul>${data.slice(0, 5).map(t => `<li>${t.name} (${t.email})</li>`).join('')}</ul>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<h3>✗ Error:</h3><p>${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

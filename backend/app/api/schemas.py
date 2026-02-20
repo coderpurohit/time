@@ -9,7 +9,7 @@ class TeacherBase(BaseModel):
     name: str
     email: str
     max_hours_per_week: int = 12
-    available_slots: List[int] = []
+    available_slots: Optional[List[int]] = []
 
 class SubjectBase(BaseModel):
     name: str
@@ -81,6 +81,33 @@ class Substitution(SubstitutionBase):
     id: int
     model_config = ConfigDict(from_attributes=True)
 
+class BreakDef(BaseModel):
+    # Either position (after which period) or start_time (HH:MM) must be provided
+    position: Optional[int] = None
+    start_time: Optional[str] = None
+    duration: int
+
+
+class ScheduleConfigBase(BaseModel):
+    day_start_time: str = "09:00"
+    day_end_time: Optional[str] = None
+    working_minutes_per_day: Optional[int] = None
+
+    number_of_periods: Optional[int] = None
+    period_duration_minutes: Optional[int] = None
+
+    breaks: List[BreakDef] = []
+
+    lunch_break_start: str = "12:00"
+    lunch_break_end: str = "13:00"
+    schedule_days: List[str] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    institution: Optional[str] = None
+
+class ScheduleConfig(ScheduleConfigBase):
+    id: int
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
 # --- Response Models ---
 
 class Teacher(TeacherBase):
@@ -109,22 +136,22 @@ class TimeSlot(TimeSlotBase):
 
 class TimetableEntry(BaseModel):
     id: int
-    version_id: int
-    time_slot_id: int
-    subject_id: int
-    room_id: int
-    class_group_id: int
-    teacher_id: int
+    version_id: Optional[int] = None
+    time_slot_id: Optional[int] = None
+    subject_id: Optional[int] = None
+    room_id: Optional[int] = None
+    class_group_id: Optional[int] = None
+    teacher_id: Optional[int] = None
     
-    time_slot: TimeSlot
-    subject: Subject
-    room: Room
-    class_group: ClassGroup
-    teacher: Teacher
+    time_slot: Optional[TimeSlot] = None
+    subject: Optional[Subject] = None
+    room: Optional[Room] = None
+    class_group: Optional[ClassGroup] = None
+    teacher: Optional[Teacher] = None
     
     model_config = ConfigDict(from_attributes=True)
 
-class TimetableVersion(BaseModel):
+class TimetableVersionShort(BaseModel):
     id: int
     name: str
     algorithm: str
@@ -132,6 +159,10 @@ class TimetableVersion(BaseModel):
     is_valid: bool
     fitness_score: Optional[int]
     created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class TimetableVersion(TimetableVersionShort):
     entries: List[TimetableEntry] = []
     
     model_config = ConfigDict(from_attributes=True)
@@ -205,3 +236,34 @@ class SubstitutionCreate(BaseModel):
     original_teacher_id: int
     substitute_teacher_id: Optional[int] = None
     status: str = "pending"
+
+# --- Lesson Schemas ---
+
+class LessonCreate(BaseModel):
+    teacher_ids: List[int]
+    class_group_ids: List[int]
+    subject_ids: List[int]
+    lessons_per_week: int = 1
+    length_per_lesson: int = 1
+
+class LessonUpdate(LessonCreate):
+    pass
+
+class Lesson(BaseModel):
+    id: int
+    lessons_per_week: int
+    length_per_lesson: int
+    teachers: List[Teacher]
+    class_groups: List[ClassGroup]
+    subjects: List[Subject]
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class BulkImportRequest(BaseModel):
+    text: str
+    clear_existing: bool = False
+
+class BulkImportResponse(BaseModel):
+    success_count: int
+    fail_count: int
+    errors: List[str]

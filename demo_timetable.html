@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Timetable - Weekly Schedule</title>
+    <link rel="stylesheet" href="demo_styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🎓 College Timetable</h1>
+                <p class="subtitle">Weekly Schedule - Academic Year 2026</p>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="loadTimetable()" id="loadBtn">
+                    <span class="btn-text">Load Latest Timetable</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+                <button class="btn btn-secondary" onclick="generateNewTimetable()" id="generateBtn">
+                    Generate New Schedule
+                </button>
+            </div>
+        </header>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <!-- Timetable Grid -->
+        <div class="timetable-wrapper">
+            <div class="timetable-header-info">
+                <div class="info-item">
+                    <span class="info-label">Teaching Hours:</span>
+                    <span class="info-value">6 hours/day</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Lunch Break:</span>
+                    <span class="info-value">12:00 PM - 1:00 PM</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Schedule:</span>
+                    <span class="info-value">Monday - Friday</span>
+                </div>
+            </div>
+
+            <div id="timetableGrid" class="timetable-grid">
+                <!-- Timetable will be rendered here -->
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <h3>No Timetable Loaded</h3>
+                    <p>Click "Load Latest Timetable" to fetch and display the schedule</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-section" id="statsSection" style="display: none;">
+            <h2>📊 Schedule Statistics</h2>
+            <div class="stats-grid">
+                <a href="frontend/app.html#manage" style="text-decoration: none; color: inherit;">
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍🏫</div>
+                        <div class="stat-value" id="teacherCount">-</div>
+                        <div class="stat-label">Teachers</div>
+                    </div>
+                </a>
+                <a href="frontend/app.html#manage" style="text-decoration: none; color: inherit;">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏫</div>
+                        <div class="stat-value" id="roomCount">-</div>
+                        <div class="stat-label">Classrooms</div>
+                    </div>
+                </a>
+                <a href="frontend/app.html#manage" style="text-decoration: none; color: inherit;">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value" id="subjectCount">-</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                </a>
+                <a href="frontend/app.html#manage" style="text-decoration: none; color: inherit;">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="classCount">-</div>
+                        <div class="stat-label">Class Groups</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-section" id="legendSection" style="display: none;">
+            <h3>📖 Subject Legend</h3>
+            <div class="legend-grid" id="legendGrid">
+                <!-- Legend items will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script src="demo_script.js"></script>
+</body>
+
+</html>

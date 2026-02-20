@@ -1,12 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TimeTable Generator</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Generator Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="timetable_academic.css">
+    <!-- jsPDF for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🎓 Timetable Generator</h1>
+                <p class="subtitle">Test Your Backend API</p>
+            </div>
+            <div class="status-indicator" id="backendStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking...</span>
+            </div>
+        </header>
+
+        <!-- CSV Import Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📥 Import Data from CSV</h2>
+                <p>Bulk upload teachers, subjects, rooms, and class groups</p>
+            </div>
+            <div class="card-body">
+                <div class="import-grid">
+                    <div class="import-item">
+                        <h4>👨‍🏫 Teachers</h4>
+                        <input type="file" id="teachersFile" accept=".csv" style="display: none;"
+                            onchange="handleFileImport(this, 'teachers')">
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="document.getElementById('teachersFile').click()">
+                            Choose CSV File
+                        </button>
+                        <a href="samples/sample_teachers.csv" download class="download-link">Download Sample</a>
+                    </div>
+                    <div class="import-item">
+                        <h4>📚 Subjects</h4>
+                        <input type="file" id="subjectsFile" accept=".csv" style="display: none;"
+                            onchange="handleFileImport(this, 'subjects')">
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="document.getElementById('subjectsFile').click()">
+                            Choose CSV File
+                        </button>
+                        <a href="samples/sample_subjects.csv" download class="download-link">Download Sample</a>
+                    </div>
+                    <div class="import-item">
+                        <h4>🏫 Rooms</h4>
+                        <input type="file" id="roomsFile" accept=".csv" style="display: none;"
+                            onchange="handleFileImport(this, 'rooms')">
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('roomsFile').click()">
+                            Choose CSV File
+                        </button>
+                        <a href="samples/sample_rooms.csv" download class="download-link">Download Sample</a>
+                    </div>
+                    <div class="import-item">
+                        <h4>👥 Class Groups</h4>
+                        <input type="file" id="classGroupsFile" accept=".csv" style="display: none;"
+                            onchange="handleFileImport(this, 'classgroups')">
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="document.getElementById('classGroupsFile').click()">
+                            Choose CSV File
+                        </button>
+                        <a href="samples/sample_classgroups.csv" download class="download-link">Download Sample</a>
+                    </div>
+                </div>
+                <div id="importStatus" class="import-status"></div>
+            </div>
+        </div>
+
+        <!-- Generation Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Generate New Timetable</h2>
+                <p>Select an algorithm and create a new timetable</p>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="timetableName">Timetable Name</label>
+                    <input type="text" id="timetableName" placeholder="e.g., Spring 2024 Schedule"
+                        value="Test Schedule">
+                </div>
+
+                <div class="form-group">
+                    <label for="algorithm">Algorithm</label>
+                    <select id="algorithm">
+                        <option value="csp">CSP (Constraint Satisfaction)</option>
+                        <option value="genetic">Genetic Algorithm</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="generateBtn" onclick="generateTimetable()">
+                    <span class="btn-text">Generate Timetable</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="card" id="resultsCard" style="display: none;">
+            <div class="card-header">
+                <h2>Generation Results</h2>
+                <div class="result-status" id="resultStatus"></div>
+            </div>
+            <div class="card-body">
+                <div id="resultsContent">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Timetable Panel -->
+        <div class="card">
+            <div class="card-header">
+                <div style="flex: 1;">
+                    <h2>View Latest Timetable</h2>
+                    <p>Visual schedule display with export options</p>
+                </div>
+                <div class="export-buttons" id="exportButtons" style="display: none;">
+                    <button class="btn btn-secondary btn-sm" onclick="exportToCSV()">
+                        📄 Export CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="exportToPDF()">
+                        📕 Export PDF
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-secondary" onclick="fetchLatestTimetable()">
+                    Fetch Latest Timetable
+                </button>
+                <div id="latestTimetableContent" class="timetable-content"></div>
+            </div>
+        </div>
+
+        <!-- Database Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🏫</div>
+                <div class="stat-value" id="teacherCount">-</div>
+                <div class="stat-label">Teachers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value" id="subjectCount">-</div>
+                <div class="stat-label">Subjects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏫</div>
+                <div class="stat-value" id="roomCount">-</div>
+                <div class="stat-label">Rooms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="timetableCount">-</div>
+                <div class="stat-label">Timetables</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
 </html>

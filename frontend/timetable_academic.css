@@ -1,0 +1,160 @@
+/* Academic Timetable Styles */
+.timetable-header {
+    background: #9da3ab;
+    border: 2px solid #000;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.timetable-header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+}
+
+.timetable-header strong {
+    font-weight: 700;
+    color: #000;
+}
+
+/* Academic Timetable Table */
+.timetable-calendar {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border: 2px solid #000;
+}
+
+.timetable-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    table-layout: auto;
+}
+
+.timetable-table th {
+    background: #9da3ab;
+    color: #000;
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #000;
+    font-size: 0.75rem;
+    vertical-align: middle;
+}
+
+.timetable-table td {
+    padding: 0.4rem;
+    border: 1px solid #000;
+    vertical-align: top;
+    background: #f0f0f0;
+    font-size: 0.7rem;
+    min-height: 60px;
+}
+
+.day-cell {
+    background: #d3d3d3 !important;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle !important;
+    color: #000;
+    min-width: 100px;
+}
+
+.time-header {
+    background: #9da3ab !important;
+    font-weight: 600;
+    color: #000;
+    min-width: 100px;
+}
+
+.class-cell {
+    min-width: 120px;
+    background: #f9f9f9 !important;
+}
+
+.class-info-compact {
+    background: transparent;
+    padding: 0.25rem;
+    line-height: 1.4;
+}
+
+.subject-name {
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.15rem;
+    font-size: 0.7rem;
+}
+
+.teacher-name,
+.room-name,
+.group-name {
+    color: #333;
+    font-size: 0.65rem;
+    margin: 0.1rem 0;
+}
+
+.empty-cell {
+    color: #999 !important;
+    font-style: italic;
+    text-align: center !important;
+    padding: 1rem;
+}
+
+.break-cell {
+    background: #e0e0e0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+}
+
+.short-break-header {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    background: #9da3ab !important;
+    min-width: 30px !important;
+    font-weight: 700;
+}
+
+/* Multi-class cell */
+.multi-class {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.class-entry {
+    padding: 0.25rem;
+    border-left: 2px solid #666;
+    margin-bottom: 0.25rem;
+}
+
+.class-entry:last-child {
+    margin-bottom: 0;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .card {
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+
+    .timetable-table {
+        page-break-inside: avoid;
+    }
+
+    .header,
+    .stats-grid,
+    .btn,
+    .export-buttons {
+        display: none !important;
+    }
+}

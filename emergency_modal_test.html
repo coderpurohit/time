@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal Test - Emergency</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body style="padding: 20px; font-family: Arial;">
+    <h1>Emergency Modal Test</h1>
+    <button class="btn" onclick="openTestModal()">Open Modal</button>
+    
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <h2>Test Modal</h2>
+            <p>If you see this, modals work!</p>
+            <button class="btn" onclick="closeTestModal()">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        function openTestModal() {
+            console.log('Opening modal...');
+            document.getElementById('testModal').style.display = 'flex';
+        }
+        function closeTestModal() {
+            console.log('Closing modal...');
+            document.getElementById('testModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

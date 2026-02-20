@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page Load</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #007bff; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        #console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Timetable Page Diagnostic Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Backend Connection Test</h2>
+        <button onclick="testBackend()">Test Backend APIs</button>
+        <div id="backend-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. JavaScript Load Test</h2>
+        <button onclick="testJavaScript()">Test JavaScript Functions</button>
+        <div id="js-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Button Click Test</h2>
+        <button onclick="testButtons()">Test All Buttons</button>
+        <div id="button-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Console Output</h2>
+        <div id="console-output">Console messages will appear here...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Quick Actions</h2>
+        <button onclick="window.location.href='http://localhost:8000/timetable_page.html'">Open Timetable Page</button>
+        <button onclick="window.location.href='http://localhost:8000/working_timetable.html'">Open Working Version</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const consoleOutput = document.getElementById('console-output');
+
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function logToPage(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#f48771' : type === 'warn' ? '#dcdcaa' : '#d4d4d4';
+            consoleOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logToPage(args.join(' '), 'log');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logToPage('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            logToPage('WARN: ' + args.join(' '), 'warn');
+        };
+
+        async function testBackend() {
+            const resultDiv = document.getElementById('backend-result');
+            resultDiv.innerHTML = '<p class="info">Testing backend APIs...</p>';
+            
+            const tests = [
+                { name: 'Teachers API', url: '/api/teachers/' },
+                { name: 'Subjects API', url: '/api/subjects/' },
+                { name: 'Rooms API', url: '/api/rooms/' },
+                { name: 'Timetable API', url: '/api/timetables/latest' },
+                { name: 'Load Factor API', url: '/api/analytics/load-factor' }
+            ];
+
+            let results = '<h3>Backend API Results:</h3>';
+            
+            for (const test of tests) {
+                try {
+                    console.log(`Testing ${test.name}...`);
+                    const response = await fetch(`${API_BASE_URL}${test.url}`);
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        const count = Array.isArray(data) ? data.length : 'N/A';
+                        results += `<p class="success">✅ ${test.name}: OK (${count} items)</p>`;
+                        console.log(`${test.name} passed`);
+                    } else {
+                        results += `<p class="error">❌ ${test.name}: ${response.status} - ${data.detail || 'Error'}</p>`;
+                        console.error(`${test.name} failed: ${response.status}`);
+                    }
+                } catch (error) {
+                    results += `<p class="error">❌ ${test.name}: ${error.message}</p>`;
+                    console.error(`${test.name} error: ${error.message}`);
+                }
+            }
+            
+            resultDiv.innerHTML = results;
+        }
+
+        function testJavaScript() {
+            const resultDiv = document.getElementById('js-result');
+            console.log('Testing JavaScript functions...');
+            
+            let results = '<h3>JavaScript Function Check:</h3>';
+            
+            // Check if functions exist in the global scope
+            const functions = [
+                'loadTimetable',
+                'generateNewTimetable',
+                'loadTeachersInPage',
+                'openTeacherModal',
+                'loadLoadFactorData',
+                'initWizard'
+            ];
+
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    results += `<p class="success">✅ ${funcName} is defined</p>`;
+                    console.log(`${funcName} exists`);
+                } else {
+                    results += `<p class="error">❌ ${funcName} is NOT defined</p>`;
+                    console.error(`${funcName} missing`);
+                }
+            });
+
+            resultDiv.innerHTML = results;
+        }
+
+        function testButtons() {
+            const resultDiv = document.getElementById('button-result');
+            console.log('Testing button elements...');
+            
+            let results = '<h3>Button Element Check:</h3>';
+            
+            const buttons = [
+                'generateBtn',
+                'loadLatestBtn',
+                'applySettingsBtn'
+            ];
+
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    results += `<p class="success">✅ ${btnId} exists</p>`;
+                    console.log(`${btnId} found`);
+                } else {
+                    results += `<p class="error">❌ ${btnId} NOT found</p>`;
+                    console.error(`${btnId} missing`);
+                }
+            });
+
+            resultDiv.innerHTML = results;
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, starting tests...');
+            setTimeout(() => {
+                testBackend();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

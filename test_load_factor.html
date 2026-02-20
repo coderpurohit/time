@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Load Factor</title>
+</head>
+<body>
+    <h1>Load Factor Test</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/analytics/load-factor');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h2>Success!</h2>
+                    <p>Status: ${response.status}</p>
+                    <p>Teachers: ${data.teacher_load.length}</p>
+                    <p>Classes: ${data.class_load.length}</p>
+                    <p>Total Periods: ${data.summary.total_periods}</p>
+                    <h3>First Teacher:</h3>
+                    <pre>${JSON.stringify(data.teacher_load[0], null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

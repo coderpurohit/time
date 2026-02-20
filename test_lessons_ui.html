@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Lessons UI</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Lessons UI Test</h1>
+    
+    <div id="status"></div>
+    
+    <h2>Test 1: Check if functions are defined</h2>
+    <button onclick="testFunctions()">Test Functions</button>
+    <div id="test1"></div>
+    
+    <h2>Test 2: Test API Connection</h2>
+    <button onclick="testAPI()">Test API</button>
+    <div id="test2"></div>
+    
+    <h2>Test 3: Test Bulk Import</h2>
+    <textarea id="testData" style="width:100%;height:100px;">Dr. Rajesh Kumar, SE-AI-DS-A, Data Structures & Algorithms, 3</textarea>
+    <button onclick="testImport()">Test Import</button>
+    <div id="test3"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        function testFunctions() {
+            const result = document.getElementById('test1');
+            const functions = [
+                'openBulkImportModal',
+                'closeBulkImportModal',
+                'submitBulkImport',
+                'setLessonView',
+                'deleteLesson',
+                'loadLessons'
+            ];
+            
+            let html = '<ul>';
+            functions.forEach(fn => {
+                const exists = typeof window[fn] === 'function';
+                html += `<li>${fn}: ${exists ? '✓ Defined' : '✗ Missing'}</li>`;
+            });
+            html += '</ul>';
+            result.innerHTML = html;
+        }
+        
+        async function testAPI() {
+            const result = document.getElementById('test2');
+            try {
+                const response = await fetch(`${API_BASE}/lessons/`);
+                const data = await response.json();
+                result.innerHTML = `<div class="status success">✓ API Working - Found ${data.length} lessons</div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="status error">✗ API Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testImport() {
+            const result = document.getElementById('test3');
+            const text = document.getElementById('testData').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/lessons/bulk-import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, clear_existing: true })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    result.innerHTML = `<div class="status success">✓ Import Success: ${data.success_count} lessons imported</div>`;
+                } else {
+                    result.innerHTML = `<div class="status error">✗ Import Failed: ${data.detail}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="status error">✗ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+    
+    <!-- Load the actual lessons script -->
+    <script src="frontend/lessons_script.js"></script>
+</body>
+</html>

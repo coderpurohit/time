@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Generator - Integrated System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+            --text: #374151;
+            --text-light: #6b7280;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .content {
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        select,
+        input,
+        textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            min-width: 200px;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--text);
+        }
+
+        .timetable-wrapper {
+            overflow-x: auto;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .timetable-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timetable-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            min-height: 80px;
+        }
+
+        .day-cell {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            font-weight: 700;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .class-cell {
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .class-cell:hover {
+            background: #fafafa;
+            box-shadow: inset 0 0 0 2px var(--primary);
+        }
+
+        .subject-code {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .teacher-name,
+        .room-name {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin: 0.15rem 0;
+        }
+
+        .lab-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary), #be185d);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+
+        .empty-cell {
+            color: var(--text-light);
+            text-align: center;
+            font-style: italic;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid var(--success);
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid var(--danger);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid var(--primary);
+        }
+
+        .resource-list {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .resource-item {
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.2s ease;
+        }
+
+        .resource-item:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .resource-item strong {
+            color: var(--dark);
+        }
+
+        .resource-item.clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .resource-item.clickable:hover {
+            background: #fff;
+            transform: translateX(5px);
+            border-left-width: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .resource-item.active {
+            border-left-color: var(--success);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .nav-tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="lessons_styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 College Timetable Generator</h1>
+            <p>Intelligent Scheduling & Resource Management System</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button id="btn-view" class="nav-tab active" onclick="switchTab('view')">📅 View Timetable</button>
+            <button id="btn-manage" class="nav-tab" onclick="switchTab('manage')">🔧 Manage Resources</button>
+            <button id="btn-lessons" class="nav-tab" onclick="switchTab('lessons')">📖 Lessons</button>
+            <button id="btn-generate" class="nav-tab" onclick="switchTab('generate')">⚡ Generate Timetable</button>
+        </div>
+
+
+        <div class="content">
+            <!-- View Timetable Tab -->
+            <div id="view-tab" class="tab-pane active">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="classSelect">Select Class Group:</label>
+                        <select id="classSelect" onchange="loadTimetable()">
+                            <option value="">-- Select a class --</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadClassGroups()">🔄 Refresh</button>
+                </div>
+
+                <div id="timetableDisplay"></div>
+            </div>
+
+            <!-- Manage Resources Tab -->
+            <div id="manage-tab" class="tab-pane">
+                <div class="grid">
+                    <!-- Teachers Card -->
+                    <div class="card">
+                        <div class="card-title">👨‍🏫 Teachers</div>
+                        <div class="form-row">
+                            <input type="text" id="teacherName" placeholder="Full Name">
+                            <input type="email" id="teacherEmail" placeholder="Email">
+                            <input type="number" id="teacherHours" placeholder="Max Hours" value="18">
+                        </div>
+                        <button class="btn btn-success" onclick="addTeacher()">➕ Add Teacher</button>
+                        <ul id="teacherList" class="resource-list"></ul>
+                    </div>
+
+                    <!-- Subjects Card -->
+                    <div class="card">
+                        <div class="card-title">📚 Subjects</div>
+                        <div class="form-row">
+                            <input type="text" id="subjectName" placeholder="Subject Name">
+                            <input type="text" id="subjectCode" placeholder="Code">
+                            <input type="number" id="subjectCredits" placeholder="Credits" value="3">
+                            <select id="subjectIsLab">
+                                <option value="false">Theory</option>
+                                <option value="true">Lab</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addSubject()">➕ Add Subject</button>
+                        <ul id="subjectList" class="resource-list"></ul>
+                    </div>
+
+                    <!-- Rooms Card -->
+                    <div class="card">
+                        <div class="card-title">🏫 Rooms</div>
+                        <div class="form-row">
+                            <input type="text" id="roomName" placeholder="Room Name">
+                            <input type="number" id="roomCapacity" placeholder="Capacity" value="60">
+                            <select id="roomType">
+                                <option value="LectureHall">Lecture Hall</option>
+                                <option value="ComputerLab">Computer Lab</option>
+                                <option value="Lab">Lab</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addRoom()">➕ Add Room</button>
+                        <ul id="roomList" class="resource-list"></ul>
+                    </div>
+
+                    <!-- Class Groups Card -->
+                    <div class="card">
+                        <div class="card-title">👥 Class Groups</div>
+                        <div class="form-row">
+                            <input type="text" id="groupName" placeholder="Group Name">
+                            <input type="number" id="groupCount" placeholder="Student Count" value="60">
+                        </div>
+                        <button class="btn btn-success" onclick="addClassGroup()">➕ Add Group</button>
+                        <ul id="groupList" class="resource-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lessons Tab -->
+            <div id="lessons-tab" class="tab-pane">
+                <div class="lessons-header">
+                    <div class="lessons-title">📖 Lessons Management</div>
+                    <div class="lessons-actions">
+                        <button class="btn btn-secondary" onclick="openBulkImportModal()">📥 Bulk Import</button>
+                        <button class="btn btn-primary" onclick="openAddLessonModal()">➕ Add New Lesson</button>
+                    </div>
+                </div>
+
+                <div class="lessons-filters">
+                    <div class="view-toggle">
+                        <button id="view-class-wise" class="toggle-btn active" onclick="setLessonView('class')">View
+                            Class Wise</button>
+                        <button id="view-teacher-wise" class="toggle-btn" onclick="setLessonView('teacher')">View
+                            Teacher Wise</button>
+                    </div>
+                </div>
+
+                <div id="lessonsList">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
+
+            <!-- Bulk Import Modal -->
+            <div id="bulkImportModal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">Bulk Import Lessons</div>
+                        <div class="close-btn" onclick="closeBulkImportModal()">×</div>
+                    </div>
+                    <div class="import-hint">
+                        Paste your lesson data in the following format:<br>
+                        <span class="hint-code">Teacher Name(s), Class Name(s), Subject Name(s), # of periods</span><br>
+                        <small>Use | to separate multiple values (e.g. Joint classes)</small>
+                    </div>
+                    <textarea id="bulkImportText"
+                        placeholder="Example:&#10;Dr. Rajesh Kumar, SE-AI-DS-A, CS301, 3&#10;Prof. Priya Sharma | Dr. Amit Patel, SE-AI-DS-A | SE-AI-DS-B, CS302, 4"></textarea>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label>
+                            <input type="checkbox" id="clearExistingLessons"> Clear existing records
+                        </label>
+                    </div>
+
+                    <div class="lessons-actions" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary" onclick="closeBulkImportModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="submitBulkImport()">Import Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Timetable Tab -->
+
+            <div id="generate-tab" class="tab-pane">
+                <div class="card">
+                    <div class="card-title">⚡ Generate New Timetable</div>
+
+                    <div class="form-row">
+                        <div class="control-group">
+                            <label for="algorithmSelect">Algorithm:</label>
+                            <select id="algorithmSelect">
+                                <option value="csp">CSP (Constraint Satisfaction)</option>
+                                <option value="genetic">Genetic Algorithm</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="timetableName">Timetable Name:</label>
+                            <input type="text" id="timetableName" placeholder="e.g., Spring 2026 Schedule">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateTimetable()">🚀 Generate Timetable</button>
+
+                    <div id="generationStatus" style="margin-top: 1.5rem;"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📜 Recent Timetables</div>
+                    <div id="versionsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var API_BASE = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+            ? 'http://localhost:8000/api'
+            : window.location.origin + '/api';
+        let currentTimetable = null;
+        let classGroups = [];
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`${tab}-tab`).classList.add('active');
+
+            // Activate the corresponding button
+            const btn = document.getElementById(`btn-${tab}`);
+            if (btn) btn.classList.add('active');
+
+            if (tab === 'manage') loadAllResources();
+            if (tab === 'lessons') loadLessons();
+            if (tab === 'generate') loadTimetableVersions();
+        }
+
+        // Initialize on page load
+        window.onload = function () {
+            loadClassGroups();
+            checkBackendHealth();
+
+            // Check for hash in URL to switch tabs
+            if (window.location.hash) {
+                const tab = window.location.hash.substring(1);
+                if (['view', 'manage', 'generate'].includes(tab)) {
+                    switchTab(tab);
+                }
+            }
+        };
+
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                if (data.status === 'healthy') {
+                    console.log('✅ Backend Connected:', data);
+                }
+            } catch (error) {
+                showError('⚠️ Backend server is not running. Please start it using: cd backend && start.bat');
+            }
+        }
+
+        // Load Class Groups
+        async function loadClassGroups() {
+            try {
+                const response = await fetch(`${API_BASE}/operational/class-groups`);
+                classGroups = await response.json();
+
+                const select = document.getElementById('classSelect');
+                select.innerHTML = '<option value="">-- Select a class --</option>';
+
+                classGroups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.id;
+                    option.textContent = `${group.name} (${group.student_count} students)`;
+                    select.appendChild(option);
+                });
+
+                if (classGroups.length > 0) {
+                    select.value = classGroups[0].id;
+                    loadTimetable();
+                }
+            } catch (error) {
+                showError('Failed to load class groups: ' + error.message);
+            }
+        }
+
+        // Load Timetable
+        async function loadTimetable() {
+            const classId = document.getElementById('classSelect').value;
+            if (!classId) return;
+
+            const display = document.getElementById('timetableDisplay');
+            display.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading timetable...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/timetables/latest`);
+                const data = await response.json();
+                currentTimetable = data;
+
+                displayTimetable(data, classId);
+            } catch (error) {
+                display.innerHTML = `<div class="alert alert-error">Failed to load timetable. Make sure backend is running and a timetable has been generated.</div>`;
+            }
+        }
+
+        function displayTimetable(timetable, classGroupId) {
+            if (!timetable || !timetable.entries || timetable.entries.length === 0) {
+                document.getElementById('timetableDisplay').innerHTML =
+                    '<div class="alert alert-info">No timetable entries found. Please generate a timetable first.</div>';
+                return;
+            }
+
+            // Filter entries for selected class group
+            const entries = timetable.entries.filter(e => e.class_group_id == classGroupId);
+
+            if (entries.length === 0) {
+                document.getElementById('timetableDisplay').innerHTML =
+                    '<div class="alert alert-info">No schedule found for this class group.</div>';
+                return;
+            }
+
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            // FIXED: Always show all 7 periods consistently
+            const periods = [1, 2, 3, 4, 5, 6, 7];
+
+            // Period time mappings (based on seed_demo_data.py configuration)
+            const periodTimes = {
+                1: { start: '9:00', end: '10:00', isBreak: false },
+                2: { start: '10:00', end: '11:00', isBreak: false },
+                3: { start: '11:00', end: '12:00', isBreak: false },
+                4: { start: '12:00', end: '13:00', isBreak: true },  // LUNCH BREAK
+                5: { start: '13:00', end: '14:00', isBreak: false },
+                6: { start: '14:00', end: '15:00', isBreak: false },
+                7: { start: '15:00', end: '16:00', isBreak: false }
+            };
+
+            const schedule = {};
+            days.forEach(day => {
+                schedule[day] = {};
+                periods.forEach(period => schedule[day][period] = null);
+            });
+
+            entries.forEach(entry => {
+                if (entry && entry.time_slot) {
+                    if (!schedule[entry.time_slot.day]) schedule[entry.time_slot.day] = {};
+                    schedule[entry.time_slot.day][entry.time_slot.period] = entry;
+                }
+            });
+
+            let html = '<div class="timetable-wrapper"><table class="timetable-table"><thead><tr><th>Day / Time</th>';
+
+            // Header row with fixed times
+            periods.forEach(period => {
+                const timeInfo = periodTimes[period];
+                if (timeInfo.isBreak) {
+                    html += `<th style="background: linear-gradient(135deg, #f59e0b, #d97706);">${timeInfo.start}<br>to<br>${timeInfo.end}<br>🍽️ LUNCH</th>`;
+                } else {
+                    html += `<th>${timeInfo.start}<br>to<br>${timeInfo.end}</th>`;
+                }
+            });
+
+            html += '</tr></thead><tbody>';
+
+            days.forEach(day => {
+                html += `<tr><td class="day-cell"><strong>${day}</strong></td>`;
+                periods.forEach(period => {
+                    const timeInfo = periodTimes[period];
+
+                    // Special handling for lunch break
+                    if (timeInfo.isBreak) {
+                        html += `<td class="class-cell" style="background: linear-gradient(135deg, #fef3c7, #fde68a); text-align: center; font-weight: 700; color: #92400e;">
+                            <div style="padding: 1rem;">🍽️<br>LUNCH BREAK</div>
+                        </td>`;
+                    } else {
+                        const entry = schedule[day] ? schedule[day][period] : null;
+                        if (entry) {
+                            const subjectCode = (entry.subject && entry.subject.code) ? entry.subject.code : (entry.subject && entry.subject.name ? entry.subject.name : 'Unknown');
+                            const teacherName = (entry.teacher && entry.teacher.name) ? entry.teacher.name : 'TBA';
+                            const roomName = (entry.room && entry.room.name) ? entry.room.name : 'TBA';
+                            const isLab = entry.subject ? entry.subject.is_lab : false;
+
+                            html += `
+                                <td class="class-cell">
+                                    <div class="subject-code">${subjectCode}</div>
+                                    <div class="teacher-name">${teacherName}</div>
+                                    <div class="room-name">${roomName}</div>
+                                    ${isLab ? '<span class="lab-badge">LAB</span>' : ''}
+                                </td>`;
+                        } else {
+                            html += '<td class="class-cell"><div class="empty-cell">—</div></td>';
+                        }
+                    }
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
+            document.getElementById('timetableDisplay').innerHTML = html;
+        }
+
+        // Resource Management Functions
+        async function loadAllResources() {
+            loadTeachers();
+            loadSubjects();
+            loadRooms();
+            loadGroups();
+        }
+
+        async function loadTeachers() {
+            try {
+                const response = await fetch(`${API_BASE}/teachers`);
+                const teachers = await response.json();
+                const list = document.getElementById('teacherList');
+                list.innerHTML = teachers.map(t => `
+                    <li class="resource-item">
+                        <strong>${t.name}</strong> - ${t.email}<br>
+                        <small>Max Hours: ${t.max_hours_per_week}/week</small>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+            }
+        }
+
+        async function addTeacher() {
+            const name = document.getElementById('teacherName').value;
+            const email = document.getElementById('teacherEmail').value;
+            const hours = document.getElementById('teacherHours').value;
+
+            if (!name || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/teachers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name, email,
+                        max_hours_per_week: parseInt(hours),
+                        available_slots: []
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('teacherName').value = '';
+                    document.getElementById('teacherEmail').value = '';
+                    loadTeachers();
+                    showSuccess('Teacher added successfully!');
+                }
+            } catch (error) {
+                showError('Failed to add teacher: ' + error.message);
+            }
+        }
+
+        async function loadSubjects() {
+            try {
+                const response = await fetch(`${API_BASE}/subjects`);
+                const subjects = await response.json();
+                const list = document.getElementById('subjectList');
+                list.innerHTML = subjects.map(s => `
+                    <li class="resource-item">
+                        <strong>${s.name}</strong> (${s.code})<br>
+                        <small>Credits: ${s.credits} | ${s.is_lab ? 'Lab' : 'Theory'}</small>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        async function addSubject() {
+            const name = document.getElementById('subjectName').value;
+            const code = document.getElementById('subjectCode').value;
+            const credits = document.getElementById('subjectCredits').value;
+            const isLab = document.getElementById('subjectIsLab').value === 'true';
+
+            if (!name || !code) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/subjects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name, code,
+                        credits: parseInt(credits),
+                        is_lab: isLab,
+                        required_room_type: isLab ? 'ComputerLab' : 'LectureHall',
+                        duration_slots: isLab ? 2 : 1
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('subjectName').value = '';
+                    document.getElementById('subjectCode').value = '';
+                    loadSubjects();
+                    showSuccess('Subject added successfully!');
+                }
+            } catch (error) {
+                showError('Failed to add subject: ' + error.message);
+            }
+        }
+
+        async function loadRooms() {
+            try {
+                const response = await fetch(`${API_BASE}/rooms`);
+                const rooms = await response.json();
+                const list = document.getElementById('roomList');
+                list.innerHTML = rooms.map(r => `
+                    <li class="resource-item">
+                        <strong>${r.name}</strong><br>
+                        <small>Type: ${r.type} | Capacity: ${r.capacity}</small>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading rooms:', error);
+            }
+        }
+
+        async function addRoom() {
+            const name = document.getElementById('roomName').value;
+            const capacity = document.getElementById('roomCapacity').value;
+            const type = document.getElementById('roomType').value;
+
+            if (!name) {
+                alert('Please enter room name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/rooms`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name, type,
+                        capacity: parseInt(capacity),
+                        resources: ['Projector', 'Whiteboard']
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('roomName').value = '';
+                    loadRooms();
+                    showSuccess('Room added successfully!');
+                }
+            } catch (error) {
+                showError('Failed to add room: ' + error.message);
+            }
+        }
+
+        async function loadGroups() {
+            try {
+                const response = await fetch(`${API_BASE}/operational/class-groups`);
+                const groups = await response.json();
+                const list = document.getElementById('groupList');
+                list.innerHTML = groups.map(g => `
+                    <li class="resource-item">
+                        <strong>${g.name}</strong><br>
+                        <small>Students: ${g.student_count}</small>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading groups:', error);
+            }
+        }
+
+        async function addClassGroup() {
+            const name = document.getElementById('groupName').value;
+            const count = document.getElementById('groupCount').value;
+
+            if (!name) {
+                alert('Please enter group name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/operational/class-groups`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        student_count: parseInt(count)
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('groupName').value = '';
+                    loadGroups();
+                    loadClassGroups();
+                    showSuccess('Class group added successfully!');
+                }
+            } catch (error) {
+                showError('Failed to add class group: ' + error.message);
+            }
+        }
+
+        // Generate Timetable
+        async function generateTimetable() {
+            const algorithm = document.getElementById('algorithmSelect').value;
+            const name = document.getElementById('timetableName').value || 'New Timetable';
+            const status = document.getElementById('generationStatus');
+
+            status.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating timetable... This may take a few moments.</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/solvers/generate?method=${algorithm}&name=${encodeURIComponent(name)}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    status.innerHTML = `
+                        <div class="alert alert-success">
+                            ✅ Timetable generation started!<br>
+                            <strong>Version ID:</strong> ${data.id}<br>
+                            <strong>Status:</strong> ${data.status}<br>
+                            <small>Refresh the page to see the results in a few moments.</small>
+                        </div>
+                    `;
+
+                    // Wait and then reload
+                    setTimeout(() => {
+                        loadTimetableVersions();
+                        loadClassGroups();
+                    }, 3000);
+                } else {
+                    status.innerHTML = '<div class="alert alert-error">Failed to generate timetable. Please check the console.</div>';
+                }
+            } catch (error) {
+                status.innerHTML = `<div class="alert alert-error">Error: ${error.message}. Make sure backend is running.</div>`;
+            }
+        }
+
+        async function loadTimetableVersions() {
+            try {
+                const response = await fetch(`${API_BASE}/timetables/`);
+                const versions = await response.json();
+
+                const list = document.getElementById('versionsList');
+                if (!versions || versions.length === 0) {
+                    list.innerHTML = '<div class="alert alert-info">No timetables generated yet.</div>';
+                    return;
+                }
+
+                list.innerHTML = versions.filter(v => v).map(v => `
+                    <div class="resource-item clickable ${currentTimetable && currentTimetable.id === v.id ? 'active' : ''}" 
+                         onclick="loadSpecificTimetable(${v.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${v.name || 'Unnamed'}</strong><br>
+                                <small>Algorithm: ${v.algorithm || 'Unknown'} | Status: ${v.status} | 
+                                Valid: ${v.is_valid ? '✅' : '❌'}</small>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color: var(--primary); opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('versionsList').innerHTML =
+                    '<div class="alert alert-error">Failed to load versions.</div>';
+            }
+        }
+
+        async function loadSpecificTimetable(id) {
+            const display = document.getElementById('timetableDisplay');
+            display.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading timetable...</p></div>';
+
+            // Switch to view tab
+            switchTab('view');
+
+            try {
+                const response = await fetch(`${API_BASE}/timetables/${id}`);
+                const data = await response.json();
+                currentTimetable = data;
+
+                // Update select dropdown if the class exists in this timetable
+                const classId = document.getElementById('classSelect').value;
+                displayTimetable(data, classId);
+
+                // Refresh the versions list to show active state
+                loadTimetableVersions();
+
+                showSuccess(`Loaded timetable: ${data.name}`);
+            } catch (error) {
+                showError('Failed to load timetable: ' + error.message);
+            }
+        }
+
+        // Utility Functions
+        function showSuccess(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.textContent = message;
+            document.querySelector('.content').prepend(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        function showError(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-error';
+            alert.textContent = message;
+            document.querySelector('.content').prepend(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+    </script>
+    <script src="lessons_script.js"></script>
+</body>
+
+
+</html>
