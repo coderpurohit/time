@@ -1,7 +1,7 @@
-INFO:     Started server process [19100]
+INFO:     Started server process [27116]
 INFO:     Waiting for application startup.
 ERROR:    Traceback (most recent call last):
-  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 105, in startup_event
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 108, in startup_event
     print(f"\u2705 Database already initialized ({teacher_count} teachers)")
     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Program Files\Python313\Lib\encodings\cp1252.py", line 19, in encode
@@ -67,7 +67,7 @@ Traceback (most recent call last):
     await self._router.startup()
   File "c:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\venv\Lib\site-packages\starlette\routing.py", line 671, in startup
     await handler()
-  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 108, in startup_event
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-Generator\backend\app\main.py", line 111, in startup_event
     print(f"\u26a0\ufe0f  Auto-seeding failed: {e}")
     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Program Files\Python313\Lib\encodings\cp1252.py", line 19, in encode
