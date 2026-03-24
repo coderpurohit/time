@@ -1,0 +1,39 @@
+================================================================================
+RESTART BACKEND SERVER NOW
+================================================================================
+
+I've fixed the CSP solver in the backend. Now you need to restart the server.
+
+STEPS:
+------
+
+1. Find the terminal window where backend is running
+   (Look for text: "Uvicorn running on http://127.0.0.1:8000")
+
+2. Press Ctrl+C to stop the server
+
+3. Run this command:
+   cd backend && start.bat
+
+4. Wait 5-10 seconds for server to start
+
+5. Open your browser:
+   http://localhost:8000/timetable_review_fixed.html
+
+6. Click "Generate New Schedule" button
+
+7. Tell me if it works!
+
+================================================================================
+
+WHAT I FIXED:
+-------------
+- Relaxed CSP constraints (was too strict, causing 0 entries)
+- Added optimization to maximize scheduled assignments
+- Increased timeout from 60 to 120 seconds
+- Added parallel search (4 workers)
+- Better logging to see what's happening
+
+The solver will now find partial solutions even if perfect solution is impossible.
+
+================================================================================

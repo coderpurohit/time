@@ -36,10 +36,6 @@
                         <i class="fas fa-calendar"></i>
                         <span>Calendar</span>
                     </a>
-                    <a href="#" class="nav-item" data-page="reports">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Reports & Analytics</span>
-                    </a>
                 </div>
 
                 <div class="nav-section">
@@ -103,8 +99,6 @@
             <!-- Header -->
             <header class="main-header">
                 <div class="header-left">
-                    <h1 class="greeting">Good afternoon, Bharat</h1>
-                    <p class="organization-name">Bharat purohit's Organization</p>
                 </div>
                 <div class="header-right">
                     <span class="role-badge">
@@ -116,68 +110,90 @@
 
             <!-- Content Sections -->
             <div class="content-sections">
-                <!-- Complete Institute Profile Section -->
-                <section class="profile-section">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <i class="fas fa-building"></i>
-                            <span>Complete Your Institute Profile</span>
-                        </div>
-                        <p class="section-description">Help us serve you better by providing your institute details.</p>
-                    </div>
-                    <div class="profile-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="instituteName">Institute Name *</label>
-                                <input type="text" id="instituteName" value="Bharat purohit's Organization" placeholder="Enter institute name">
-                            </div>
-                            <div class="form-group">
-                                <label for="instituteType">Institute Type *</label>
-                                <select id="instituteType">
-                                    <option value="">Select type</option>
-                                    <option value="school">School</option>
-                                    <option value="college">College</option>
-                                    <option value="university">University</option>
-                                    <option value="training">Training Institute</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="city">City *</label>
-                                <input type="text" id="city" value="Lonavla" placeholder="Enter city">
-                            </div>
-                            <div class="form-group">
-                                <label for="website">Website</label>
-                                <input type="url" id="website" placeholder="https://example.com">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn-save">
-                                <i class="fas fa-check"></i>
-                                Save Details
-                            </button>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- Premium Features Section -->
-                <section class="premium-section">
-                    <div class="premium-content">
-                        <div class="premium-info">
-                            <div class="premium-title">
-                                <i class="fas fa-star"></i>
-                                <span>Unlock Premium Features with Pro</span>
-                            </div>
-                            <p class="premium-description">Upgrade to unlock unlimited timetables, advanced scheduling, priority support, and more.</p>
-                        </div>
-                        <button class="btn-premium">
-                            Explore Plans & Upgrade
-                        </button>
-                    </div>
-                </section>
+
 
                 <!-- Quick Actions and My Schedule -->
+                <div class="actions-schedule-row">
+                    <!-- Statistics Overview -->
+                    <section class="statistics-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2 class="section-title-simple">📊 Dashboard Statistics</h2>
+                            <button onclick="refreshStatistics()" style="background: var(--primary-purple); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-sync-alt"></i>
+                                Refresh
+                            </button>
+                        </div>
+                        <div class="statistics-grid">
+                            <div class="stat-card stat-teachers">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Total Teachers</div>
+                                    <div class="stat-value" id="totalTeachers">-</div>
+                                    <div class="stat-status active">Active</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card stat-classes">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Total Classes</div>
+                                    <div class="stat-value" id="totalClasses">-</div>
+                                    <div class="stat-status scheduled">Scheduled</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card stat-rooms">
+                                <div class="stat-icon">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Total Rooms</div>
+                                    <div class="stat-value" id="totalRooms">-</div>
+                                    <div class="stat-status available">Available</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card stat-subjects">
+                                <div class="stat-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Total Subjects</div>
+                                    <div class="stat-value" id="totalSubjects">-</div>
+                                    <div class="stat-status active">Active</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card stat-timeslots">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Time Slots</div>
+                                    <div class="stat-value" id="timeSlots">-</div>
+                                    <div class="stat-status per-week">Per Week</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card stat-utilization">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Utilization</div>
+                                    <div class="stat-value" id="utilization">-</div>
+                                    <div class="stat-status overall">Overall</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
                 <div class="actions-schedule-row">
                     <!-- Quick Actions -->
                     <section class="quick-actions-section">
@@ -187,10 +203,6 @@
                                 <i class="fas fa-file-alt"></i>
                                 <span>My Timetables</span>
                             </a>
-                            <button class="action-card action-orange" data-action="reports">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Reports & Analytics</span>
-                            </button>
                             <button class="action-card action-green" data-action="users">
                                 <i class="fas fa-users"></i>
                                 <span>Manage Users</span>

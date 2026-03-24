@@ -47,13 +47,13 @@ app.add_middleware(
 #         teacher_count = db.query(models.Teacher).count()
 #         
 #         if teacher_count == 0:
-#             print("📊 Database is empty. Auto-seeding with sample data...")
+#             print("Database is empty. Auto-seeding with sample data...")
 #             # ... rest of startup code ...
 #         else:
-#             print(f"✅ Database already initialized ({teacher_count} teachers)")
+#             print(f"Database already initialized ({teacher_count} teachers)")
 #     
 #     except Exception as e:
-#         print(f"⚠️  Auto-seeding failed: {e}")
+#         print(f"WARNING: Auto-seeding failed: {e}")
 #         db.rollback()
 #     finally:
 #         db.close()
@@ -66,7 +66,9 @@ app.include_router(solvers.router, prefix="/api/solvers", tags=["solvers"])
 app.include_router(operational.router, prefix="/api/operational", tags=["operational"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
 app.include_router(substitutions.router)  # Uses prefix from router definition
-app.include_router(imports.router, prefix="/api/import", tags=["import"])
+from .api.routers import imports_fixed, imports_enhanced
+app.include_router(imports_fixed.router, prefix="/api/import", tags=["import"])
+app.include_router(imports_enhanced.router, prefix="/api/import", tags=["import-enhanced"])
 from .api.routers import lessons
 app.include_router(lessons.router, prefix="/api/lessons", tags=["lessons"])
 

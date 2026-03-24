@@ -13,6 +13,12 @@ const SUBJECT_COLORS = [
 // Global state
 let currentTimetable = null;
 let subjectColorMap = {};
+let classGroups = [];
+let cachedTimeSlots = null;
+let activeDivisionId = null;
+
+// Config state
+let breakRowCount = 0;
 
 /**
  * Show status message to user
@@ -69,7 +75,9 @@ async function loadTimetable() {
         const data = await response.json();
         currentTimetable = data;
 
-        renderTimetable(data);
+        await renderDivisionSwitcher();
+        await renderTimetableForDivision(activeDivisionId);
+        
         await fetchAndDisplayStats();
         showStatus('Timetable loaded successfully!', 'success');
 
@@ -78,6 +86,61 @@ async function loadTimetable() {
         showStatus(`Error loading timetable: ${error.message}. Make sure backend is running on port 8000.`, 'error');
     } finally {
         setButtonLoading('loadBtn', false);
+    }
+}
+
+/**
+ * Time Slots and Divisions
+ */
+async function fetchTimeSlots() {
+    if (cachedTimeSlots) return cachedTimeSlots;
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/operational/time-slots`);
+        cachedTimeSlots = await res.json();
+    } catch (e) { cachedTimeSlots = []; }
+    return cachedTimeSlots;
+}
+
+async function loadClassGroups() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/operational/class-groups`);
+        classGroups = await res.json();
+        if (classGroups.length > 0 && !activeDivisionId) {
+            activeDivisionId = classGroups[0].id;
+        }
+    } catch (err) {
+        console.error('Failed to load class groups');
+    }
+}
+
+async function renderDivisionSwitcher() {
+    if (classGroups.length === 0) await loadClassGroups();
+    
+    const container = document.getElementById('divisionTabsContainer');
+    if (!container) return;
+
+    if (classGroups.length === 0) {
+        container.innerHTML = '<span>No class groups found.</span>';
+        return;
+    }
+
+    container.innerHTML = classGroups.map(g => `
+        <button id="div-btn-${g.id}" class="btn ${g.id === activeDivisionId ? 'btn-primary' : 'btn-secondary'}"
+            style="padding:0.5rem 1rem; border-radius:8px;" onclick="selectDivision(${g.id})">${g.name}</button>
+    `).join('');
+}
+
+async function selectDivision(groupId) {
+    activeDivisionId = groupId;
+    
+    // Update active button styles
+    classGroups.forEach(g => {
+        const btn = document.getElementById(`div-btn-${g.id}`);
+        if (btn) btn.className = `btn ${g.id === groupId ? 'btn-primary' : 'btn-secondary'}`;
+    });
+
+    if (currentTimetable) {
+        await renderTimetableForDivision(groupId);
     }
 }
 
@@ -233,12 +296,12 @@ function createLegend(subjects) {
 }
 
 /**
- * Render timetable grid
+ * Render timetable grid for a specific division
  */
-function renderTimetable(timetableData) {
+async function renderTimetableForDivision(classGroupId) {
     const gridElement = document.getElementById('timetableGrid');
 
-    if (!timetableData || !timetableData.entries || timetableData.entries.length === 0) {
+    if (!currentTimetable || !currentTimetable.entries || currentTimetable.entries.length === 0) {
         gridElement.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📅</div>
@@ -249,8 +312,40 @@ function renderTimetable(timetableData) {
         return;
     }
 
-    // Organize slots by day and period
-    const schedule = organizeSchedule(timetableData.entries);
+    // Filter entries for the selected class group
+    const entries = currentTimetable.entries.filter(e => e.class_group_id == classGroupId);
+    const groupName = (classGroups.find(g => g.id == classGroupId) || {}).name || classGroupId;
+
+    if (entries.length === 0) {
+        gridElement.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <h3>No Schedule Data for ${groupName}</h3>
+                <p>There are no classes scheduled for this division.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const slots = await fetchTimeSlots();
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        .filter(d => slots.some(s => s.day === d));
+    if (!days.length) days.push('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday');
+
+    // Get ordered time slots for a single day (e.g., Monday) to build headers
+    const daySlots = slots.filter(s => s.day === days[0])
+        .sort((a,b) => a.start_time.localeCompare(b.start_time) || a.period - b.period);
+
+    // Build schedule dictionary
+    const schedule = {};
+    days.forEach(day => { schedule[day] = {}; });
+    entries.forEach(e => {
+        if (e && e.time_slot) {
+            const d = e.time_slot.day, p = e.time_slot.period;
+            if (!schedule[d]) schedule[d] = {};
+            schedule[d][p] = e;
+        }
+    });
 
     // Build table HTML
     const table = document.createElement('table');
@@ -259,56 +354,55 @@ function renderTimetable(timetableData) {
     // Header row
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th>Time</th>
-        <th>Monday</th>
-        <th>Tuesday</th>
-        <th>Wednesday</th>
-        <th>Thursday</th>
-        <th>Friday</th>
-    `;
+    
+    let headerHTML = `<th>Time / Day</th>`;
+    days.forEach(day => {
+        headerHTML += `<th>${day}</th>`;
+    });
+    headerRow.innerHTML = headerHTML;
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
     // Body rows
     const tbody = document.createElement('tbody');
-    const periods = [
-        { period: 1, time: '9:00 - 10:00' },
-        { period: 2, time: '10:00 - 11:00' },
-        { period: 3, time: '11:00 - 12:00' },
-        { period: 4, time: '12:00 - 13:00', isBreak: true },
-        { period: 5, time: '13:00 - 14:00' },
-        { period: 6, time: '14:00 - 15:00' },
-        { period: 7, time: '15:00 - 16:00' },
-    ];
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-    periods.forEach(({ period, time, isBreak }) => {
+    daySlots.forEach(s => {
         const row = document.createElement('tr');
-
+        
         // Time cell
         const timeCell = document.createElement('td');
         timeCell.className = 'time-cell';
-        timeCell.textContent = time;
+        timeCell.innerHTML = `<strong>${s.start_time} - ${s.end_time}</strong>`;
         row.appendChild(timeCell);
 
-        if (isBreak) {
+        if (s.is_break) {
+            // Break row spans across all days
             const cell = document.createElement('td');
             cell.className = 'schedule-cell break';
             cell.colSpan = days.length;
-            cell.innerHTML = '🍽️ LUNCH BREAK';
+            cell.innerHTML = '🍽️ BREAK';
+            cell.style.background = '#fef3c7';
+            cell.style.color = '#92400e';
+            cell.style.fontWeight = 'bold';
+            cell.style.textAlign = 'center';
             row.appendChild(cell);
         } else {
-            // Day cells
+            // Normal class row
             days.forEach(day => {
                 const cell = document.createElement('td');
-                const slots = schedule[day]?.[period] || [];
-                cell.appendChild(createScheduleCell(slots));
+                const entry = schedule[day] ? schedule[day][s.period] : null;
+                
+                if (entry) {
+                    cell.appendChild(createScheduleCell([entry]));
+                } else {
+                    const empty = document.createElement('div');
+                    empty.className = 'schedule-cell empty';
+                    empty.textContent = '—';
+                    cell.appendChild(empty);
+                }
                 row.appendChild(cell);
             });
         }
-
         tbody.appendChild(row);
     });
 
@@ -381,12 +475,129 @@ function createScheduleCell(slots) {
 }
 
 /**
+ * Schedule Configuration Modal Logic
+ */
+function openConfigModal() {
+    document.getElementById('configModal').style.display = 'flex';
+    loadScheduleConfig();
+}
+
+function closeConfigModal() {
+    document.getElementById('configModal').style.display = 'none';
+}
+
+function addBreakRow(position = '', duration = 15) {
+    breakRowCount++;
+    const id = breakRowCount;
+    const container = document.getElementById('breaksContainer');
+    container.insertAdjacentHTML('beforeend',
+        `<div id="break-row-${id}" style="display:flex;gap:0.75rem;align-items:center;margin-bottom:0.5rem;">
+            <label style="font-size:0.85rem;min-width:130px;">After Period #</label>
+            <input type="number" min="1" max="20" value="${position}" style="width:80px;min-width:unset;" class="break-position" data-id="${id}">
+            <label style="font-size:0.85rem;min-width:80px;">Duration (min)</label>
+            <input type="number" min="5" max="120" value="${duration}" style="width:80px;min-width:unset;" class="break-duration" data-id="${id}">
+            <button class="btn btn-secondary" style="padding:0.3rem 0.75rem;font-size:0.8rem;"
+                onclick="document.getElementById('break-row-${id}').remove()">✕</button>
+        </div>`
+    );
+}
+
+async function loadScheduleConfig() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/operational/schedule-config`);
+        const cfg = await res.json();
+        document.getElementById('cfg_institution').value = cfg.institution || '';
+        document.getElementById('cfg_start').value = cfg.day_start_time || '09:00';
+        document.getElementById('cfg_periods').value = cfg.number_of_periods || 7;
+        document.getElementById('cfg_period_dur').value = cfg.period_duration_minutes || 60;
+        document.getElementById('cfg_lunch_start').value = cfg.lunch_break_start || '12:00';
+        document.getElementById('cfg_lunch_end').value = cfg.lunch_break_end || '13:00';
+        
+        const savedDays = cfg.schedule_days || ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+        document.querySelectorAll('.cfg-day').forEach(cb => { 
+            cb.checked = savedDays.includes(cb.value); 
+        });
+        
+        document.getElementById('breaksContainer').innerHTML = '';
+        breakRowCount = 0;
+        (cfg.breaks || []).forEach(b => addBreakRow(b.position, b.duration));
+        
+        const statusEl = document.getElementById('configStatus');
+        statusEl.innerHTML = '<div class="alert alert-info">Config loaded from server.</div>';
+        setTimeout(() => { statusEl.innerHTML = ''; }, 2500);
+    } catch (e) {
+        document.getElementById('configStatus').innerHTML = '<div class="alert alert-error">Failed to load config: ' + e.message + '</div>';
+    }
+}
+
+async function applyScheduleConfig() {
+    const statusEl = document.getElementById('configStatus');
+    statusEl.innerHTML = '<div class="loading"><div class="spinner"></div><p>Applying config and regenerating timetable...</p></div>';
+    
+    const days = [...document.querySelectorAll('.cfg-day:checked')].map(cb => cb.value);
+    if (!days.length) { 
+        statusEl.innerHTML = '<div class="alert alert-error">Select at least one working day.</div>'; 
+        return; 
+    }
+    
+    const breaks = [];
+    document.querySelectorAll('.break-position').forEach(el => {
+        const id = el.dataset.id;
+        const pos = parseInt(el.value);
+        const durEl = document.querySelector(`.break-duration[data-id="${id}"]`);
+        const dur = durEl ? parseInt(durEl.value) : 0;
+        if (pos > 0 && dur > 0) breaks.push({ position: pos, duration: dur });
+    });
+    
+    const periods = parseInt(document.getElementById('cfg_periods').value);
+    const period_dur = parseInt(document.getElementById('cfg_period_dur').value);
+    
+    const payload = {
+        day_start_time: document.getElementById('cfg_start').value,
+        number_of_periods: periods, 
+        period_duration_minutes: period_dur,
+        lunch_break_start: document.getElementById('cfg_lunch_start').value,
+        lunch_break_end: document.getElementById('cfg_lunch_end').value,
+        schedule_days: days, 
+        institution: document.getElementById('cfg_institution').value,
+        breaks: breaks, 
+        working_minutes_per_day: periods * period_dur
+    };
+    
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/operational/apply-config`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            statusEl.innerHTML = `<div class="alert alert-success">✅ Config applied successfully!</div>`;
+            cachedTimeSlots = null; // Clear cache to fetch new slots
+            setTimeout(() => {
+                closeConfigModal();
+                loadTimetable(); // Reload data
+            }, 1500);
+        } else {
+            statusEl.innerHTML = `<div class="alert alert-error">Error: ${data.detail || JSON.stringify(data)}</div>`;
+        }
+    } catch (e) { 
+        statusEl.innerHTML = `<div class="alert alert-error">Request failed: ${e.message}</div>`; 
+    }
+}
+
+/**
  * Initialize on page load
  */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('Demo Timetable Viewer initialized');
     console.log('Backend API:', API_BASE_URL);
 
-    // Optionally auto-load timetable on page load
-    // loadTimetable();
+    // Load necessary data sequentially
+    await loadClassGroups();
+    await renderDivisionSwitcher();
+    
+    // Auto-load timetable on page load
+    loadTimetable();
 });

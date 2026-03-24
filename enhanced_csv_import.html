@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced CSV Teacher Import</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center; }
+        .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-control { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; }
+        .form-control:focus { border-color: #667eea; outline: none; }
+        .upload-area { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; transition: all 0.3s; }
+        .upload-area:hover { border-color: #667eea; background: #f8f9ff; }
+        .upload-area.dragover { border-color: #667eea; background: #e3f2fd; }
+        .progress { width: 100%; height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: width 0.3s; }
+        .alert { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat-value { font-size: 2em; font-weight: bold; }
+        .field-mapping { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .field-mapping h4 { margin-bottom: 10px; color: #495057; }
+        .mapping-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #dee2e6; }
+        .error-list { max-height: 200px; overflow-y: auto; background: #fff; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px; }
+        .error-item { padding: 5px; margin: 2px 0; background: #f8d7da; border-radius: 3px; font-size: 12px; }
+        .sample-format { background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .sample-format pre { background: white; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-csv"></i> Enhanced CSV Teacher Import</h1>
+            <p>Import faculty workload data with robust parsing and error handling</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-upload"></i> Upload Faculty CSV</h2>
+            
+            <div class="sample-format">
+                <h4><i class="fas fa-info-circle"></i> Supported CSV Formats</h4>
+                <p>The system automatically detects and maps these column headers:</p>
+                <pre>Faculty Name, Designation, Theory Hours, Practical Hours, Project Hours
+Dr. V. G. Kottawar, HOD, 3, 1, 4
+Dr. Manish Sharma, Professor, 2, 0, 4
+
+OR with email:
+Name, Email, Max Hours Per Week
+John Doe, john.doe@college.edu, 22</pre>
+                <small><strong>Note:</strong> Email addresses are auto-generated if missing. Extra columns are ignored.</small>
+            </div>
+
+            <form id="importForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="csvFile">Select CSV File</label>
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                        <p>Drag and drop your CSV file here or click to browse</p>
+                        <input type="file" id="csvFile" name="file" accept=".csv,.txt" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFile').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                    </div>
+                    <div id="fileInfo" style="margin-top: 10px; display: none;">
+                        <small id="fileName"></small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="clearExisting" name="force_clear_existing" value="true">
+                        Clear existing teachers before import
+                    </label>
+                    <small style="color: #666;">⚠️ This will delete all current teacher data</small>
+                </div>
+
+                <div class="progress" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+
+                <button type="submit" class="btn btn-success" id="importBtn">
+                    <i class="fas fa-upload"></i> Import Teachers
+                </button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='http://localhost:8000/dynamic_academic_management.html'">
+                    <i class="fas fa-arrow-left"></i> Back to System
+                </button>
+            </form>
+        </div>
+
+        <div id="resultsCard" class="card" style="display: none;">
+            <h3><i class="fas fa-chart-bar"></i> Import Results</h3>
+            
+            <div id="statsGrid" class="stats-grid"></div>
+            
+            <div id="fieldMapping" class="field-mapping" style="display: none;">
+                <h4><i class="fas fa-map"></i> Field Mapping Detected</h4>
+                <div id="mappingList"></div>
+            </div>
+            
+            <div id="alertContainer"></div>
+            
+            <div id="errorContainer" style="display: none;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Errors & Warnings</h4>
+                <div id="errorList" class="error-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('csvFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                showFileInfo(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showFileInfo(e.target.files[0]);
+            }
+        });
+        
+        function showFileInfo(file) {
+            fileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            fileInfo.style.display = 'block';
+        }
+        
+        // Form submission
+        document.getElementById('importForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                showAlert('Please select a CSV file', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('dataset', 'teachers');
+            formData.append('force_clear_existing', document.getElementById('clearExisting').checked ? 'true' : 'false');
+            
+            try {
+                showProgress(true);
+                updateProgress(20);
+                
+                const response = await fetch(`${API_BASE}/import/enhanced`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                updateProgress(80);
+                
+                const result = await response.json();
+                
+                updateProgress(100);
+                
+                if (response.ok && result.success) {
+                    showResults(result);
+                    showAlert(result.message, 'success');
+                } else {
+                    throw new Error(result.detail || result.message || 'Import failed');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                showAlert(`Import failed: ${error.message}`, 'error');
+            } finally {
+                setTimeout(() => showProgress(false), 1000);
+            }
+        });
+        
+        function showProgress(show) {
+            document.getElementById('progressContainer').style.display = show ? 'block' : 'none';
+            document.getElementById('importBtn').disabled = show;
+            if (!show) updateProgress(0);
+        }
+        
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+        
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-error' : 'alert-warning';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                    ${message}
+                </div>
+            `;
+        }
+        
+        function showResults(result) {
+            const resultsCard = document.getElementById('resultsCard');
+            const statsGrid = document.getElementById('statsGrid');
+            const fieldMapping = document.getElementById('fieldMapping');
+            const mappingList = document.getElementById('mappingList');
+            const errorContainer = document.getElementById('errorContainer');
+            const errorList = document.getElementById('errorList');
+            
+            // Show results card
+            resultsCard.style.display = 'block';
+            
+            // Show statistics
+            const stats = result.statistics;
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.total_rows_processed}</div>
+                    <div>Rows Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.teachers_added}</div>
+                    <div>Teachers Added</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.teachers_updated}</div>
+                    <div>Teachers Updated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.errors_count}</div>
+                    <div>Errors</div>
+                </div>
+            `;
+            
+            // Show field mapping
+            if (result.field_mapping && Object.keys(result.field_mapping).length > 0) {
+                fieldMapping.style.display = 'block';
+                mappingList.innerHTML = Object.entries(result.field_mapping)
+                    .map(([field, header]) => `
+                        <div class="mapping-item">
+                            <span><strong>${field}:</strong></span>
+                            <span>${header}</span>
+                        </div>
+                    `).join('');
+            }
+            
+            // Show errors and warnings
+            if (result.errors && result.errors.length > 0) {
+                errorContainer.style.display = 'block';
+                errorList.innerHTML = result.errors.map(error => 
+                    `<div class="error-item"><i class="fas fa-exclamation-circle"></i> ${error}</div>`
+                ).join('');
+            }
+        }
+        
+        // Auto-check backend status
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/teachers`);
+                if (response.ok) {
+                    console.log('✅ Backend is running');
+                } else {
+                    showAlert('Backend is running but may have issues', 'warning');
+                }
+            } catch (error) {
+                showAlert('⚠️ Backend not accessible. Make sure it\'s running on port 8000', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -13,56 +13,105 @@ An automated college timetable generation system using constraint satisfaction (
 - **Smart Scheduling**: Constraint-based optimization for conflict-free schedules
 - **Multi-view Display**: Calendar view, grid view, and detailed reports
 - **Export Options**: PDF, CSV, and print-friendly formats
+- **Real-time Updates**: Instant timetable updates when resources change
 
 ### 👥 Resource Management
 - **Teachers**: CRUD operations with workload tracking and availability management
 - **Classes**: Manage class groups with student count and coverage tracking
 - **Subjects**: Theory and lab subjects with duration and room requirements
 - **Rooms**: Room allocation with capacity and utilization tracking
+- **Time Slots**: Flexible configuration for teaching hours and breaks
 
 ### 📊 Analytics & Reports
-- **Teacher Workload**: Visual charts showing load distribution
-- **Room Utilization**: Pie charts and usage statistics
+- **Teacher Workload**: Visual charts showing load distribution across all teachers
+- **Room Utilization**: Pie charts and usage statistics for optimal space planning
 - **Coverage Reports**: Class-wise and subject-wise coverage analysis
-- **Key Insights**: Busiest teachers, most used rooms, popular subjects
+- **Key Insights**: Busiest teachers, most used rooms, popular subjects at a glance
+- **Load Factor Analysis**: Real-time monitoring of teacher and class loads
 
 ### 🔄 Advanced Features
 - **Intelligent Substitution**: Scoring-based teacher replacement (availability, expertise, workload)
 - **Bulk Import**: CSV import for teachers, subjects, classes, and rooms
 - **Conflict Detection**: Automatic detection of scheduling conflicts
 - **Load Balancing**: Even distribution of workload across teachers
+- **Multi-period Labs**: Support for lab sessions spanning multiple consecutive periods
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.11+
-- pip (Python package manager)
+- **Python 3.11+** (Download from [python.org](https://www.python.org/downloads/))
+- **Git** (Download from [git-scm.com](https://git-scm.com/downloads))
+- **pip** (Comes with Python)
 
-### Installation
+### Installation & Setup
 
-1. **Clone the repository**
+#### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/timetable-generator.git
-cd timetable-generator
+git clone https://github.com/coderpurohit/time.git
+cd time
 ```
 
-2. **Start the backend** (Windows)
+#### Step 2: Start the Backend
+
+**For Windows:**
 ```bash
 cd backend
 start.bat
 ```
 
-The backend will:
-- Create a virtual environment
-- Install dependencies
-- Initialize the database
-- Start the server on http://localhost:8000
+**For Mac/Linux:**
+```bash
+cd backend
+./start.sh
+```
+Note: The script is already executable. If you get a permission error, run: `chmod +x start.sh`
 
-3. **Access the application**
-- Main App: http://localhost:8000/timetable_page.html
-- Calendar: http://localhost:8000/calendar_page.html
-- Reports: http://localhost:8000/reports_page.html
-- API Docs: http://localhost:8000/docs
+**Or manually:**
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Mac/Linux
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The backend will:
+- ✅ Create a virtual environment
+- ✅ Install all dependencies
+- ✅ Initialize the SQLite database
+- ✅ Start the server on http://localhost:8000
+
+#### Step 3: Access the Application
+
+Open your browser and navigate to:
+
+**Main Application:**
+- 🎓 **Timetable Management**: http://localhost:8000/timetable_page.html
+- 📅 **Calendar View**: http://localhost:8000/calendar_page.html
+- 📊 **Reports & Analytics**: http://localhost:8000/reports_page.html
+- 🏠 **Dashboard**: http://localhost:8000/dashboard.html
+
+**API Documentation:**
+- 📖 **Swagger UI**: http://localhost:8000/docs
+- 📖 **ReDoc**: http://localhost:8000/redoc
+
+### ⚡ Quick Start Commands
+
+```bash
+# Clone and start in one go
+git clone https://github.com/coderpurohit/time.git && cd time/backend && start.bat
+```
+
+### 🛑 Stopping the Server
+
+**Windows:**
+- Press `Ctrl + C` in the terminal
+- Or run: `cd backend && stop.bat`
+
+**Mac/Linux:**
+- Press `Ctrl + C` in the terminal
 
 ## 📖 Usage
 
@@ -158,6 +207,82 @@ python tests/test_api_flow.py
 python tests/test_auto_substitution.py
 python tests/test_operational.py
 ```
+
+## 🔧 Troubleshooting
+
+### Server Won't Start
+
+**Issue**: Port 8000 already in use
+```bash
+# Windows: Find and kill process using port 8000
+netstat -ano | findstr :8000
+taskkill /PID <process_id> /F
+
+# Mac/Linux: Find and kill process using port 8000
+lsof -ti:8000 | xargs kill -9
+```
+
+**Issue**: Python not found
+- Ensure Python 3.11+ is installed: `python --version` or `python3 --version`
+- Add Python to your system PATH
+- Download from [python.org](https://www.python.org/downloads/)
+
+**Issue**: Module not found errors
+```bash
+cd backend
+# Activate virtual environment
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Mac/Linux
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+### Frontend Issues
+
+**Issue**: Changes not showing up
+- Hard refresh your browser: `Ctrl + Shift + R` (Windows/Linux) or `Cmd + Shift + R` (Mac)
+- Clear browser cache
+- Check browser console for errors (F12)
+
+**Issue**: API connection errors
+- Verify backend is running at http://localhost:8000
+- Check CORS settings in `backend/app/main.py`
+- Ensure no firewall blocking port 8000
+
+### Database Issues
+
+**Issue**: Database locked or corrupted
+```bash
+cd backend
+# Backup existing database
+copy timetable.db timetable.db.backup  # Windows
+cp timetable.db timetable.db.backup    # Mac/Linux
+
+# Reset database
+python setup_database.py
+```
+
+**Issue**: No data showing up
+- Check if database exists: `backend/timetable.db`
+- Verify data via API docs: http://localhost:8000/docs
+- Try regenerating timetable from the UI
+
+### Common Errors
+
+**"INFEASIBLE" when generating timetable**
+- Too many lessons for available time slots
+- Conflicting constraints (teacher/room availability)
+- Reduce lesson count or increase available time slots
+
+**"Unknown Subject" in timetable**
+- Subject was deleted but still referenced in lessons
+- Regenerate timetable after adding/removing subjects
+
+**Teachers not balanced**
+- Ensure all teachers have reasonable max hours per week
+- Check lesson assignments in Lessons tab
+- Regenerate timetable to redistribute load
 
 ## 📝 API Documentation
 

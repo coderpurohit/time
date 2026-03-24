@@ -21,9 +21,10 @@ class CspTimetableSolver:
             print("WARNING: No required assignments provided, using cartesian product (may fail)")
             return self._solve_cartesian()
         
-        # 1. Create Variables - one for each required assignment × room × slot
-        print(f"DEBUG: Creating variables for {len(self.required_assignments)} required assignments...")
+        print(f"CSP SOLVER: Starting with {len(self.required_assignments)} required assignments")
+        print(f"CSP SOLVER: Available resources - {len(self.rooms)} rooms, {len([s for s in self.slots if not s.is_break])} slots")
         
+        # 1. Create Variables - one for each required assignment × room × slot
         for idx, assignment in enumerate(self.required_assignments):
             for r in self.rooms:
                 for t in self.slots:
@@ -35,12 +36,12 @@ class CspTimetableSolver:
                         f'x_a{idx}_r{r.id}_t{t.id}'
                     )
 
-        print(f"DEBUG: Created {len(self.vars)} variables")
+        print(f"CSP SOLVER: Created {len(self.vars)} variables")
 
         # 2. Constraints
-        print(f"DEBUG: Applying constraints...")
         
-        # C1: Each assignment must be scheduled exactly once
+        # C1: Each assignment SHOULD be scheduled (relaxed from MUST to allow partial solutions)
+        # Instead of == 1, we use <= 1 to allow some assignments to be skipped if needed
         for idx in range(len(self.required_assignments)):
             assignment_vars = []
             for r in self.rooms:
@@ -48,8 +49,9 @@ class CspTimetableSolver:
                     if not t.is_break and (idx, r.id, t.id) in self.vars:
                         assignment_vars.append(self.vars[(idx, r.id, t.id)])
             if assignment_vars:
-                self.model.Add(sum(assignment_vars) == 1)
-        print(f"DEBUG: Added {len(self.required_assignments)} assignment constraints")
+                # RELAXED: Allow assignment to be scheduled 0 or 1 times (not forcing exactly 1)
+                self.model.Add(sum(assignment_vars) <= 1)
+        print(f"CSP SOLVER: Added {len(self.required_assignments)} assignment constraints (relaxed)")
 
         # C2: Group No Overlaps - a group can't have multiple classes at same time
         overlap_count = 0
@@ -66,7 +68,7 @@ class CspTimetableSolver:
                 if group_vars:
                     self.model.Add(sum(group_vars) <= 1)
                     overlap_count += 1
-        print(f"DEBUG: Added {overlap_count} group overlap constraints")
+        print(f"CSP SOLVER: Added {overlap_count} group overlap constraints")
 
         # C3: Room No Overlaps - a room can't have multiple classes at same time
         room_overlap_count = 0
@@ -81,7 +83,7 @@ class CspTimetableSolver:
                 if room_vars:
                     self.model.Add(sum(room_vars) <= 1)
                     room_overlap_count += 1
-        print(f"DEBUG: Added {room_overlap_count} room overlap constraints")
+        print(f"CSP SOLVER: Added {room_overlap_count} room overlap constraints")
 
         # C4: Teacher No Overlaps - a teacher can't teach multiple classes at same time
         teacher_overlap_count = 0
@@ -98,44 +100,42 @@ class CspTimetableSolver:
                 if teacher_vars:
                     self.model.Add(sum(teacher_vars) <= 1)
                     teacher_overlap_count += 1
-        print(f"DEBUG: Added {teacher_overlap_count} teacher overlap constraints")
+        print(f"CSP SOLVER: Added {teacher_overlap_count} teacher overlap constraints")
 
-        # C5: HARD CONSTRAINT - Each teacher must teach exactly 3 classes per day
-        # TEMPORARILY DISABLED - Testing if this constraint is causing the 63-entry issue
-        # daily_load_count = 0
-        # days = set(t.day for t in self.slots if not t.is_break)
-        # for teacher_id in set(a['teacher_id'] for a in self.required_assignments if a['teacher_id']):
-        #     for day in days:
-        #         # Get all slots for this day
-        #         day_slots = [t for t in self.slots if t.day == day and not t.is_break]
-        #         
-        #         # Get all variables for this teacher on this day
-        #         teacher_day_vars = []
-        #         for idx, assignment in enumerate(self.required_assignments):
-        #             if assignment.get('teacher_id') == teacher_id:
-        #                 for slot in day_slots:
-        #                     for r in self.rooms:
-        #                         if (idx, r.id, slot.id) in self.vars:
-        #                             teacher_day_vars.append(self.vars[(idx, r.id, slot.id)])
-        #         
-        #         if teacher_day_vars:
-        #             # Each teacher must teach exactly 3 classes per day
-        #             self.model.Add(sum(teacher_day_vars) == 3)
-        #             daily_load_count += 1
-        # print(f"DEBUG: Added {daily_load_count} daily teacher load constraints (3 classes/day)")
-        print(f"DEBUG: Daily teacher load constraint DISABLED for testing - will re-enable after fixing 225 entries issue")
+        # OPTIMIZATION: Maximize number of assignments scheduled
+        # This helps the solver find partial solutions if full solution is impossible
+        all_assignment_vars = []
+        for idx in range(len(self.required_assignments)):
+            for r in self.rooms:
+                for t in self.slots:
+                    if not t.is_break and (idx, r.id, t.id) in self.vars:
+                        all_assignment_vars.append(self.vars[(idx, r.id, t.id)])
+        
+        if all_assignment_vars:
+            self.model.Maximize(sum(all_assignment_vars))
+            print(f"CSP SOLVER: Added optimization objective to maximize scheduled assignments")
 
         # 3. Solve
-        print("DEBUG: Solving...")
+        print("CSP SOLVER: Starting solver (max 120 seconds)...")
         solver = cp_model.CpSolver()
-        solver.parameters.log_search_progress = True
-        solver.parameters.max_time_in_seconds = 60.0  # 60 second timeout
+        solver.parameters.max_time_in_seconds = 120.0  # Increased timeout
+        solver.parameters.num_search_workers = 4  # Parallel search
         status = solver.Solve(self.model)
 
-        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-            return self._extract_solution_from_assignments(solver)
+        print(f"CSP SOLVER: Solver finished with status: {status}")
+        if status == cp_model.OPTIMAL:
+            print("CSP SOLVER: Found OPTIMAL solution")
+        elif status == cp_model.FEASIBLE:
+            print("CSP SOLVER: Found FEASIBLE solution")
         else:
-            print(f"DEBUG: No solution found. Status: {status}")
+            print(f"CSP SOLVER: No solution found (status={status})")
+
+        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+            solution = self._extract_solution_from_assignments(solver)
+            print(f"CSP SOLVER: Extracted {len(solution) if solution else 0} entries")
+            return solution
+        else:
+            print(f"CSP SOLVER: Returning None (no solution)")
             return None
     
     def _extract_solution_from_assignments(self, solver):

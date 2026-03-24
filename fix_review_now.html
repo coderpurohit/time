@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timetable Review - WORKING</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; background: #f5f5f5; }
+        .header { background: #667eea; color: white; padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0 0 15px 0; }
+        .btn { background: white; color: #667eea; border: none; padding: 15px 30px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn:hover { background: #f0f0f0; }
+        .timetable-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .timetable-table th { background: #667eea; color: white; padding: 15px; text-align: center; }
+        .timetable-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .time-cell { background: #f8f9fa; font-weight: bold; }
+        .schedule-cell { padding: 10px; border-radius: 6px; min-height: 80px; }
+        .empty { background: #f8f9fa; color: #999; }
+        .has-class { color: white; }
+        .subject-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .teacher-name, .room-name, .class-name { font-size: 12px; opacity: 0.9; }
+        .break { background: #fff3cd; color: #856404; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Timetable Review</h1>
+        <button class="btn" onclick="loadTimetable()">🔄 Load Timetable</button>
+        <p style="margin: 10px 0 0 0; opacity: 0.9;">Click to load the latest timetable</p>
+    </div>
+    
+    <div id="timetableContainer"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        const COLORS = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        ];
+        
+        async function loadTimetable() {
+            const container = document.getElementById('timetableContainer');
+            container.innerHTML = '<p style="text-align: center; padding: 40px;">Loading...</p>';
+            
+            try {
+                // Fetch timetable
+                const resp = await fetch(`${API_BASE}/timetables/latest`);
+                if (!resp.ok) {
+                    container.innerHTML = '<p style="text-align: center; color: red;">No timetable found. Generate one first.</p>';
+                    return;
+                }
+                
+                const data = await resp.json();
+                if (!data.entries || data.entries.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: orange;">Timetable is empty.</p>';
+                    return;
+                }
+                
+                // Fetch time slots
+                const slotsResp = await fetch(`${API_BASE}/operational/time-slots`);
+                const timeSlots = slotsResp.ok ? await slotsResp.json() : [];
+                
+                // Build periods
+                const periods = buildPeriods(timeSlots);
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                
+                // Organize schedule
+                const schedule = {};
+                data.entries.forEach(entry => {
+                    if (!entry.time_slot) return;
+                    const day = entry.time_slot.day;
+                    const period = entry.time_slot.period;
+                    if (!schedule[day]) schedule[day] = {};
+                    if (!schedule[day][period]) schedule[day][period] = [];
+                    schedule[day][period].push(entry);
+                });
+                
+                // Assign colors
+                const subjectColors = {};
+                const subjects = [...new Set(data.entries.map(e => e.subject?.id).filter(Boolean))];
+                subjects.forEach((id, idx) => {
+                    subjectColors[id] = COLORS[idx % COLORS.length];
+                });
+                
+                // Build HTML
+                let html = '<table class="timetable-table"><thead><tr><th>Time</th>';
+                days.forEach(day => html += `<th>${day}</th>`);
+                html += '</tr></thead><tbody>';
+                
+                periods.forEach(({period, time, isBreak}) => {
+                    html += `<tr><td class="time-cell">${time}</td>`;
+                    
+                    if (isBreak) {
+                        html += `<td colspan="${days.length}" class="break">☕ BREAK</td>`;
+                    } else {
+                        days.forEach(day => {
+                            const slots = schedule[day]?.[period] || [];
+                            if (slots.length === 0) {
+                                html += '<td><div class="schedule-cell empty">Free</div></td>';
+                            } else {
+                                const slot = slots[0];
+                                const color = subjectColors[slot.subject?.id] || COLORS[0];
+                                html += `<td><div class="schedule-cell has-class" style="background: ${color}">
+                                    <div class="subject-name">${slot.subject?.name || 'Unknown'}</div>
+                                    <div class="teacher-name">${slot.teacher?.name || 'TBA'}</div>
+                                    <div class="room-name">${slot.room?.name || 'TBA'}</div>
+                                    <div class="class-name">${slot.class_group?.name || 'All'}</div>
+                                </div></td>`;
+                            }
+                        });
+                    }
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                container.innerHTML = html;
+                
+            } catch (error) {
+                container.innerHTML = `<p style="text-align: center; color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function buildPeriods(timeSlots) {
+            if (!timeSlots || timeSlots.length === 0) {
+                return [
+                    {period: 1, time: '9:00 - 10:00', isBreak: false},
+                    {period: 2, time: '10:00 - 11:00', isBreak: false},
+                    {period: 3, time: '11:00 - 12:00', isBreak: false},
+                    {period: 4, time: '12:00 - 13:00', isBreak: true},
+                    {period: 5, time: '13:00 - 14:00', isBreak: false},
+                    {period: 6, time: '14:00 - 15:00', isBreak: false},
+                    {period: 7, time: '15:00 - 16:00', isBreak: false},
+                ];
+            }
+            
+            const mondaySlots = timeSlots.filter(s => s.day === 'Monday').sort((a, b) => {
+                const ta = a.start_time.split(':').map(Number);
+                const tb = b.start_time.split(':').map(Number);
+                return (ta[0] * 60 + ta[1]) - (tb[0] * 60 + tb[1]);
+            });
+            
+            const periods = [];
+            const seen = new Set();
+            
+            mondaySlots.forEach(slot => {
+                if (slot.is_break) {
+                    periods.push({period: slot.period || 0, time: `${slot.start_time} - ${slot.end_time}`, isBreak: true});
+                } else if (!seen.has(slot.period)) {
+                    periods.push({period: slot.period, time: `${slot.start_time} - ${slot.end_time}`, isBreak: false});
+                    seen.add(slot.period);
+                }
+            });
+            
+            return periods;
+        }
+        
+        // Auto-load on page load
+        loadTimetable();
+    </script>
+</body>
+</html>

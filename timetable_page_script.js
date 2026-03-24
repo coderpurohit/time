@@ -1017,9 +1017,9 @@ async function loadLoadFactorData() {
         document.getElementById('lf-classLoadContainer').innerHTML = 
             '<div style="text-align: center; padding: 30px; color: #667eea;"><i class="fas fa-spinner fa-spin"></i> Loading class data...</div>';
 
-        console.log('Fetching from:', `${API_BASE_URL}/api/analytics/load-factor`);
+        console.log('Fetching from:', `${API_BASE_URL}/api/analytics/load-factor/`);
         
-        const response = await fetch(`${API_BASE_URL}/api/analytics/load-factor`);
+        const response = await fetch(`${API_BASE_URL}/api/analytics/load-factor/`);
         console.log('Response status:', response.status);
         
         if (!response.ok) {
@@ -1249,12 +1249,18 @@ function setupLoadFactorFilters() {
  * Initialize Wizard Navigation and Progress Tracking
  */
 function initWizard() {
+    console.log('=== initWizard CALLED ===');
     const tabs = document.querySelectorAll('.wizard-tab');
     const contents = document.querySelectorAll('.wizard-content');
+    
+    console.log('Found tabs:', tabs.length);
+    console.log('Found contents:', contents.length);
 
-    tabs.forEach(tab => {
+    tabs.forEach((tab, index) => {
+        console.log(`Tab ${index}:`, tab.getAttribute('data-step'));
         tab.addEventListener('click', () => {
             const step = tab.getAttribute('data-step');
+            console.log('Tab clicked:', step);
 
             // Update tabs
             tabs.forEach(t => t.classList.remove('active'));
@@ -1263,7 +1269,12 @@ function initWizard() {
             // Update content view
             contents.forEach(c => c.classList.remove('active'));
             const content = document.getElementById(`step-${step}`);
-            if (content) content.classList.add('active');
+            if (content) {
+                content.classList.add('active');
+                console.log('Activated content:', `step-${step}`);
+            } else {
+                console.error('Content not found:', `step-${step}`);
+            }
 
             // Trigger specific page logic
             if (step === 'lessons' && typeof loadLessons === 'function') {
@@ -1294,6 +1305,7 @@ function initWizard() {
         });
     });
 
+    console.log('✓ initWizard completed');
     // Initial progress check
     updateProgressCheckmarks();
 }
@@ -1390,7 +1402,7 @@ let deletingTeacherId = null;
 
 async function loadTeachersInPage() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/teachers/`);
+        const response = await fetch(`${API_BASE}/teachers/`);
         if (!response.ok) throw new Error('Failed to load teachers');
         
         allTeachersData = await response.json();
@@ -1431,15 +1443,47 @@ function renderTeachersInPage(teachers) {
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" onclick="openEditTeacherModal(${teacher.id})" style="flex: 1; padding: 8px; font-size: 0.9em;">
+                <button class="btn btn-primary teacher-edit-btn" data-teacher-id="${teacher.id}" style="flex: 1; padding: 8px; font-size: 0.9em;">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn btn-danger" onclick="openDeleteTeacherModal(${teacher.id}, '${teacher.name.replace(/'/g, "\\'")}')}" style="flex: 1; padding: 8px; font-size: 0.9em; background: #dc3545;">
+                <button class="btn btn-danger teacher-delete-btn" data-teacher-id="${teacher.id}" data-teacher-name="${teacher.name.replace(/"/g, '&quot;')}" style="flex: 1; padding: 8px; font-size: 0.9em; background: #dc3545;">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
         </div>
     `).join('');
+    
+    // Add event listeners after rendering
+    document.querySelectorAll('.teacher-edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const teacherId = parseInt(this.getAttribute('data-teacher-id'));
+            openEditTeacherModal(teacherId);
+        });
+    });
+    
+    document.querySelectorAll('.teacher-delete-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const teacherId = parseInt(this.getAttribute('data-teacher-id'));
+            const teacherName = this.getAttribute('data-teacher-name');
+            
+            if (confirm(`Delete ${teacherName}?`)) {
+                try {
+                    const response = await fetch(`${API_BASE}/teachers/${teacherId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to delete teacher');
+                    }
+                    
+                    alert('Teacher deleted successfully!');
+                    loadTeachersInPage();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+    });
 }
 
 function filterTeachersInPage() {
@@ -1489,13 +1533,13 @@ async function saveTeacher(event) {
     try {
         let response;
         if (editingTeacherId) {
-            response = await fetch(`${API_BASE_URL}/api/teachers/${editingTeacherId}`, {
+            response = await fetch(`${API_BASE}/teachers/${editingTeacherId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(teacherData)
             });
         } else {
-            response = await fetch(`${API_BASE_URL}/api/teachers/`, {
+            response = await fetch(`${API_BASE}/teachers/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(teacherData)
@@ -1516,37 +1560,65 @@ async function saveTeacher(event) {
 }
 
 function openDeleteTeacherModal(teacherId, teacherName) {
+    console.log('openDeleteTeacherModal called:', teacherId, teacherName);
     deletingTeacherId = teacherId;
     document.getElementById('deleteTeacherName').textContent = teacherName;
-    document.getElementById('deleteTeacherModal').style.display = 'flex';
+    const modal = document.getElementById('deleteTeacherModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        console.log('Delete modal opened');
+    } else {
+        console.error('deleteTeacherModal not found!');
+    }
 }
 
 function closeDeleteTeacherModal() {
-    document.getElementById('deleteTeacherModal').style.display = 'none';
+    console.log('closeDeleteTeacherModal called');
+    const modal = document.getElementById('deleteTeacherModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
     deletingTeacherId = null;
 }
 
-async function confirmDeleteTeacher() {
-    if (!deletingTeacherId) return;
+async function confirmDeleteTeacher(teacherId) {
+    console.log('confirmDeleteTeacher called with ID:', teacherId);
+    
+    if (!teacherId) {
+        console.error('No teacher ID provided!');
+        alert('Error: No teacher ID');
+        return;
+    }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/teachers/${deletingTeacherId}`, {
+        const url = `${API_BASE}/teachers/${teacherId}`;
+        console.log('Deleting teacher at URL:', url);
+        
+        const response = await fetch(url, {
             method: 'DELETE'
         });
 
+        console.log('Delete response status:', response.status);
+
         if (!response.ok) {
             const error = await response.json();
+            console.error('Delete failed:', error);
             throw new Error(error.detail || 'Failed to delete teacher');
         }
 
-        showStatus('Teacher deleted successfully!', 'success');
-        closeDeleteTeacherModal();
+        console.log('Teacher deleted successfully');
+        alert('Teacher deleted successfully!');
         loadTeachersInPage();
     } catch (error) {
-        showStatus('Error: ' + error.message, 'error');
-        closeDeleteTeacherModal();
+        console.error('Delete error:', error);
+        alert('Error: ' + error.message);
     }
 }
+
+// Make teacher functions globally accessible
+window.openDeleteTeacherModal = openDeleteTeacherModal;
+window.closeDeleteTeacherModal = closeDeleteTeacherModal;
+window.confirmDeleteTeacher = confirmDeleteTeacher;
 
 // Load teachers when the teachers tab is clicked - integrated into initWizard above
 // Also load on page load if teachers tab is already active

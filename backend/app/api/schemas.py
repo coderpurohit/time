@@ -267,3 +267,30 @@ class BulkImportResponse(BaseModel):
     success_count: int
     fail_count: int
     errors: List[str]
+
+class TeacherWorkloadAspectBase(BaseModel):
+    teacher_id: int
+    course_name: str
+    class_division: str
+    theory_hours: Optional[str] = "-"
+    practical_hours: Optional[str] = "-"
+    project_hours: Optional[str] = "-"
+    total_load: Optional[int] = 0
+
+class TeacherWorkloadAspectCreate(TeacherWorkloadAspectBase):
+    pass
+
+class TeacherWorkloadAspect(TeacherWorkloadAspectBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class WorkloadOverrideCreate(BaseModel):
+    version_id: Optional[int] = 0
+    report_data: List[Any]
+
+class WorkloadOverride(WorkloadOverrideCreate):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+

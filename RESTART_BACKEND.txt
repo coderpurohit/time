@@ -1,0 +1,34 @@
+═══════════════════════════════════════════════════════════════
+    BACKEND SERVER NEEDS RESTART
+═══════════════════════════════════════════════════════════════
+
+The timetable generation is failing because the backend server
+is using old data. You need to restart it to pick up the new
+lessons we just created.
+
+HOW TO RESTART:
+═══════════════════════════════════════════════════════════════
+
+1. Go to the terminal where backend is running
+2. Press: Ctrl + C (to stop the server)
+3. Run: cd backend && start.bat
+4. Wait for: "Application startup complete"
+
+THEN:
+═══════════════════════════════════════════════════════════════
+
+1. Go to: http://localhost:8000/timetable_review_fixed.html
+2. Click: "Generate New Schedule" button
+3. Wait 5-10 seconds
+4. The timetable should appear with entries!
+
+WHAT WE FIXED:
+═══════════════════════════════════════════════════════════════
+
+✅ Created 54 properly configured lessons
+✅ Each lesson has teacher, subject, and class assigned
+✅ Each lesson scheduled 3 times per week
+✅ Covers 9 classes × 6 subjects = 54 lessons
+✅ Total: 162 periods to schedule (54 × 3)
+
+The backend just needs to restart to see these changes!

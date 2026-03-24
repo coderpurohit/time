@@ -17,6 +17,81 @@ def get_time_slots(db: Session = Depends(get_db)):
     """Get all configured time slots"""
     return db.query(models.TimeSlot).all()
 
+@router.post('/time-slots/generate')
+def generate_time_slots(
+    days: str = None,  # Changed to string, will split by comma
+    periods_per_day: int = 7,
+    start_hour: int = 9,
+    period_duration: int = 60,
+    lunch_start: str = "12:00",
+    lunch_end: str = "13:00",
+    db: Session = Depends(get_db)
+):
+    """Generate time slots based on provided configuration.
+    This is called by the frontend after saving schedule config.
+    """
+    # Handle days parameter - can be comma-separated string or None
+    if days:
+        days_list = [day.strip() for day in days.split(',')]
+    else:
+        days_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    
+    # Clear existing time slots
+    db.query(models.TimeSlot).delete()
+    
+    created = 0
+    for day in days_list:
+        minutes = start_hour * 60
+        period_idx = 1
+        lunch_inserted = False
+        
+        for p in range(1, periods_per_day + 1):
+            # Check if lunch should be inserted before this period
+            if lunch_start and not lunch_inserted:
+                try:
+                    lunch_start_min = _hhmm_to_minutes(lunch_start)
+                    lunch_end_min = _hhmm_to_minutes(lunch_end)
+                    if minutes >= lunch_start_min:
+                        # Insert lunch break
+                        ts = models.TimeSlot(
+                            day=day,
+                            period=0,
+                            start_time=lunch_start,
+                            end_time=lunch_end,
+                            is_break=True
+                        )
+                        db.add(ts)
+                        created += 1
+                        minutes = lunch_end_min
+                        lunch_inserted = True
+                except Exception as e:
+                    print(f"Error inserting lunch break: {e}")
+            
+            # Create period slot
+            start_h = (minutes // 60) % 24
+            start_m = minutes % 60
+            end_minutes = minutes + period_duration
+            end_h = (end_minutes // 60) % 24
+            end_m = end_minutes % 60
+            
+            start_time = f"{start_h:02d}:{start_m:02d}"
+            end_time = f"{end_h:02d}:{end_m:02d}"
+            
+            ts = models.TimeSlot(
+                day=day,
+                period=period_idx,
+                start_time=start_time,
+                end_time=end_time,
+                is_break=False
+            )
+            db.add(ts)
+            created += 1
+            minutes = end_minutes
+            period_idx += 1
+    
+    db.commit()
+    return {"message": f"Created {created} time slots", "count": created}
+
 @router.get('/time-slots/configure')
 @router.post('/time-slots/configure')
 def configure_time_slots(number_of_periods: int = 7, period_length_minutes: int = 60, start_hour: int = 9, db: Session = Depends(get_db)):
@@ -408,7 +483,7 @@ def apply_config(config: schemas.ScheduleConfigBase, db: Session = Depends(get_d
     adjusted_working_minutes = int(available)
     if total_required > int(available):
         adjusted_working_minutes = total_required
-        print(f"[apply-config] Auto-adjusting working_minutes_per_day from {available} to {adjusted_working_minutes} to accommodate {config.number_of_periods} periods × {config.period_duration_minutes} minutes")
+        print(f"[apply-config] Auto-adjusting working_minutes_per_day from {available} to {adjusted_working_minutes} to accommodate {config.number_of_periods} periods x {config.period_duration_minutes} minutes")
 
     # 5. Save the config with adjusted working_minutes if necessary
     cfg = db.query(models.ScheduleConfig).first()

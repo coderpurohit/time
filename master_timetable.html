@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Timetable Viewer - Master & Division</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+
+        /* ── Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 22px 30px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+        }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p  { font-size: 13px; opacity: 0.85; margin-top: 3px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            padding: 9px 20px; border: none; border-radius: 7px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: all 0.25s;
+        }
+        .btn-white  { background: white; color: #667eea; }
+        .btn-white:hover { background: #f0f0ff; }
+        .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.7); }
+        .btn-outline:hover { background: rgba(255,255,255,0.15); }
+
+        /* ── Tabs ── */
+        .tabs-bar {
+            background: white; border-bottom: 2px solid #e8ecf0;
+            display: flex; gap: 0; padding: 0 30px;
+        }
+        .tab-btn {
+            padding: 14px 28px; font-size: 15px; font-weight: 600;
+            border: none; background: transparent; cursor: pointer;
+            color: #6b7280; border-bottom: 3px solid transparent;
+            transition: all 0.2s; margin-bottom: -2px;
+        }
+        .tab-btn.active { color: #667eea; border-bottom-color: #667eea; }
+        .tab-btn:hover:not(.active) { color: #374151; background: #f9fafb; }
+
+        /* ── Content wrapper ── */
+        .content { padding: 24px 30px; }
+
+        /* ── Cards ── */
+        .card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07); margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 18px 22px; border-bottom: 1px solid #f3f4f6;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .card-header h3 { font-size: 17px; font-weight: 700; color: #1f2937; }
+        .card-body { padding: 22px; }
+
+        /* ── Stats row ── */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px; margin-bottom: 24px;
+        }
+        .stat-box {
+            border-radius: 10px; padding: 16px 18px; color: white; text-align: center;
+        }
+        .stat-box .val { font-size: 28px; font-weight: 700; }
+        .stat-box .lbl { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+
+        /* ── Filter bar ── */
+        .filter-bar {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            background: #f8f9ff; border: 2px solid #e0e7ff;
+            border-radius: 10px; padding: 14px 18px; margin-bottom: 20px;
+        }
+        .filter-bar label { font-weight: 600; color: #374151; font-size: 14px; }
+        .filter-bar select, .filter-bar input {
+            padding: 8px 12px; border: 1.5px solid #d1d5db;
+            border-radius: 7px; font-size: 14px; background: white;
+            min-width: 200px; cursor: pointer;
+        }
+        .filter-bar select:focus { outline: none; border-color: #667eea; }
+
+        /* ── Quick-select buttons ── */
+        .class-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+        .chip {
+            padding: 6px 14px; border: 2px solid #e5e7eb;
+            border-radius: 20px; font-size: 13px; font-weight: 600;
+            background: white; cursor: pointer; color: #374151;
+            transition: all 0.2s;
+        }
+        .chip:hover  { border-color: #667eea; color: #667eea; }
+        .chip.active { background: #667eea; border-color: #667eea; color: white; }
+
+        /* ── Timetable grid ── */
+        .tt-wrap { overflow-x: auto; border-radius: 8px; }
+        table.tt {
+            width: 100%; border-collapse: collapse; min-width: 700px;
+            font-size: 13px;
+        }
+        table.tt thead th {
+            background: #667eea; color: white; padding: 12px 10px;
+            text-align: center; font-weight: 700; white-space: nowrap;
+            position: sticky; top: 0; z-index: 2;
+        }
+        table.tt thead th:first-child { background: #764ba2; min-width: 110px; }
+        table.tt tbody td {
+            border: 1px solid #e5e7eb; padding: 6px;
+            vertical-align: top; min-width: 130px;
+        }
+        table.tt tbody td.time-col {
+            background: #f8f9fa; font-weight: 700; font-size: 12px;
+            text-align: center; vertical-align: middle; color: #374151;
+            min-width: 110px;
+        }
+        table.tt tbody td.break-cell {
+            background: #fffbeb; color: #92400e; font-weight: 700;
+            text-align: center; font-size: 13px; padding: 12px;
+        }
+        table.tt tbody tr:hover td:not(.time-col):not(.break-cell) { background: #fafaff; }
+
+        /* ── Entry card inside cell ── */
+        .entry-card {
+            border-radius: 7px; padding: 8px 10px; margin-bottom: 5px;
+            color: white; font-size: 12px; min-height: 70px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .entry-card:last-child { margin-bottom: 0; }
+        .entry-card .subj { font-weight: 700; font-size: 13px; line-height: 1.3; }
+        .entry-card .meta { opacity: 0.9; font-size: 11px; line-height: 1.5; }
+        .entry-card .division-badge {
+            display: inline-block; background: rgba(255,255,255,0.3);
+            border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 700;
+            margin-top: 2px; align-self: flex-start;
+        }
+        .free-cell { color: #9ca3af; font-size: 12px; text-align: center; padding: 20px 0; }
+
+        /* ── Division summary ── */
+        .division-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px; padding: 20px 24px; color: white;
+            margin-bottom: 20px;
+        }
+        .division-summary h3 { font-size: 18px; margin-bottom: 12px; }
+        .sum-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px;
+        }
+        .sum-item { text-align: center; }
+        .sum-item .num { font-size: 26px; font-weight: 700; }
+        .sum-item .lbl { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+        /* ── All-divisions stacked ── */
+        .all-div-wrapper { display: flex; flex-direction: column; gap: 30px; }
+        .div-section-header {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white; padding: 12px 18px; border-radius: 8px;
+            font-size: 16px; font-weight: 700; margin-bottom: 10px;
+        }
+
+        /* ── Loading / error states ── */
+        .loading-box {
+            text-align: center; padding: 60px 20px; color: #9ca3af;
+        }
+        .loading-box i { font-size: 48px; margin-bottom: 16px; }
+        .loading-box p { font-size: 16px; }
+        .error-box {
+            background: #fee2e2; border-radius: 10px; padding: 20px;
+            color: #991b1b; text-align: center; border: 2px solid #fca5a5;
+        }
+
+        /* ── Section visibility ── */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Spinner ── */
+        .spin {
+            width: 28px; height: 28px; border: 3px solid #e5e7eb;
+            border-top-color: #667eea; border-radius: 50%;
+            animation: rotate 0.8s linear infinite; display: inline-block;
+        }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        /* ── Print ── */
+        @media print {
+            .page-header, .tabs-bar, .header-actions, .filter-bar, .class-chips,
+            .btn, .card-header .btn { display: none !important; }
+            .content { padding: 0; }
+            table.tt { font-size: 10px; }
+        }
+
+        @media (max-width: 600px) {
+            .page-header { flex-direction: column; gap: 12px; }
+            .content { padding: 14px; }
+            .tabs-bar { padding: 0 10px; }
+            .tab-btn { padding: 12px 14px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ PAGE HEADER ══════════════ -->
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-calendar-alt"></i> Timetable Viewer</h1>
+        <p>Master &amp; Division-wise Timetable — Academic Year 2026</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-white" onclick="refreshAll()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="btn btn-outline" onclick="window.print()">
+            <i class="fas fa-print"></i> Print
+        </button>
+        <button class="btn btn-outline" onclick="window.location.href='timetable_page.html'">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+    </div>
+</div>
+
+<!-- ══════════════ TABS ══════════════ -->
+<div class="tabs-bar">
+    <button class="tab-btn active" id="tab-master" onclick="showTab('master')">
+        <i class="fas fa-th"></i> Master Timetable
+    </button>
+    <button class="tab-btn" id="tab-division" onclick="showTab('division')">
+        <i class="fas fa-graduation-cap"></i> Division Timetable
+    </button>
+</div>
+
+<!-- ══════════════ CONTENT ══════════════ -->
+<div class="content">
+
+    <!-- ── Master Timetable Tab ── -->
+    <div id="content-master" class="tab-content active">
+
+        <!-- Stats -->
+        <div class="stats-row" id="masterStats"></div>
+
+        <!-- Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-th" style="color:#667eea"></i> Master Timetable — All Classes</h3>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-white" style="border:1.5px solid #e5e7eb;color:#374151;"
+                        onclick="generateNewSchedule()">
+                        <i class="fas fa-bolt" style="color:#f59e0b"></i> Generate New
+                    </button>
+                    <button class="btn btn-white" style="border:1.5px solid #e5e7eb;color:#374151;"
+                        onclick="loadData()">
+                        <i class="fas fa-sync-alt" style="color:#667eea"></i> Reload
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
+                    <i class="fas fa-info-circle" style="color:#667eea"></i>
+                    All classes are shown together. Each cell lists every section scheduled at that time.
+                </p>
+                <div class="tt-wrap" id="masterGrid">
+                    <div class="loading-box">
+                        <div class="spin" style="margin:0 auto 20px"></div>
+                        <p>Loading master timetable…</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Division Timetable Tab ── -->
+    <div id="content-division" class="tab-content">
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <label><i class="fas fa-filter" style="color:#667eea"></i> Select Division:</label>
+            <select id="divisionSelect" onchange="onDivisionChange()">
+                <option value="">Loading…</option>
+            </select>
+            <button class="btn btn-white" style="border:1.5px solid #e5e7eb;color:#374151;"
+                onclick="document.getElementById('divisionSelect').value=''; onDivisionChange()">
+                <i class="fas fa-times"></i> Clear
+            </button>
+        </div>
+
+        <!-- Quick-select chips -->
+        <div class="class-chips" id="classChips"></div>
+
+        <!-- Division display area -->
+        <div id="divisionContent">
+            <div class="loading-box">
+                <div class="spin" style="margin:0 auto 20px"></div>
+                <p>Loading…</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ══════════════ JAVASCRIPT ══════════════ -->
+<script>
+// ── API base ──
+const API = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+    ? 'http://localhost:8000/api'
+    : window.location.origin + '/api';
+
+// ── Global state ──
+let timetableData  = null;   // raw API response
+let timeSlots      = [];     // all time-slot objects
+let classGroups    = [];     // all class groups from API
+let currentDivision = '';    // '' = all
+
+// ── Colour palette for class groups ──
+const PALETTES = [
+    '#667eea','#f5576c','#00c9a7','#f59e0b','#7c3aed',
+    '#0ea5e9','#ec4899','#10b981','#f97316','#6366f1',
+    '#14b8a6','#db2777','#059669','#d97706','#7c3aed'
+];
+let groupColorMap = {};
+
+// ── Tab switching ──
+function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('content-' + name).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── Load everything ──
+async function loadData() {
+    showLoading('masterGrid');
+    showLoading('divisionContent');
+
+    try {
+        // Fetch all three in parallel
+        const [ttResp, slotsResp, groupsResp] = await Promise.all([
+            fetch(`${API}/timetables/latest`),
+            fetch(`${API}/operational/time-slots`),
+            fetch(`${API}/class-groups/`)
+        ]);
+
+        timeSlots   = slotsResp.ok   ? await slotsResp.json()   : [];
+        classGroups = groupsResp.ok  ? await groupsResp.json()  : [];
+
+        // Assign colors to each class group
+        classGroups.forEach((g, i) => {
+            groupColorMap[g.id]   = PALETTES[i % PALETTES.length];
+            groupColorMap[g.name] = PALETTES[i % PALETTES.length];
+        });
+
+        if (!ttResp.ok) {
+            const msg = 'No timetable found. Generate one first using the button above.';
+            showError('masterGrid', msg);
+            showError('divisionContent', msg);
+            buildClassUI([]);
+            renderMasterStats(null);
+            return;
+        }
+
+        timetableData = await ttResp.json();
+
+        if (!timetableData.entries || timetableData.entries.length === 0) {
+            const msg = 'Timetable is empty. Please generate a new schedule.';
+            showError('masterGrid', msg);
+            showError('divisionContent', msg);
+            buildClassUI([]);
+            renderMasterStats(null);
+            return;
+        }
+
+        // Render both views
+        renderMasterStats(timetableData);
+        renderMasterGrid(timetableData.entries);
+        buildClassUI(classGroups);
+        renderDivisionView(currentDivision);
+
+    } catch (err) {
+        const msg = 'Error: ' + err.message;
+        showError('masterGrid', msg);
+        showError('divisionContent', msg);
+    }
+}
+
+// ══════════════════════════════════════════
+//  MASTER TIMETABLE
+// ══════════════════════════════════════════
+
+function renderMasterStats(data) {
+    const container = document.getElementById('masterStats');
+    if (!data) { container.innerHTML = ''; return; }
+
+    const entries  = data.entries || [];
+    const teachers = new Set(entries.map(e => e.teacher?.id).filter(Boolean)).size;
+    const classes  = new Set(entries.map(e => e.class_group?.id).filter(Boolean)).size;
+    const subjects = new Set(entries.map(e => e.subject?.id).filter(Boolean)).size;
+    const periods  = entries.length;
+
+    container.innerHTML = `
+        <div class="stat-box" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+            <div class="val">${periods}</div><div class="lbl">Total Periods</div>
+        </div>
+        <div class="stat-box" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
+            <div class="val">${classes}</div><div class="lbl">Divisions</div>
+        </div>
+        <div class="stat-box" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+            <div class="val">${subjects}</div><div class="lbl">Subjects</div>
+        </div>
+        <div class="stat-box" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
+            <div class="val">${teachers}</div><div class="lbl">Teachers</div>
+        </div>`;
+}
+
+function renderMasterGrid(entries) {
+    const container = document.getElementById('masterGrid');
+
+    const periods = buildPeriods(timeSlots);
+    const days    = getActiveDays(entries, timeSlots);
+
+    // Build lookup: day → period → [entries]
+    const sched = buildScheduleMap(entries);
+
+    let html = '<table class="tt"><thead><tr><th>Time / Day</th>';
+    days.forEach(d => html += `<th>${d}</th>`);
+    html += '</tr></thead><tbody>';
+
+    periods.forEach(({ period, time, isBreak }) => {
+        html += `<tr><td class="time-col">${time}</td>`;
+        if (isBreak) {
+            html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+        } else {
+            days.forEach(day => {
+                const slots = sched[day]?.[period] || [];
+                if (slots.length === 0) {
+                    html += '<td><div class="free-cell">—</div></td>';
+                } else {
+                    html += '<td>' + slots.map(e => entryCard(e, true)).join('') + '</td>';
+                }
+            });
+        }
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+//  DIVISION TIMETABLE
+// ══════════════════════════════════════════
+
+function buildClassUI(groups) {
+    // Populate select
+    const sel = document.getElementById('divisionSelect');
+    sel.innerHTML = '<option value="">— All Divisions —</option>';
+    groups.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g.name;
+        opt.textContent = g.name + (g.student_count ? ` (${g.student_count} students)` : '');
+        sel.appendChild(opt);
+    });
+
+    // Populate chips
+    const chips = document.getElementById('classChips');
+    chips.innerHTML = '<button class="chip active" data-cls="" onclick="selectChip(this, \'\')">All Divisions</button>';
+    groups.forEach(g => {
+        chips.innerHTML += `<button class="chip" data-cls="${g.name}" onclick="selectChip(this, '${g.name}')">${g.name}</button>`;
+    });
+}
+
+function selectChip(el, cls) {
+    document.querySelectorAll('.class-chips .chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('divisionSelect').value = cls;
+    currentDivision = cls;
+    renderDivisionView(cls);
+}
+
+function onDivisionChange() {
+    const cls = document.getElementById('divisionSelect').value;
+    currentDivision = cls;
+
+    // Sync chips
+    document.querySelectorAll('.class-chips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.cls === cls);
+    });
+
+    renderDivisionView(cls);
+}
+
+function renderDivisionView(cls) {
+    if (!timetableData) {
+        showLoading('divisionContent');
+        return;
+    }
+
+    if (!cls) {
+        renderAllDivisions();
+    } else {
+        renderSingleDivision(cls);
+    }
+}
+
+function renderSingleDivision(cls) {
+    const container = document.getElementById('divisionContent');
+    const entries   = (timetableData?.entries || []).filter(e => e.class_group?.name === cls);
+
+    if (entries.length === 0) {
+        container.innerHTML = `
+            <div class="error-box" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;">
+                <i class="fas fa-exclamation-triangle" style="font-size:32px;margin-bottom:10px;"></i>
+                <p><strong>No scheduled classes found for ${cls}.</strong></p>
+                <p style="margin-top:8px;font-size:13px;">Try generating a timetable or selecting a different division.</p>
+            </div>`;
+        return;
+    }
+
+    const periods = buildPeriods(timeSlots);
+    const days    = getActiveDays(entries, timeSlots);
+    const sched   = buildScheduleMap(entries);
+
+    // Summary
+    const uniqueSubjects = [...new Set(entries.map(e => e.subject?.name).filter(Boolean))];
+    const uniqueTeachers = [...new Set(entries.map(e => e.teacher?.name).filter(Boolean))];
+    const color = groupColorMap[cls] || '#667eea';
+
+    let html = `
+        <div class="division-summary" style="background:linear-gradient(135deg,${color},${adjustColor(color)})">
+            <h3><i class="fas fa-graduation-cap"></i> ${cls} — Weekly Schedule</h3>
+            <div class="sum-grid">
+                <div class="sum-item"><div class="num">${entries.length}</div><div class="lbl">Total Periods</div></div>
+                <div class="sum-item"><div class="num">${uniqueSubjects.length}</div><div class="lbl">Subjects</div></div>
+                <div class="sum-item"><div class="num">${uniqueTeachers.length}</div><div class="lbl">Teachers</div></div>
+                <div class="sum-item"><div class="num">${days.length}</div><div class="lbl">Working Days</div></div>
+            </div>
+        </div>`;
+
+    html += '<div class="card"><div class="card-body"><div class="tt-wrap">';
+    html += '<table class="tt"><thead><tr><th>Time / Day</th>';
+    days.forEach(d => html += `<th>${d}</th>`);
+    html += '</tr></thead><tbody>';
+
+    periods.forEach(({ period, time, isBreak }) => {
+        html += `<tr><td class="time-col">${time}</td>`;
+        if (isBreak) {
+            html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+        } else {
+            days.forEach(day => {
+                const slots = sched[day]?.[period] || [];
+                if (slots.length === 0) {
+                    html += '<td><div class="free-cell">—</div></td>';
+                } else {
+                    html += '<td>' + slots.map(e => entryCard(e, false, color)).join('') + '</td>';
+                }
+            });
+        }
+        html += '</tr>';
+    });
+
+    html += '</tbody></table></div></div></div>';
+    container.innerHTML = html;
+}
+
+function renderAllDivisions() {
+    const container = document.getElementById('divisionContent');
+
+    if (!timetableData || !timetableData.entries || timetableData.entries.length === 0) {
+        showError('divisionContent', 'No timetable data. Please generate a timetable first.');
+        return;
+    }
+
+    // Get unique division names from timetable entries
+    const divNames = [...new Set(
+        timetableData.entries.map(e => e.class_group?.name).filter(Boolean)
+    )].sort();
+
+    if (divNames.length === 0) {
+        showError('divisionContent', 'No division data found in timetable.');
+        return;
+    }
+
+    let html = '<div class="all-div-wrapper">';
+
+    divNames.forEach(cls => {
+        const entries = timetableData.entries.filter(e => e.class_group?.name === cls);
+        const periods = buildPeriods(timeSlots);
+        const days    = getActiveDays(entries, timeSlots);
+        const sched   = buildScheduleMap(entries);
+        const color   = groupColorMap[cls] || '#667eea';
+
+        html += `
+            <div>
+                <div class="div-section-header" style="background:linear-gradient(90deg,${color},${adjustColor(color)})">
+                    <i class="fas fa-graduation-cap"></i> ${cls}
+                    <span style="font-size:13px;font-weight:400;margin-left:12px;opacity:0.9;">
+                        ${entries.length} periods
+                    </span>
+                </div>
+                <div class="tt-wrap">
+                    <table class="tt">
+                        <thead><tr><th>Time / Day</th>`;
+
+        days.forEach(d => html += `<th>${d}</th>`);
+        html += '</tr></thead><tbody>';
+
+        periods.forEach(({ period, time, isBreak }) => {
+            html += `<tr><td class="time-col">${time}</td>`;
+            if (isBreak) {
+                html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+            } else {
+                days.forEach(day => {
+                    const slots = sched[day]?.[period] || [];
+                    if (slots.length === 0) {
+                        html += '<td><div class="free-cell">—</div></td>';
+                    } else {
+                        html += '<td>' + slots.map(e => entryCard(e, false, color)).join('') + '</td>';
+                    }
+                });
+            }
+            html += '</tr>';
+        });
+
+        html += '</tbody></table></div></div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+
+/** Build a period list from time-slot data, with fallback defaults */
+function buildPeriods(slots) {
+    if (!slots || slots.length === 0) {
+        return [
+            { period: 1, time: '09:00 – 10:00', isBreak: false },
+            { period: 2, time: '10:00 – 11:00', isBreak: false },
+            { period: 3, time: '11:00 – 12:00', isBreak: false },
+            { period: 4, time: '12:00 – 13:00', isBreak: true  },
+            { period: 5, time: '13:00 – 14:00', isBreak: false },
+            { period: 6, time: '14:00 – 15:00', isBreak: false },
+            { period: 7, time: '15:00 – 16:00', isBreak: false },
+        ];
+    }
+
+    const refSlots = slots.filter(s => s.day === 'Monday');
+    const sorted   = refSlots.sort((a, b) => timeToMins(a.start_time) - timeToMins(b.start_time));
+
+    const result = [];
+    const seen   = new Set();
+    sorted.forEach(s => {
+        if (s.is_break) {
+            result.push({ period: s.period || 0, time: `${s.start_time} – ${s.end_time}`, isBreak: true });
+        } else if (!seen.has(s.period)) {
+            result.push({ period: s.period, time: `${s.start_time} – ${s.end_time}`, isBreak: false });
+            seen.add(s.period);
+        }
+    });
+
+    return result.length ? result : buildPeriods([]);
+}
+
+/** Return ordered list of active working days */
+function getActiveDays(entries, slots) {
+    const ORDER = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+    // Prefer days from time-slot data
+    const fromSlots = new Set(slots.filter(s => !s.is_break).map(s => s.day));
+    // Also include days that appear in entries
+    const fromEntries = new Set(entries.map(e => e.time_slot?.day).filter(Boolean));
+    const all = new Set([...fromSlots, ...fromEntries]);
+
+    const active = ORDER.filter(d => all.has(d));
+    return active.length ? active : ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+}
+
+/** Build schedule map: day → period → [entries] */
+function buildScheduleMap(entries) {
+    const map = {};
+    entries.forEach(e => {
+        if (!e.time_slot) return;
+        const d = e.time_slot.day;
+        const p = e.time_slot.period;
+        if (!map[d]) map[d] = {};
+        if (!map[d][p]) map[d][p] = [];
+        map[d][p].push(e);
+    });
+    return map;
+}
+
+/** Render a single timetable entry as a coloured card */
+function entryCard(e, showDivision = false, overrideColor = null) {
+    const color = overrideColor
+        || groupColorMap[e.class_group?.id]
+        || groupColorMap[e.class_group?.name]
+        || '#667eea';
+
+    const subj    = e.subject?.name   || 'Unknown Subject';
+    const teacher = e.teacher?.name   || 'TBA';
+    const room    = e.room?.name       || 'TBA';
+    const div     = e.class_group?.name || '';
+
+    return `<div class="entry-card" style="background:${color}">
+        <div class="subj">${subj}</div>
+        <div class="meta">
+            <span>👨‍🏫 ${teacher}</span><br>
+            <span>🏫 ${room}</span>
+        </div>
+        ${showDivision ? `<span class="division-badge">${div}</span>` : ''}
+    </div>`;
+}
+
+function timeToMins(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + (m || 0);
+}
+
+/** Simple hue-shift for gradient second colour */
+function adjustColor(hex) {
+    // darken slightly
+    const num = parseInt(hex.replace('#',''), 16);
+    const r = Math.max(0, (num >> 16) - 30);
+    const g = Math.max(0, ((num >> 8) & 0xff) - 30);
+    const b = Math.max(0, (num & 0xff) - 30);
+    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+function showLoading(id) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<div class="loading-box"><div class="spin" style="margin:0 auto 20px"></div><p>Loading…</p></div>`;
+}
+
+function showError(id, msg) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<div class="error-box"><i class="fas fa-exclamation-circle" style="font-size:32px;margin-bottom:10px;"></i><p>${msg}</p></div>`;
+}
+
+// ══════════════════════════════════════════
+//  GENERATE NEW SCHEDULE
+// ══════════════════════════════════════════
+async function generateNewSchedule() {
+    showLoading('masterGrid');
+    try {
+        const resp = await fetch(`${API}/solvers/generate?method=csp`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }
+        });
+        if (!resp.ok) {
+            const t = await resp.text();
+            throw new Error(t || 'Generation failed');
+        }
+        const result = await resp.json();
+        if (!result.id) throw new Error('No timetable ID returned');
+
+        // Small delay then reload
+        setTimeout(() => loadData(), 800);
+    } catch (err) {
+        showError('masterGrid', '❌ Generation Failed: ' + err.message);
+    }
+}
+
+function refreshAll() { loadData(); }
+
+// ── Bootstrap on load ──
+window.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>

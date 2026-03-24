@@ -3,6 +3,7 @@ from typing import Optional, List
 import csv
 import io
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from ...infrastructure.database import get_db
 from ...infrastructure import models
@@ -111,14 +112,19 @@ async def import_dataset(
          raise HTTPException(status_code=400, detail="CSV file appears to be empty or missing headers")
 
     try:
-        # Parse boolean flag manually to avoid form data issues
-        print(f"DEBUG: force_clear_existing raw value: '{force_clear_existing}', type: {type(force_clear_existing)}")
-        should_clear = str(force_clear_existing).lower().strip() == 'true'
+        # Parse boolean flag - simple and safe
+        should_clear = False
+        if isinstance(force_clear_existing, str):
+            should_clear = force_clear_existing.lower().strip() == 'true'
+        elif isinstance(force_clear_existing, bool):
+            should_clear = force_clear_existing
+        
         print(f"DEBUG: should_clear evaluated to: {should_clear}")
         
         # Clear existing data if requested
         cleared = 0
         timetable_cleared = False
+        lessons_cleared = 0
         if should_clear:
             # Clear timetable first to avoid broken foreign key references
             timetable_count = db.query(models.TimetableEntry).count()
@@ -128,13 +134,44 @@ async def import_dataset(
                 timetable_cleared = True
             
             if dataset == 'teachers':
+                # Clear lessons and their associations first
+                lessons_cleared = db.query(models.Lesson).count()
+                if lessons_cleared > 0:
+                    # Delete association table entries first
+                    db.execute(text("DELETE FROM lesson_teachers"))
+                    db.execute(text("DELETE FROM lesson_class_groups"))
+                    db.execute(text("DELETE FROM lesson_subjects"))
+                    # Then delete lessons
+                    db.query(models.Lesson).delete()
+                
+                # Clear subject-teacher associations
                 db.query(models.Subject).update({models.Subject.teacher_id: None})
+                
+                # Clear substitutions that reference teachers
+                db.query(models.Substitution).delete()
+                
+                # Finally delete teachers
                 cleared = db.query(models.Teacher).delete()
+                
             elif dataset == 'rooms':
                 cleared = db.query(models.Room).delete()
             elif dataset == 'subjects':
+                # Clear lessons that reference subjects
+                lessons_cleared = db.query(models.Lesson).count()
+                if lessons_cleared > 0:
+                    db.execute(text("DELETE FROM lesson_subjects"))
+                    db.execute(text("DELETE FROM lesson_teachers"))
+                    db.execute(text("DELETE FROM lesson_class_groups"))
+                    db.query(models.Lesson).delete()
                 cleared = db.query(models.Subject).delete()
             elif dataset == 'classgroups' or dataset == 'class_groups':
+                # Clear lessons that reference class groups
+                lessons_cleared = db.query(models.Lesson).count()
+                if lessons_cleared > 0:
+                    db.execute(text("DELETE FROM lesson_class_groups"))
+                    db.execute(text("DELETE FROM lesson_teachers"))
+                    db.execute(text("DELETE FROM lesson_subjects"))
+                    db.query(models.Lesson).delete()
                 cleared = db.query(models.ClassGroup).delete()
             db.commit()
         
@@ -151,9 +188,11 @@ async def import_dataset(
         
         if should_clear:
             result["cleared"] = cleared
+            if lessons_cleared > 0:
+                result["lessons_cleared"] = lessons_cleared
             if timetable_cleared:
                 result["timetable_cleared"] = True
-                result["message"] += " (timetable also cleared - please regenerate)"
+                result["message"] += " (lessons and timetable also cleared - please regenerate)"
         return result
 
     except HTTPException:
@@ -162,7 +201,8 @@ async def import_dataset(
         db.rollback()
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+        error_msg = getattr(e, 'message', repr(e))
+        raise HTTPException(status_code=500, detail=f"Import failed: {error_msg}")
 
 
 async def _import_teachers(reader: csv.DictReader, db: Session) -> dict:

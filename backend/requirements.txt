@@ -7,4 +7,5 @@ ortools
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
+python-docx
 

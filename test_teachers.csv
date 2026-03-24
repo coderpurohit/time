@@ -1,4 +1,3 @@
-﻿teacher_id,teacher_name
-T1,Dr. Amit Sharma
-T2,Prof. Neha Verma
-T3,Dr. Rajesh Kumar
+name,email,max_hours_per_week
+Dr. Rajesh Kumar,rajesh.kumar@college.edu,20
+Prof. Priya Sharma,priya.sharma@college.edu,18

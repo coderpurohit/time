@@ -15,6 +15,7 @@ class Teacher(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     subjects = relationship("Subject", back_populates="teacher")
+    custom_workloads = relationship("TeacherWorkloadAspect", back_populates="teacher", cascade="all, delete-orphan")
 
 class Room(Base):
     __tablename__ = "rooms"
@@ -139,12 +140,37 @@ class Substitution(Base):
     id = Column(Integer, primary_key=True, index=True)
     date = Column(String, index=True)
     timetable_entry_id = Column(Integer, ForeignKey("timetable_entries.id"))
+
     original_teacher_id = Column(Integer, ForeignKey("teachers.id"))
     substitute_teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
     status = Column(String, default="pending")
 
     original_teacher = relationship("Teacher", foreign_keys=[original_teacher_id])
     substitute_teacher = relationship("Teacher", foreign_keys=[substitute_teacher_id])
+
+class TeacherWorkloadAspect(Base):
+    __tablename__ = "teacher_workload_aspects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    teacher_id = Column(Integer, ForeignKey("teachers.id"))
+    course_name = Column(String)
+    class_division = Column(String)
+    theory_hours = Column(String, default="-")
+    practical_hours = Column(String, default="-")
+    project_hours = Column(String, default="-")
+    total_load = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    teacher = relationship("Teacher", back_populates="custom_workloads")
+
+class WorkloadReportOverride(Base):
+    __tablename__ = "workload_overrides"
+
+    id = Column(Integer, primary_key=True, index=True)
+    version_id = Column(Integer, nullable=True, unique=True, index=True)  # NULL = standalone (no timetable)
+    report_data = Column(JSON) # Stores the completely modified teacher_load array
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 
 class ScheduleConfig(Base):
     """Global timetable configuration (one row)"""

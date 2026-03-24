@@ -53,9 +53,19 @@ def delete_lesson(lesson_id: int, db: Session = Depends(get_db)):
 @router.post("/bulk-import", response_model=BulkImportResponse)
 def bulk_import_lessons(req: BulkImportRequest, db: Session = Depends(get_db)):
     if req.clear_existing:
-        # Clear all lessons (cascade will handle associations)
-        db.query(models.Lesson).delete()
+        # Clear all lessons and their associations properly
+        print("BULK IMPORT: Clearing existing lessons...")
+        
+        # Delete association table entries first
+        db.execute("DELETE FROM lesson_teachers")
+        db.execute("DELETE FROM lesson_class_groups")
+        db.execute("DELETE FROM lesson_subjects")
+        
+        # Then delete lessons
+        deleted_count = db.query(models.Lesson).delete()
         db.commit()
+        
+        print(f"BULK IMPORT: Cleared {deleted_count} existing lessons")
     
     lines = [l.strip() for l in req.text.strip().split("\n") if l.strip()]
     success = 0

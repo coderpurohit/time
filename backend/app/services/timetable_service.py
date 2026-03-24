@@ -19,48 +19,47 @@ class TimetableService:
         db_slots = db.query(models.TimeSlot).all()
         db_lessons = db.query(models.Lesson).all()
 
-        # 2. Domain conversion (Simplified)
-        teachers = [Teacher(id=t.id, name=t.name, email=t.email, max_hours_per_week=t.max_hours_per_week) for t in db_teachers]
+        print(f"GENERATOR: Found {len(db_lessons)} lessons, {len(db_slots)} slots, method: {method}")
+        
+        # Convert DB models to Domain Entities expected by Solvers
+        teachers = [Teacher(id=t.id, name=t.name, email=t.email) for t in db_teachers]
         subjects = [Subject(id=s.id, name=s.name, code=s.code, is_lab=s.is_lab, credits=s.credits, 
                     required_room_type=s.required_room_type, duration_slots=s.duration_slots, teacher_id=s.teacher_id) for s in db_subjects]
         rooms = [Room(id=r.id, name=r.name, capacity=r.capacity, type=r.type) for r in db_rooms]
         groups = [ClassGroup(id=g.id, name=g.name, student_count=g.student_count) for g in db_groups]
         slots = [TimeSlot(id=s.id, day=s.day, period=s.period, start_time=s.start_time, end_time=s.end_time, is_break=s.is_break) for s in db_slots]
-        
+
         # Convert lessons to required assignments
-        # Each lesson defines: which groups need which subjects, how many times per week
         required_assignments = []
-        assignment_id = 0  # Unique ID for each assignment occurrence
-        
-        print(f"DEBUG: Found {len(db_lessons)} lessons in database")
+        assignment_id = 0
         
         for lesson in db_lessons:
-            # Handle many-to-many relationships - create assignments for ALL combinations
-            teachers_list = lesson.teachers if lesson.teachers else []
-            subjects_list = lesson.subjects if lesson.subjects else []
-            groups_list = lesson.class_groups if lesson.class_groups else []
+            teacher_id = lesson.teachers[0].id if lesson.teachers else None
+            subject_id = lesson.subjects[0].id if lesson.subjects else None
+            group_id = lesson.class_groups[0].id if lesson.class_groups else None
             
-            print(f"DEBUG: Lesson {lesson.id}: {len(teachers_list)} teachers, {len(subjects_list)} subjects, {len(groups_list)} groups, {lesson.lessons_per_week} periods/week")
-            
-            # Create assignments for each combination
-            for teacher in teachers_list:
-                for subject in subjects_list:
-                    for group in groups_list:
-                        # Add this many assignments for this lesson
-                        for occurrence in range(lesson.lessons_per_week):
-                            required_assignments.append({
-                                'assignment_id': assignment_id,
-                                'group_id': group.id,
-                                'subject_id': subject.id,
-                                'teacher_id': teacher.id,
-                                'duration': lesson.length_per_lesson,
-                                'occurrence': occurrence + 1
-                            })
-                            assignment_id += 1
+            if teacher_id and subject_id and group_id:
+                # Add one assignment per required lesson occurrence per week
+                for occurrence in range(lesson.lessons_per_week):
+                    required_assignments.append({
+                        'assignment_id': assignment_id,
+                        'group_id': group_id,
+                        'subject_id': subject_id,
+                        'teacher_id': teacher_id,
+                        'duration': lesson.length_per_lesson,
+                        'occurrence': occurrence + 1
+                    })
+                    assignment_id += 1
 
-        print(f"DEBUG: Generated {len(required_assignments)} required assignments from {len(db_lessons)} lessons")
+        print(f"GENERATOR: Generated {len(required_assignments)} required constraints from {len(db_lessons)} lessons")
 
-        # 3. Solver
+        # Create version record
+        version = models.TimetableVersion(name=version_name, algorithm=method)
+        db.add(version)
+        db.commit()
+        db.refresh(version)
+
+        # Run Solver
         if method == "genetic":
             solver = GeneticTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
             schedule = solver.solve()
@@ -68,31 +67,33 @@ class TimetableService:
             solver = CspTimetableSolver(teachers, subjects, rooms, groups, slots, required_assignments)
             schedule = solver.solve()
 
-        if not schedule:
-            raise HTTPException(status_code=409, detail="No feasible solution found.")
-
-        # 4. Save with versioning
-        version = models.TimetableVersion(name=version_name, algorithm=method)
-        db.add(version)
-        db.commit()
-        db.refresh(version)
-
-        for item in schedule:
-            entry = models.TimetableEntry(
-                version_id=version.id,
-                time_slot_id=item["time_slot_id"],
-                subject_id=item["subject_id"],
-                room_id=item["room_id"],
-                class_group_id=item["class_group_id"],
-                teacher_id=item["teacher_id"]
-            )
-            db.add(entry)
-        
-        # Mark version as active after successful generation
-        version.status = "active"
-        version.is_valid = True
-        db.commit()
-        db.refresh(version)
+        # Save results
+        if schedule:
+            entries_created = 0
+            for item in schedule:
+                entry = models.TimetableEntry(
+                    version_id=version.id,
+                    time_slot_id=item["time_slot_id"],
+                    subject_id=item["subject_id"],
+                    room_id=item["room_id"],
+                    class_group_id=item["class_group_id"],
+                    teacher_id=item["teacher_id"]
+                )
+                db.add(entry)
+                entries_created += 1
+            
+            version.status = "active"
+            version.is_valid = True
+            db.commit()
+            db.refresh(version)
+            print(f"GENERATOR: Success! Saved {entries_created} entries to DB.")
+        else:
+            version.status = "failed"
+            version.is_valid = False
+            db.commit()
+            db.refresh(version)
+            print("GENERATOR: Solver failed to find a valid schedule.")
+            
         return version
 
     @staticmethod

@@ -24,6 +24,9 @@
                 <button class="btn btn-secondary" onclick="generateNewTimetable()" id="generateBtn">
                     Generate New Schedule
                 </button>
+                <button class="btn btn-secondary" onclick="openConfigModal()" id="configBtn">
+                    ⚙️ Config
+                </button>
             </div>
         </header>
 
@@ -32,7 +35,12 @@
 
         <!-- Timetable Grid -->
         <div class="timetable-wrapper">
-            <div class="timetable-header-info">
+            <!-- Division Switcher -->
+            <div id="divisionTabsContainer" class="division-tabs" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom: 1rem;">
+                <!-- Division buttons injected here -->
+            </div>
+
+            <div class="timetable-header-info" id="timetableHeaderInfo">
                 <div class="info-item">
                     <span class="info-label">Teaching Hours:</span>
                     <span class="info-value">6 hours/day</span>
@@ -102,6 +110,72 @@
     </div>
 
     <script src="demo_script.js"></script>
+
+    <!-- Schedule Config Modal -->
+    <div id="configModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:white; padding:2rem; border-radius:12px; max-width:600px; width:90%; max-height:90vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="margin:0;">⚙️ Schedule Configuration</h2>
+                <button onclick="closeConfigModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" title="Close">✕</button>
+            </div>
+            
+            <div id="configForm">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label>Institution Name</label><br>
+                        <input type="text" id="cfg_institution" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                    <div>
+                        <label>Day Start Time</label><br>
+                        <input type="time" id="cfg_start" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                    <div>
+                        <label>Periods per Day</label><br>
+                        <input type="number" id="cfg_periods" min="1" max="12" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                    <div>
+                        <label>Period Duration (min)</label><br>
+                        <input type="number" id="cfg_period_dur" min="15" max="180" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                    <div>
+                        <label>Lunch Start</label><br>
+                        <input type="time" id="cfg_lunch_start" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                    <div>
+                        <label>Lunch End</label><br>
+                        <input type="time" id="cfg_lunch_end" style="width:100%; padding:0.5rem; margin-top:0.25rem;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label>Working Days</label><br>
+                    <div style="display:flex; gap:1rem; margin-top:0.5rem; flex-wrap:wrap;">
+                        <label><input type="checkbox" class="cfg-day" value="Monday"> Mon</label>
+                        <label><input type="checkbox" class="cfg-day" value="Tuesday"> Tue</label>
+                        <label><input type="checkbox" class="cfg-day" value="Wednesday"> Wed</label>
+                        <label><input type="checkbox" class="cfg-day" value="Thursday"> Thu</label>
+                        <label><input type="checkbox" class="cfg-day" value="Friday"> Fri</label>
+                        <label><input type="checkbox" class="cfg-day" value="Saturday"> Sat</label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <label>Custom Extra Breaks</label>
+                        <button onclick="addBreakRow()" class="btn btn-secondary" style="padding:0.3rem 0.5rem; font-size:0.8rem;">+ Add Break</button>
+                    </div>
+                    <div id="breaksContainer"></div>
+                </div>
+
+                <div id="configStatus" style="margin-bottom:1rem;"></div>
+
+                <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                    <button class="btn btn-secondary" onclick="closeConfigModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="applyScheduleConfig()">Apply & Regenerate</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

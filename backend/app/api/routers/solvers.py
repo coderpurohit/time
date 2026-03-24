@@ -12,34 +12,34 @@ router = APIRouter()
 @router.post("/generate", response_model=schemas.TimetableVersion)
 def generate_timetable(background_tasks: BackgroundTasks, method: str = "csp", name: str = "New Generation", db: Session = Depends(get_db)):
     """
-    Generate and save a new timetable version. 
-    Heavy generations can be moved to background if needed, but for now we return the version metadata.
+    Generate and save a new timetable version using LOAD-AWARE generator.
+    This uses an enhanced algorithm that considers teacher load factors.
     """
     
-    # Validate sufficient data exists before generating
+    # Validate sufficient data exists
     teachers_count = db.query(models.Teacher).count()
     subjects_count = db.query(models.Subject).count()
     rooms_count = db.query(models.Room).count()
     groups_count = db.query(models.ClassGroup).count()
+    lessons_count = db.query(models.Lesson).count()
 
     if teachers_count == 0 or subjects_count == 0 or rooms_count == 0 or groups_count == 0:
         raise HTTPException(
             status_code=400, 
-            detail=f"Insufficient data for generation. Teachers: {teachers_count}, Subjects: {subjects_count}, Rooms: {rooms_count}, Groups: {groups_count}. Please import data first."
+            detail=f"Insufficient data. Teachers: {teachers_count}, Subjects: {subjects_count}, Rooms: {rooms_count}, Groups: {groups_count}"
+        )
+    
+    if lessons_count == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="No lessons found. Please create lessons first using the complete setup."
         )
 
-    version = models.TimetableVersion(name=name, algorithm=method, status="processing")
-    db.add(version)
-    db.commit()
-    db.refresh(version)
+    print(f"LOAD-AWARE GENERATOR API: Starting generation with {lessons_count} lessons")
 
-    def run_generation(v_id: int):
-        # We need a fresh session for background tasks usually, but here we reuse for simplicity
-        try:
-            TimetableService.generate_in_background(v_id, method)
-        except Exception as e:
-            print(f"Background Gen Error: {e}")
-
-    background_tasks.add_task(run_generation, version.id)
+    # Use the enhanced timetable service
+    version = TimetableService.generate_and_save(db, method, name)
+    
+    print(f"LOAD-AWARE GENERATOR API: Created version {version.id} with load balancing")
     return version
 

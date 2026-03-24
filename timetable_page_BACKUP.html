@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Timetables - TimeTabler</title>
+    <link rel="stylesheet" href="dashboard_styles.css?v=9">
+    <link rel="stylesheet" href="timetable_page_styles.css?v=9">
+    <link rel="stylesheet" href="frontend/lessons_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Teacher Management Styles */
+        .btn-danger {
+            background: #dc3545 !important;
+            color: white !important;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: #c82333 !important;
+        }
+        .modal {
+            align-items: center;
+        }
+        .modal.active {
+            display: flex !important;
+        }
+        .teacher-card {
+            transition: transform 0.2s;
+        }
+        .teacher-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="logo-text">timetabler</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="timetable_page.html" class="nav-item active">
+                        <i class="fas fa-file-alt"></i>
+                        <span>My Timetables</span>
+                    </a>
+                    <a href="calendar_page.html" class="nav-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="reports_page.html" class="nav-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports & Analytics</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">MANAGEMENT</div>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cube"></i>
+                        <span>Master Data</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="timetable-header">
+                <div class="header-left">
+                    <button class="sidebar-menu-toggle" id="desktopMenuToggle" title="Toggle Sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        College Timetable
+                    </h1>
+                    <p class="page-subtitle">Weekly Schedule - Academic Year 2026</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="generateBtn" onclick="if(typeof generateNewTimetable === 'function') generateNewTimetable(); else alert('Generate function not loaded yet');">
+                        Generate New Schedule
+                    </button>
+                    <button class="btn btn-secondary" id="loadLatestBtn" onclick="if(typeof loadTimetableInline === 'function') loadTimetableInline(); else if(typeof loadTimetable === 'function') loadTimetable(); else alert('Load function not loaded yet');">
+                        Load Latest Timetable
+                    </button>
+                </div>
+            </header>
+
+            <!-- Wizard Progression Tabs -->
+            <div class="wizard-tabs">
+                <div class="wizard-tab active" data-step="subjects" onclick="switchTab('subjects')">
+                    <i class="fas fa-book"></i> Subjects/Courses
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="teachers" onclick="switchTab('teachers')">
+                    <i class="fas fa-chalkboard-teacher"></i> Teachers/Instructors
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="classes" onclick="switchTab('classes')">
+                    <i class="fas fa-users"></i> Classes/Grades
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="rooms" onclick="switchTab('rooms')">
+                    <i class="fas fa-door-open"></i> Rooms
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="lessons" onclick="switchTab('lessons')">
+                    <i class="fas fa-tasks"></i> Lessons
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="loadfactor" onclick="switchTab('loadfactor')">
+                    <i class="fas fa-chart-bar"></i> Load Factor
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+                <div class="wizard-tab" data-step="review" onclick="switchTab('review')">
+                    <i class="fas fa-calendar-check"></i> Review
+                    <i class="fas fa-check-circle check-icon"></i>
+                </div>
+            </div>
+            
+            <script>
+            // INLINE TAB SWITCHING - BYPASSES CACHE
+            function switchTab(step) {
+                console.log('=== SWITCHING TO:', step, '===');
+                
+                // FORCE HIDE ALL SECTIONS FIRST
+                const allSections = ['subjects', 'teachers', 'classes', 'rooms', 'lessons', 'loadfactor', 'review'];
+                allSections.forEach(s => {
+                    const el = document.getElementById(`step-${s}`);
+                    if (el) {
+                        el.classList.remove('active');
+                        el.style.display = 'none';
+                        console.log(`Hiding step-${s}`);
+                    }
+                });
+                
+                // Update tabs
+                document.querySelectorAll('.wizard-tab').forEach(t => t.classList.remove('active'));
+                const tab = document.querySelector(`[data-step="${step}"]`);
+                if (tab) {
+                    tab.classList.add('active');
+                    console.log(`Activated tab: ${step}`);
+                }
+                
+                // FORCE SHOW ONLY THE SELECTED SECTION
+                const content = document.getElementById(`step-${step}`);
+                if (content) {
+                    content.classList.add('active');
+                    content.style.display = 'block';
+                    console.log(`Showing step-${step}`);
+                }
+                
+                // Load data for specific tabs
+                if (step === 'teachers' && typeof loadTeachersInPage === 'function') {
+                    loadTeachersInPage();
+                }
+                if (step === 'lessons' && typeof loadLessons === 'function') {
+                    loadLessons();
+                }
+                if (step === 'loadfactor' && typeof loadLoadFactorInline === 'function') {
+                    loadLoadFactorInline();
+                }
+                if (step === 'review' && typeof loadTimetableInline === 'function') {
+                    console.log('Calling loadTimetableInline...');
+                    setTimeout(() => loadTimetableInline(), 100);
+                }
+            }
+            </script>
+
+            <!-- Wizard Content Sections -->
+            <div id="step-subjects" class="wizard-content active">
+                <div class="config-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 class="config-title">📚 Subjects/Courses Management</h4>
+                        <button class="btn-primary" onclick="openSubjectModal()">
+                            <i class="fas fa-plus"></i> Add Subject
+                        </button>
+                    </div>
+                    
+                    <!-- Search and Filter -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="subjectSearch" placeholder="Search by name or code..." 
+                               style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;"
+                               oninput="filterSubjects()">
+                        <select id="subjectTypeFilter" onchange="filterSubjects()"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="">All Types</option>
+                            <option value="theory">Theory</option>
+                            <option value="lab">Lab</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Subjects Table -->
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="subjectsTable">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Credits</th>
+                                    <th>Type</th>
+                                    <th>Duration</th>
+                                    <th>Teacher</th>
+                                    <th>Room Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjectsTableBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading subjects...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-teachers" class="wizard-content">
+                <div class="config-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="config-title">👨‍🏫 Teacher Management</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="openTeacherBulkImportModal()">
+                                <i class="fas fa-file-upload"></i> Bulk Import CSV
+                            </button>
+                            <button class="btn btn-primary" onclick="openTeacherModal(); console.log('Add button clicked');">
+                                <i class="fas fa-plus"></i> Add New Teacher
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="teacherSearchInput" placeholder="🔍 Search teachers by name or email..." 
+                               style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 8px; font-size: 16px;"
+                               onkeyup="filterTeachersInPage(); console.log('Search triggered');">
+                    </div>
+
+                    <div id="teachersListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 30px; color: #666;">
+                            <p>Loading teachers...</p>
+                            <button onclick="loadTeachersInPage(); console.log('Manual load clicked');" style="margin-top: 10px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Click here if teachers don't load
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-classes" class="wizard-content">
+                <div class="config-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 class="config-title">🎓 Classes/Grades Management</h4>
+                        <button class="btn-primary" onclick="openClassModal()">
+                            <i class="fas fa-plus"></i> Add Class
+                        </button>
+                    </div>
+                    
+                    <!-- Search -->
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="classSearch" placeholder="Search by class name..." 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;"
+                               oninput="filterClasses()">
+                    </div>
+                    
+                    <!-- Classes Table -->
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="classesTable">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Student Count</th>
+                                    <th>Periods Assigned</th>
+                                    <th>Coverage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading classes...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-rooms" class="wizard-content">
+                <div class="config-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 class="config-title">🏫 Rooms Management</h4>
+                        <button class="btn-primary" onclick="openRoomModal()">
+                            <i class="fas fa-plus"></i> Add Room
+                        </button>
+                    </div>
+                    
+                    <!-- Search and Filter -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="roomSearch" placeholder="Search by room name..." 
+                               style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;"
+                               oninput="filterRooms()">
+                        <select id="roomTypeFilter" onchange="filterRooms()"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="">All Types</option>
+                            <option value="LectureHall">Lecture Hall</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Seminar">Seminar Room</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Rooms Table -->
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="roomsTable">
+                            <thead>
+                                <tr>
+                                    <th>Room Name</th>
+                                    <th>Type</th>
+                                    <th>Capacity</th>
+                                    <th>Resources</th>
+                                    <th>Utilization</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading rooms...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-lessons" class="wizard-content">
+                <div class="config-card">
+                    <div class="lessons-header">
+                        <div class="lessons-title">📖 Lessons Management</div>
+                        <div class="lessons-actions">
+                            <button class="btn btn-secondary" onclick="openBulkImportModal()">📥 Bulk Import</button>
+                            <button class="btn btn-primary" onclick="window.location.href='frontend/app.html#manage'">➕
+                                Manage Resources</button>
+                        </div>
+                    </div>
+
+                    <div class="lessons-filters" style="margin: 1.5rem 0;">
+                        <div class="view-toggle">
+                            <button id="view-class-wise" class="toggle-btn active" onclick="setLessonView('class')">View
+                                Class Wise</button>
+                            <button id="view-teacher-wise" class="toggle-btn" onclick="setLessonView('teacher')">View
+                                Teacher Wise</button>
+                        </div>
+                    </div>
+
+                    <div id="lessonsList">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-loadfactor" class="wizard-content">
+                <div class="config-card">
+                    <h4 class="config-title">📊 Load Factor Analysis</h4>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="color: #666; font-size: 0.9em;">Total Teachers</div>
+                            <div id="lf-totalTeachers" style="font-size: 2.5em; font-weight: bold; color: #667eea; margin: 10px 0;">-</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="color: #666; font-size: 0.9em;">Total Classes</div>
+                            <div id="lf-totalClasses" style="font-size: 2.5em; font-weight: bold; color: #667eea; margin: 10px 0;">-</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="color: #666; font-size: 0.9em;">Total Periods</div>
+                            <div id="lf-totalPeriods" style="font-size: 2.5em; font-weight: bold; color: #667eea; margin: 10px 0;">-</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="color: #666; font-size: 0.9em;">Avg Teacher Load</div>
+                            <div id="lf-avgTeacherLoad" style="font-size: 2.5em; font-weight: bold; color: #667eea; margin: 10px 0;">-</div>
+                        </div>
+                    </div>
+                    
+                    <div id="lf-teacherList" style="margin-top: 20px;">Loading teacher data...</div>
+                    
+                    <script>
+                    // INLINE LOAD FACTOR - BYPASSES CACHE
+                    async function loadLoadFactorInline() {
+                        try {
+                            const response = await fetch(`${API_BASE}/analytics/load-factor`);
+                            const data = await response.json();
+                            
+                            document.getElementById('lf-totalTeachers').textContent = data.total_teachers || 0;
+                            document.getElementById('lf-totalClasses').textContent = data.total_classes || 0;
+                            document.getElementById('lf-totalPeriods').textContent = data.total_periods || 0;
+                            document.getElementById('lf-avgTeacherLoad').textContent = (data.avg_teacher_load || 0).toFixed(1);
+                            
+                            const teachers = data.teacher_loads || [];
+                            const html = teachers.map(t => `
+                                <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #667eea;">
+                                    <strong>${t.teacher_name}</strong><br>
+                                    Periods: ${t.periods_assigned} / ${t.max_hours_per_week}<br>
+                                    Load: ${t.load_percentage}%
+                                </div>
+                            `).join('');
+                            
+                            document.getElementById('lf-teacherList').innerHTML = html || 'No data';
+                        } catch (e) {
+                            document.getElementById('lf-teacherList').innerHTML = 'Error loading: ' + e.message;
+                        }
+                    }
+                    
+                    // Auto-load when this section becomes visible
+                    if (document.getElementById('step-loadfactor').classList.contains('active')) {
+                        loadLoadFactorInline();
+                    }
+                    </script>
+                                    <option value="load-asc">Load (Low to High)</option>
+                                    <option value="name">Name (A-Z)</option>
+                                </select>
+                                <label style="font-weight: bold;">Filter:</label>
+                                <select id="lf-teacherFilter" style="padding: 8px 12px; border: 2px solid #667eea; border-radius: 6px; background: white;">
+                                    <option value="all">All Teachers</option>
+                                    <option value="high">High Load (>80%)</option>
+                                    <option value="medium">Medium Load (50-80%)</option>
+                                    <option value="low">Low Load (<50%)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="lf-teacherLoadContainer" style="max-height: 500px; overflow-y: auto;">
+                            <div style="text-align: center; padding: 30px; color: #666;">Loading teacher data...</div>
+                        </div>
+                    </div>
+
+                    <!-- Class Load Section -->
+                    <div>
+                        <h4 class="config-title">🎓 Class Load Factor</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                <label style="font-weight: bold;">Sort by:</label>
+                                <select id="lf-classSort" style="padding: 8px 12px; border: 2px solid #667eea; border-radius: 6px; background: white;">
+                                    <option value="name">Name (A-Z)</option>
+                                    <option value="periods-desc">Periods (High to Low)</option>
+                                    <option value="periods-asc">Periods (Low to High)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="lf-classLoadContainer" style="max-height: 500px; overflow-y: auto;">
+                            <div style="text-align: center; padding: 30px; color: #666;">Loading class data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-review" class="wizard-content">
+                <script>
+                // INLINE TIMETABLE LOADER - BYPASSES CACHE
+                const SUBJECT_COLORS_INLINE = [
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                ];
+                let subjectColorMapInline = {};
+                
+                async function loadTimetableInline() {
+                    try {
+                        console.log('Loading timetable inline...');
+                        const response = await fetch(`${API_BASE}/timetables/latest`);
+                        
+                        if (!response.ok) {
+                            document.getElementById('timetableGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;">No timetable found. Please generate one first.</div>';
+                            return;
+                        }
+                        
+                        const data = await response.json();
+                        console.log('Timetable data:', data);
+                        
+                        if (!data.entries || data.entries.length === 0) {
+                            document.getElementById('timetableGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #f59e0b;">Timetable is empty. Please generate a new schedule.</div>';
+                            return;
+                        }
+                        
+                        // Fetch time slots
+                        const slotsResp = await fetch(`${API_BASE}/operational/time-slots`);
+                        const timeSlots = slotsResp.ok ? await slotsResp.json() : [];
+                        
+                        // Build periods from time slots
+                        const periods = buildPeriodsInline(timeSlots);
+                        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        
+                        // Organize schedule
+                        const schedule = {};
+                        data.entries.forEach(entry => {
+                            if (!entry.time_slot) return;
+                            const day = entry.time_slot.day;
+                            const period = entry.time_slot.period;
+                            if (!schedule[day]) schedule[day] = {};
+                            if (!schedule[day][period]) schedule[day][period] = [];
+                            schedule[day][period].push(entry);
+                        });
+                        
+                        // Assign colors to subjects
+                        const subjects = [...new Set(data.entries.map(e => e.subject?.id).filter(Boolean))];
+                        subjects.forEach((subId, idx) => {
+                            subjectColorMapInline[subId] = SUBJECT_COLORS_INLINE[idx % SUBJECT_COLORS_INLINE.length];
+                        });
+                        
+                        // Build table
+                        let html = '<table class="timetable-table"><thead><tr><th>Time</th>';
+                        days.forEach(day => html += `<th>${day}</th>`);
+                        html += '</tr></thead><tbody>';
+                        
+                        periods.forEach(({period, time, isBreak}) => {
+                            html += '<tr><td class="time-cell">' + time + '</td>';
+                            
+                            if (isBreak) {
+                                html += `<td colspan="${days.length}" class="schedule-cell break">☕ BREAK</td>`;
+                            } else {
+                                days.forEach(day => {
+                                    const slots = schedule[day]?.[period] || [];
+                                    if (slots.length === 0) {
+                                        html += '<td><div class="schedule-cell empty">Free</div></td>';
+                                    } else {
+                                        const slot = slots[0];
+                                        const color = subjectColorMapInline[slot.subject?.id] || SUBJECT_COLORS_INLINE[0];
+                                        html += `<td><div class="schedule-cell has-class" style="background: ${color}">
+                                            <div class="class-info">
+                                                <div class="subject-name">${slot.subject?.name || 'Unknown'}</div>
+                                                <div class="teacher-name">${slot.teacher?.name || 'TBA'}</div>
+                                                <div class="room-name">${slot.room?.name || 'TBA'}</div>
+                                                <div class="class-name">${slot.class_group?.name || 'All'}</div>
+                                            </div>
+                                        </div></td>`;
+                                    }
+                                });
+                            }
+                            html += '</tr>';
+                        });
+                        
+                        html += '</tbody></table>';
+                        document.getElementById('timetableGrid').innerHTML = html;
+                        console.log('Timetable rendered successfully');
+                        
+                    } catch (error) {
+                        console.error('Error loading timetable:', error);
+                        document.getElementById('timetableGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;">Error: ' + error.message + '</div>';
+                    }
+                }
+                
+                function buildPeriodsInline(timeSlots) {
+                    if (!timeSlots || timeSlots.length === 0) {
+                        return [
+                            {period: 1, time: '9:00 - 10:00', isBreak: false},
+                            {period: 2, time: '10:00 - 11:00', isBreak: false},
+                            {period: 3, time: '11:00 - 12:00', isBreak: false},
+                            {period: 4, time: '12:00 - 13:00', isBreak: true},
+                            {period: 5, time: '13:00 - 14:00', isBreak: false},
+                            {period: 6, time: '14:00 - 15:00', isBreak: false},
+                            {period: 7, time: '15:00 - 16:00', isBreak: false},
+                        ];
+                    }
+                    
+                    const mondaySlots = timeSlots.filter(s => s.day === 'Monday').sort((a, b) => {
+                        const ta = a.start_time.split(':').map(Number);
+                        const tb = b.start_time.split(':').map(Number);
+                        return (ta[0] * 60 + ta[1]) - (tb[0] * 60 + tb[1]);
+                    });
+                    
+                    const periods = [];
+                    const seen = new Set();
+                    
+                    mondaySlots.forEach(slot => {
+                        if (slot.is_break) {
+                            periods.push({period: slot.period || 0, time: `${slot.start_time} - ${slot.end_time}`, isBreak: true});
+                        } else if (!seen.has(slot.period)) {
+                            periods.push({period: slot.period, time: `${slot.start_time} - ${slot.end_time}`, isBreak: false});
+                            seen.add(slot.period);
+                        }
+                    });
+                    
+                    return periods;
+                }
+                
+                // Auto-load when review tab is active
+                if (document.getElementById('step-review').classList.contains('active')) {
+                    loadTimetableInline();
+                }
+                </script>
+                
+                <!-- MANUAL LOAD BUTTON -->
+                <div style="background: #667eea; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                    <h2 style="margin: 0 0 15px 0; font-size: 24px;">📅 Timetable Review</h2>
+                    <button onclick="loadTimetableInline()" style="background: white; color: #667eea; border: none; padding: 15px 30px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        🔄 Load Timetable Now
+                    </button>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">Click the button above if the timetable doesn't load automatically</p>
+                </div>
+                
+                <!-- TIMETABLE GRID - MAIN DISPLAY -->
+                <div class="timetable-wrapper" style="margin-bottom: 2rem;">
+                    <div id="timetableGrid" class="timetable-grid" style="min-height: 400px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; padding: 60px; color: #999;">
+                            <i class="fas fa-calendar-alt" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <p style="font-size: 18px;">Click "Load Timetable Now" button above to view the schedule</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Period settings (admin) -->
+                <div class="config-card">
+                    <div class="config-section">
+                        <h4 class="config-title">⚙️ Teaching Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-input-group">
+                                <label>Hours/day:</label>
+                                <input type="number" id="teachingHours" min="1" value="6" />
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay" value="Monday"
+                                        checked> Mon</label>
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay"
+                                        value="Tuesday" checked> Tue</label>
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay"
+                                        value="Wednesday" checked> Wed</label>
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay"
+                                        value="Thursday" checked> Thu</label>
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay" value="Friday"
+                                        checked> Fri</label>
+                                <label style="font-size:12px;"><input type="checkbox" class="scheduleDay" value="Saturday"> Sat</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h4 class="config-title">🥪 Lunch Break</h4>
+                        <div class="config-grid">
+                            <div class="config-input-group">
+                                <label>From:</label>
+                                <input type="time" id="lunchStart" value="12:00" />
+                            </div>
+                            <div class="config-input-group">
+                                <label>To:</label>
+                                <input type="time" id="lunchEnd" value="13:00" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h4 class="config-title">⏲️ Period Settings</h4>
+                        <div class="config-grid">
+                            <div class="config-input-group">
+                                <label>Periods/day:</label>
+                                <input type="number" id="periodCount" min="1" value="7" />
+                            </div>
+                            <div class="config-input-group">
+                                <label>Duration (min):</label>
+                                <input type="number" id="periodDuration" min="10" value="60" />
+                            </div>
+                            <div class="config-input-group">
+                                <label>Start hour:</label>
+                                <input type="number" id="periodStartHour" min="0" max="23" value="9" />
+                            </div>
+                            <button class="btn btn-primary" id="applySettingsBtn">Apply All</button>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots Display -->
+                    <div class="config-section">
+                        <h4 class="config-title">📅 Available Time Slots</h4>
+                        <div id="timeSlotsDisplay" style="padding: 1rem; background: #f8f9fa; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                            <p style="color: #666;">Loading time slots...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timetable Preview section -->
+                <div class="info-card-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">Teaching Hours</div>
+                        <div class="summary-value" id="infoTeachingHours">6 hours/day</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Lunch Break</div>
+                        <div class="summary-value" id="infoLunchBreak">12:00 - 13:00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Schedule</div>
+                        <div class="summary-value" id="infoScheduleDays">Monday - Friday</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Slots</div>
+                        <div class="summary-value" id="infoTotalSlots">0 slots</div>
+                    </div>
+                </div>
+
+                <!-- Class Filter -->
+                <div class="config-card" style="margin-top: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem;">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-filter"></i> Filter by Class:
+                        </label>
+                        <select id="groupFilter" style="padding: 0.5rem 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px; display: none;">
+                            <option value="">All Groups</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Export Buttons -->
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; padding: 20px;">
+                    <button class="btn btn-primary" onclick="exportTimetableToPDF()" style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-file-pdf"></i>
+                        Export to PDF
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportTimetableToCSV()" style="display: flex; align-items: center; gap: 10px; background: #10b981;">
+                        <i class="fas fa-file-csv"></i>
+                        Export to CSV
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.print()" style="display: flex; align-items: center; gap: 10px; background: #6366f1;">
+                        <i class="fas fa-print"></i>
+                        Print Timetable
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bulk Import Modal -->
+            <div id="bulkImportModal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">Bulk Import Lessons</div>
+                        <div class="close-btn" onclick="closeBulkImportModal()">×</div>
+                    </div>
+                    <div class="import-hint">
+                        Paste your lesson data in the following format:<br>
+                        <span class="hint-code">Teacher Name(s), Class Name(s), Subject Name(s), # of periods</span><br>
+                        <small>Use | to separate multiple values (e.g. Joint classes)</small>
+                    </div>
+                    <textarea id="bulkImportText"
+                        style="width:100%;height:300px;margin:1rem 0;padding:1rem;font-family:monospace;"
+                        placeholder="Example:&#10;Dr. Rajesh Kumar, SE-AI-DS-A, CS301, 3&#10;Prof. Priya Sharma | Dr. Amit Patel, SE-AI-DS-A | SE-AI-DS-B, CS302, 4"></textarea>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label>
+                            <input type="checkbox" id="clearExistingLessons"> Clear existing records
+                        </label>
+                    </div>
+
+                    <div style="display:flex;justify-content:flex-end;gap:1rem;">
+                        <button class="btn btn-secondary" onclick="closeBulkImportModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="submitBulkImport()">Import Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="status-message" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script>
+        var API_BASE = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+            ? 'http://localhost:8000/api'
+            : window.location.origin + '/api';
+    </script>
+    <!-- Teacher Management Modals -->
+    <div id="teacherModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h3 id="teacherModalTitle" style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">Add New Teacher</h3>
+            <form id="teacherForm" onsubmit="saveTeacher(event)">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Name *</label>
+                    <input type="text" id="teacherName" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Email *</label>
+                    <input type="email" id="teacherEmail" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Max Hours Per Week</label>
+                    <input type="number" id="teacherHours" value="20" min="1" max="40" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeTeacherModal()" style="flex: 1; padding: 10px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 10px;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteTeacherModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; padding: 30px; border-radius: 15px; max-width: 400px; width: 90%;">
+            <h3 style="color: #dc3545; margin-bottom: 20px; font-size: 1.5em;">⚠️ Confirm Delete</h3>
+            <p style="margin-bottom: 15px; font-size: 16px;">Are you sure you want to delete <strong id="deleteTeacherName"></strong>?</p>
+            <p style="color: #dc3545; margin-bottom: 20px; font-size: 14px;">This action cannot be undone!</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="closeDeleteTeacherModal()" style="flex: 1; padding: 10px;">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDeleteTeacher()" style="flex: 1; padding: 10px;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard_script.js?v=9"></script>
+    <script src="frontend/lessons_script.js?v=5"></script>
+    <script>
+        // Force cache clear
+        const timestamp = new Date().getTime();
+        const script = document.createElement('script');
+        script.src = `timetable_page_script.js?v=${timestamp}`;
+        document.head.appendChild(script);
+    </script>
+    <script src="subjects_management.js?v=2"></script>
+    <script src="classes_management.js?v=2"></script>
+    <script src="rooms_management.js?v=2"></script>
+    <script src="teacher_bulk_import.js?v=10000"></script>
+    <script>
+        // Force reload check
+        console.log('=== TIMETABLE PAGE LOADED ===');
+        console.log('API_BASE:', typeof API_BASE !== 'undefined' ? API_BASE : 'NOT DEFINED');
+        console.log('initWizard:', typeof initWizard);
+        console.log('loadTeachersInPage:', typeof loadTeachersInPage);
+        console.log('generateNewTimetable:', typeof generateNewTimetable);
+        console.log('loadTimetable:', typeof loadTimetable);
+        
+        // Check if buttons exist
+        setTimeout(() => {
+            console.log('generateBtn:', document.getElementById('generateBtn') ? 'EXISTS' : 'MISSING');
+            console.log('loadLatestBtn:', document.getElementById('loadLatestBtn') ? 'EXISTS' : 'MISSING');
+        }, 100);
+    </script>
+
+    <!-- Subject Add/Edit Modal -->
+    <div id="subjectModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="subjectModalTitle">Add Subject</h3>
+                <button class="modal-close" onclick="closeSubjectModal()">&times;</button>
+            </div>
+            <form id="subjectForm" onsubmit="saveSubject(event)">
+                <div class="form-group">
+                    <label>Subject Name *</label>
+                    <input type="text" id="subjectName" required placeholder="e.g., Machine Learning">
+                </div>
+                
+                <div class="form-group">
+                    <label>Subject Code *</label>
+                    <input type="text" id="subjectCode" required placeholder="e.g., ML, CS401">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Credits *</label>
+                        <input type="number" id="subjectCredits" required min="1" max="10" value="3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="subjectType" required onchange="updateRoomType()">
+                            <option value="false">Theory</option>
+                            <option value="true">Lab</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Duration (Periods) *</label>
+                        <select id="subjectDuration" required>
+                            <option value="1">Single (1 period)</option>
+                            <option value="2">Double (2 periods)</option>
+                            <option value="3">Triple (3 periods)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Room Type *</label>
+                        <select id="subjectRoomType" required>
+                            <option value="LectureHall">Lecture Hall</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Seminar">Seminar Room</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Assign Teacher (Optional)</label>
+                    <select id="subjectTeacher">
+                        <option value="">-- No Teacher Assigned --</option>
+                    </select>
+                </div>
+                
+                <input type="hidden" id="subjectId">
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Subject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Add/Edit Modal -->
+    <div id="classModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="classModalTitle">Add Class</h3>
+                <button class="modal-close" onclick="closeClassModal()">&times;</button>
+            </div>
+            <form id="classForm" onsubmit="saveClass(event)">
+                <div class="form-group">
+                    <label>Class Name *</label>
+                    <input type="text" id="className" required placeholder="e.g., SE-AIDS-A, TE-AIDS-B">
+                    <small style="color: #6b7280; font-size: 12px;">Format: Year-Department-Section (e.g., SE-AIDS-A)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Student Count *</label>
+                    <input type="number" id="classStudentCount" required min="1" max="200" value="60">
+                    <small style="color: #6b7280; font-size: 12px;">Number of students in this class</small>
+                </div>
+                
+                <input type="hidden" id="classId">
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeClassModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Class
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Room Add/Edit Modal -->
+    <div id="roomModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="roomModalTitle">Add Room</h3>
+                <button class="modal-close" onclick="closeRoomModal()">&times;</button>
+            </div>
+            <form id="roomForm" onsubmit="saveRoom(event)">
+                <div class="form-group">
+                    <label>Room Name/Number *</label>
+                    <input type="text" id="roomName" required placeholder="e.g., Room 101, Lab A, Auditorium">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Room Type *</label>
+                        <select id="roomType" required>
+                            <option value="LectureHall">Lecture Hall</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Seminar">Seminar Room</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Capacity *</label>
+                        <input type="number" id="roomCapacity" required min="1" max="500" value="60" placeholder="Number of seats">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Resources/Equipment</label>
+                    <input type="text" id="roomResources" placeholder="e.g., Projector, Whiteboard, Computers (comma-separated)">
+                    <small style="color: #6b7280; font-size: 12px;">Separate multiple resources with commas</small>
+                </div>
+                
+                <input type="hidden" id="roomId">
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRoomModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Room
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teacher Bulk Import Modal -->
+    <div id="teacherBulkImportModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>📥 Bulk Import Teachers (CSV)</h3>
+                <button class="modal-close" onclick="closeTeacherBulkImportModal()">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                    <strong>📋 CSV Format:</strong><br>
+                    <code style="background: white; padding: 5px; display: block; margin-top: 10px;">
+                        name,email,max_hours_per_week<br>
+                        Dr. Rajesh Kumar,rajesh.kumar@college.edu,20<br>
+                        Prof. Priya Sharma,priya.sharma@college.edu,18
+                    </code>
+                    <small style="color: #6b7280; margin-top: 10px; display: block;">
+                        • First row must be headers<br>
+                        • Email will be auto-generated if missing<br>
+                        • max_hours_per_week defaults to 18 if not specified
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label><strong>Upload CSV File:</strong></label>
+                    <input type="file" id="teacherCsvFile" accept=".csv,.txt" style="width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="clearExistingTeachers" style="width: auto;">
+                        <span><strong>Clear existing teachers before import</strong></span>
+                    </label>
+                    <small style="color: #dc2626; margin-left: 30px;">⚠️ Warning: This will delete all current teachers!</small>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="closeTeacherBulkImportModal()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="submitTeacherBulkImport()">
+                        <i class="fas fa-upload"></i> Import Teachers
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

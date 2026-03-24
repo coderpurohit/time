@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Teacher Config</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        input { padding: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug Teacher Configuration</h1>
+    
+    <div class="debug">
+        <h3>Configuration Form</h3>
+        <div>
+            <label>Hours/day: <input type="number" id="teachingHours" value="6" /></label>
+            <label>Periods: <input type="number" id="periodCount" value="7" /></label>
+            <label>Duration: <input type="number" id="periodDuration" value="60" /></label>
+            <label>Start Hour: <input type="number" id="periodStartHour" value="9" /></label>
+        </div>
+        <div>
+            <label>Lunch Start: <input type="time" id="lunchStart" value="12:00" /></label>
+            <label>Lunch End: <input type="time" id="lunchEnd" value="13:00" /></label>
+        </div>
+        <div>
+            <label><input type="checkbox" value="Monday" checked> Monday</label>
+            <label><input type="checkbox" value="Tuesday" checked> Tuesday</label>
+            <label><input type="checkbox" value="Wednesday" checked> Wednesday</label>
+            <label><input type="checkbox" value="Thursday" checked> Thursday</label>
+            <label><input type="checkbox" value="Friday" checked> Friday</label>
+        </div>
+        <button onclick="debugApplySettings()">🔧 Debug Apply Settings</button>
+    </div>
+    
+    <div class="debug">
+        <h3>Debug Output</h3>
+        <div id="debugOutput">Click button to start debug...</div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        function debugLog(message) {
+            const output = document.getElementById('debugOutput');
+            output.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            console.log(message);
+        }
+        
+        async function debugApplySettings() {
+            document.getElementById('debugOutput').innerHTML = '<h4>🐛 Starting Debug...</h4>';
+            
+            try {
+                debugLog('Step 1: Getting form values...');
+                
+                const hours = document.getElementById('teachingHours').value;
+                const lunchStart = document.getElementById('lunchStart').value;
+                const lunchEnd = document.getElementById('lunchEnd').value;
+                const periodCount = document.getElementById('periodCount').value;
+                const periodDuration = document.getElementById('periodDuration').value;
+                const periodStartHour = document.getElementById('periodStartHour').value;
+                
+                debugLog(`Form values: hours=${hours}, periods=${periodCount}, duration=${periodDuration}, start=${periodStartHour}`);
+                debugLog(`Lunch: ${lunchStart} - ${lunchEnd}`);
+                
+                debugLog('Step 2: Getting selected days...');
+                const dayCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
+                debugLog(`Found ${dayCheckboxes.length} day checkboxes`);
+                
+                const selectedDays = Array.from(dayCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                
+                debugLog(`Selected days: ${selectedDays.join(', ')}`);
+                
+                if (selectedDays.length === 0) {
+                    debugLog('❌ ERROR: No working days selected');
+                    alert('❌ Please select at least one working day');
+                    return;
+                }
+                
+                debugLog('Step 3: Calculating working minutes...');
+                const workingMinutes = parseInt(periodCount) * parseInt(periodDuration);
+                debugLog(`Working minutes: ${workingMinutes}`);
+                
+                debugLog('Step 4: Preparing config data...');
+                const configData = {
+                    day_start_time: `${String(periodStartHour).padStart(2, '0')}:00`,
+                    day_end_time: null,
+                    working_minutes_per_day: workingMinutes,
+                    number_of_periods: parseInt(periodCount),
+                    period_duration_minutes: parseInt(periodDuration),
+                    breaks: [],
+                    lunch_break_start: lunchStart,
+                    lunch_break_end: lunchEnd,
+                    schedule_days: selectedDays,
+                    institution: "College"
+                };
+                
+                debugLog(`Config data: ${JSON.stringify(configData, null, 2)}`);
+                
+                debugLog('Step 5: Sending POST to schedule-config...');
+                const configResponse = await fetch(`${API_BASE}/operational/schedule-config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configData)
+                });
+                
+                debugLog(`Config response status: ${configResponse.status}`);
+                
+                if (!configResponse.ok) {
+                    const errorText = await configResponse.text();
+                    debugLog(`❌ Config save failed: ${errorText}`);
+                    throw new Error('Failed to save configuration: ' + errorText);
+                }
+                
+                const configResult = await configResponse.json();
+                debugLog(`✅ Config saved! ID: ${configResult.id}`);
+                
+                debugLog('Step 6: Generating time slots...');
+                const timeSlotsResponse = await fetch(`${API_BASE}/operational/time-slots/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                debugLog(`Time slots response status: ${timeSlotsResponse.status}`);
+                
+                if (!timeSlotsResponse.ok) {
+                    const errorText = await timeSlotsResponse.text();
+                    debugLog(`❌ Time slots generation failed: ${errorText}`);
+                    throw new Error('Failed to generate time slots: ' + errorText);
+                }
+                
+                const timeSlotsResult = await timeSlotsResponse.json();
+                debugLog(`✅ Time slots generated! Count: ${timeSlotsResult.count}`);
+                
+                debugLog('🎉 SUCCESS: All steps completed successfully!');
+                
+                alert(`✅ Settings Applied Successfully!\n\nConfiguration:\n- Teaching Hours: ${hours}/day\n- Lunch: ${lunchStart} - ${lunchEnd}\n- Periods: ${periodCount}\n- Duration: ${periodDuration} min\n- Start Hour: ${periodStartHour}:00\n- Days: ${selectedDays.join(', ')}\n\n✨ Time slots generated: ${timeSlotsResult.count}\n\nYou can now generate a new timetable with these settings.`);
+                
+            } catch (error) {
+                debugLog(`❌ JAVASCRIPT ERROR: ${error.message}`);
+                debugLog(`Error stack: ${error.stack}`);
+                console.error('Full error object:', error);
+                alert(`❌ Error: ${error.message}`);
+            }
+        }
+        
+        // Test connection on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            debugLog('Page loaded, testing API connection...');
+            try {
+                const response = await fetch(`${API_BASE}/operational/schedule-config`);
+                if (response.ok) {
+                    debugLog('✅ API connection successful');
+                } else {
+                    debugLog(`❌ API connection failed: ${response.status}`);
+                }
+            } catch (error) {
+                debugLog(`❌ Cannot connect to API: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

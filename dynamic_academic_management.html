@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Academic Resource Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .tabs { display: flex; background: white; border-radius: 12px; padding: 5px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .tab { flex: 1; padding: 15px 20px; text-align: center; cursor: pointer; border-radius: 8px; transition: all 0.3s; font-weight: 600; }
+        .tab:hover { background: #f8f9fa; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .content { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        .table th { background: #f8f9fa; font-weight: 600; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .form-control { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; }
+        .form-control:focus { border-color: #667eea; outline: none; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .load-status { padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+        .status-optimal { background: #d4edda; color: #155724; }
+        .status-underloaded { background: #fff3cd; color: #856404; }
+        .status-overloaded { background: #f8d7da; color: #721c24; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-value { font-size: 2.5em; font-weight: bold; margin: 10px 0; }
+        .conflict-alert { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #dc3545; }
+        .subject-tag { 
+            display: inline-block; 
+            background: #e3f2fd; 
+            color: #1976d2; 
+            padding: 2px 8px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            margin: 2px; 
+            border: 1px solid #bbdefb; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> Dynamic Academic Resource Management</h1>
+            <p>Complete CRUD System with Auto Timetable Generation & Load Factor Engine</p>
+        </div>
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('faculty')">
+                <i class="fas fa-chalkboard-teacher"></i> Faculty Management
+            </div>
+            <div class="tab" onclick="switchTab('subjects')">
+                <i class="fas fa-book"></i> Subject Management
+            </div>
+            <div class="tab" onclick="switchTab('classes')">
+                <i class="fas fa-users"></i> Class Management
+            </div>
+            <div class="tab" onclick="switchTab('labs')">
+                <i class="fas fa-flask"></i> Lab Management
+            </div>
+            <div class="tab" onclick="switchTab('loadfactor')">
+                <i class="fas fa-chart-bar"></i> Load Factor Engine
+            </div>
+            <div class="tab" onclick="switchTab('timetable')">
+                <i class="fas fa-calendar-alt"></i> Auto Timetable
+            </div>
+            <div class="tab" onclick="switchTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- MODULE 1: FACULTY MANAGEMENT -->
+            <div id="faculty" class="section active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-chalkboard-teacher"></i> Faculty Management</h2>
+                    <button class="btn btn-primary" onclick="openFacultyModal()">
+                        <i class="fas fa-plus"></i> Add Faculty
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>Total Faculty</div>
+                        <div class="stat-value" id="totalFaculty">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Optimal Load</div>
+                        <div class="stat-value" id="optimalFaculty">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Overloaded</div>
+                        <div class="stat-value" id="overloadedFaculty">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Underloaded</div>
+                        <div class="stat-value" id="underloadedFaculty">0</div>
+                    </div>
+                </div>
+
+                <table class="table" id="facultyTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Max Weekly Load</th>
+                            <th>Current Load</th>
+                            <th>Load %</th>
+                            <th>Status</th>
+                            <th>Lab Eligible</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facultyTableBody">
+                        <tr><td colspan="8" style="text-align: center; padding: 40px;">Loading faculty data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- MODULE 2: SUBJECT MANAGEMENT -->
+            <div id="subjects" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-book"></i> Subject Management</h2>
+                    <button class="btn btn-primary" onclick="openSubjectModal()">
+                        <i class="fas fa-plus"></i> Add Subject
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>Total Subjects</div>
+                        <div class="stat-value" id="totalSubjects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Theory Subjects</div>
+                        <div class="stat-value" id="theorySubjects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Lab Subjects</div>
+                        <div class="stat-value" id="labSubjects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Project Subjects</div>
+                        <div class="stat-value" id="projectSubjects">0</div>
+                    </div>
+                </div>
+
+                <table class="table" id="subjectTable">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Code</th>
+                            <th>Type</th>
+                            <th>Theory Hours</th>
+                            <th>Practical Hours</th>
+                            <th>Semester</th>
+                            <th>Class</th>
+                            <th>Faculty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectTableBody">
+                        <tr><td colspan="9" style="text-align: center; padding: 40px;">Loading subjects...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MODULE 3: CLASS MANAGEMENT -->
+            <div id="classes" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-users"></i> Class & Division Management</h2>
+                    <button class="btn btn-primary" onclick="openClassModal()">
+                        <i class="fas fa-plus"></i> Add Class
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>Total Classes</div>
+                        <div class="stat-value" id="totalClasses">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>SE Classes</div>
+                        <div class="stat-value" id="seClasses">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>TE Classes</div>
+                        <div class="stat-value" id="teClasses">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>BE Classes</div>
+                        <div class="stat-value" id="beClasses">0</div>
+                    </div>
+                </div>
+
+                <table class="table" id="classTable">
+                    <thead>
+                        <tr>
+                            <th>Class Name</th>
+                            <th>Year</th>
+                            <th>Division</th>
+                            <th>Student Count</th>
+                            <th>Working Days</th>
+                            <th>Time Slots/Day</th>
+                            <th>Coverage %</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classTableBody">
+                        <tr><td colspan="8" style="text-align: center; padding: 40px;">Loading classes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MODULE 4: LAB MANAGEMENT -->
+            <div id="labs" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-flask"></i> Lab Management</h2>
+                    <button class="btn btn-primary" onclick="openLabModal()">
+                        <i class="fas fa-plus"></i> Add Lab
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>Total Labs</div>
+                        <div class="stat-value" id="totalLabs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Software Labs</div>
+                        <div class="stat-value" id="softwareLabs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>AI/DS Labs</div>
+                        <div class="stat-value" id="aiLabs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Lab Utilization</div>
+                        <div class="stat-value" id="labUtilization">0%</div>
+                    </div>
+                </div>
+
+                <table class="table" id="labTable">
+                    <thead>
+                        <tr>
+                            <th>Lab Name</th>
+                            <th>Type</th>
+                            <th>Capacity</th>
+                            <th>Lab Incharge</th>
+                            <th>Available Slots</th>
+                            <th>Utilization</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="labTableBody">
+                        <tr><td colspan="8" style="text-align: center; padding: 40px;">Loading labs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- MODULE 5: LOAD FACTOR ENGINE -->
+            <div id="loadfactor" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-chart-bar"></i> Load Factor Engine</h2>
+                    <div>
+                        <button class="btn btn-info" onclick="openBulkImportModal()">
+                            <i class="fas fa-file-upload"></i> Bulk Import
+                        </button>
+                        <button class="btn btn-success" onclick="refreshAssignments()">
+                            <i class="fas fa-sync"></i> Refresh Assignments
+                        </button>
+                        <button class="btn btn-warning" onclick="optimizeLoadDistribution()">
+                            <i class="fas fa-magic"></i> Optimize Load
+                        </button>
+                        <button class="btn btn-success" onclick="validateLoadFactor()">
+                            <i class="fas fa-check-circle"></i> Validate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Real-time Load Summary -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                    <h3>Real-time Load Distribution</h3>
+                    <div id="loadFactorSummary">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div>Average Load</div>
+                                <div class="stat-value" id="avgLoad">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div>Total Hours</div>
+                                <div class="stat-value" id="totalHours">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div>Conflicts</div>
+                                <div class="stat-value" id="totalConflicts">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div>Efficiency</div>
+                                <div class="stat-value" id="efficiency">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faculty Load Details -->
+                <div style="margin-bottom: 25px;">
+                    <h3>Faculty Load Breakdown</h3>
+                    <table class="table" id="loadFactorTable">
+                        <thead>
+                            <tr>
+                                <th>Faculty</th>
+                                <th>Theory</th>
+                                <th>Practical</th>
+                                <th>Lab</th>
+                                <th>Project</th>
+                                <th>Total</th>
+                                <th>Load %</th>
+                                <th>Status</th>
+                                <th>Assigned Subjects</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loadFactorTableBody">
+                            <tr><td colspan="10" style="text-align: center; padding: 40px;">Loading load factor data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Conflict Alerts -->
+                <div id="conflictAlerts"></div>
+            </div>
+
+            <!-- MODULE 6: AUTO TIMETABLE GENERATION -->
+            <div id="timetable" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2><i class="fas fa-calendar-alt"></i> Auto Timetable Generation</h2>
+                    <div>
+                        <button class="btn btn-primary" onclick="generateTimetable()">
+                            <i class="fas fa-cogs"></i> Generate Timetable
+                        </button>
+                        <button class="btn btn-success" onclick="exportTimetable()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Generation Status -->
+                <div id="generationStatus" style="margin-bottom: 25px;"></div>
+                
+                <!-- Timetable Configuration -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                    <h3>Timetable Configuration</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label>Working Days</label>
+                            <select class="form-control" id="workingDays">
+                                <option value="5">Monday to Friday</option>
+                                <option value="6">Monday to Saturday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Periods per Day</label>
+                            <input type="number" class="form-control" id="periodsPerDay" value="8" min="6" max="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Break Duration</label>
+                            <input type="number" class="form-control" id="breakDuration" value="60" min="30" max="90">
+                        </div>
+                        <div class="form-group">
+                            <label>Lab Session Duration</label>
+                            <select class="form-control" id="labDuration">
+                                <option value="2">2 Hours</option>
+                                <option value="3">3 Hours</option>
+                                <option value="4">4 Hours</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Timetable Display -->
+                <div id="timetableDisplay">
+                    <div style="text-align: center; padding: 60px; color: #666;">
+                        <i class="fas fa-calendar-alt" style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;"></i>
+                        <h3>No Timetable Generated</h3>
+                        <p>Click "Generate Timetable" to create a new schedule</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 7: DASHBOARD -->
+            <div id="dashboard" class="section">
+                <h2><i class="fas fa-tachometer-alt"></i> System Dashboard</h2>
+                
+                <!-- Key Metrics -->
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <div>System Efficiency</div>
+                        <div class="stat-value" id="systemEfficiency">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Resource Utilization</div>
+                        <div class="stat-value" id="resourceUtilization">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Active Conflicts</div>
+                        <div class="stat-value" id="activeConflicts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Completion Rate</div>
+                        <div class="stat-value" id="completionRate">0%</div>
+                    </div>
+                </div>
+
+                <!-- Summary Tables -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h3>Faculty Load Summary</h3>
+                        <div id="facultyLoadSummary"></div>
+                    </div>
+                    <div>
+                        <h3>Class Coverage Summary</h3>
+                        <div id="classCoverageSummary"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODALS -->
+    
+    <!-- Faculty Modal -->
+    <div id="facultyModal" class="modal">
+        <div class="modal-content">
+            <h3 id="facultyModalTitle">Add New Faculty</h3>
+            <form id="facultyForm" onsubmit="event.preventDefault(); saveFaculty();">
+                <div class="form-group">
+                    <label>Faculty Name *</label>
+                    <input type="text" name="facultyName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="facultyEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Maximum Weekly Load (Hours) *</label>
+                    <input type="number" name="facultyMaxHours" class="form-control" value="18" min="10" max="25" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="facultyLabEligible"> Lab Eligible
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Subjects Can Teach (Multi-select)</label>
+                    <select name="facultySubjects" class="form-control" multiple>
+                        <option value="theory">Theory Subjects</option>
+                        <option value="practical">Practical Subjects</option>
+                        <option value="lab">Lab Subjects</option>
+                        <option value="project">Project Guidance</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeFacultyModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Faculty</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subject Modal -->
+    <div id="subjectModal" class="modal">
+        <div class="modal-content">
+            <h3 id="subjectModalTitle">Add New Subject</h3>
+            <form id="subjectForm" onsubmit="event.preventDefault(); saveSubject();">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Subject Name *</label>
+                        <input type="text" name="subjectName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject Code *</label>
+                        <input type="text" name="subjectCode" class="form-control" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select name="subjectType" class="form-control" required>
+                            <option value="theory">Theory</option>
+                            <option value="practical">Practical</option>
+                            <option value="lab">Lab</option>
+                            <option value="project">Project</option>
+                            <option value="mooc">MOOC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <select name="subjectSemester" class="form-control">
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Class</label>
+                        <select name="subjectClass" class="form-control">
+                            <option value="SE">SE (Second Year)</option>
+                            <option value="TE">TE (Third Year)</option>
+                            <option value="BE">BE (Final Year)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Theory Hours/Week</label>
+                        <input type="number" name="theoryHours" class="form-control" value="0" min="0" max="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Practical Hours/Week</label>
+                        <input type="number" name="practicalHours" class="form-control" value="0" min="0" max="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Credits</label>
+                        <input type="number" name="subjectCredits" class="form-control" value="3" min="1" max="6">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Assigned Faculty</label>
+                    <select name="subjectFaculty" class="form-control">
+                        <option value="">Select Faculty</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="batchRequired"> Batch Division Required
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div id="classModal" class="modal">
+        <div class="modal-content">
+            <h3 id="classModalTitle">Add New Class</h3>
+            <form id="classForm" onsubmit="event.preventDefault(); saveClass();">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Year *</label>
+                        <select name="classYear" class="form-control" required>
+                            <option value="SE">SE (Second Year)</option>
+                            <option value="TE">TE (Third Year)</option>
+                            <option value="BE">BE (Final Year)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Division *</label>
+                        <select name="classDivision" class="form-control" required>
+                            <option value="A">Division A</option>
+                            <option value="B">Division B</option>
+                            <option value="C">Division C</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Student Count</label>
+                        <input type="number" name="studentCount" class="form-control" value="60" min="30" max="80">
+                    </div>
+                    <div class="form-group">
+                        <label>Working Days</label>
+                        <select name="workingDays" class="form-control">
+                            <option value="5">5 Days (Mon-Fri)</option>
+                            <option value="6">6 Days (Mon-Sat)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Time Slots per Day</label>
+                        <input type="number" name="timeSlotsPerDay" class="form-control" value="8" min="6" max="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Classroom Number</label>
+                    <input type="text" name="classroomNumber" class="form-control" placeholder="e.g., LH-101">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeClassModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lab Modal -->
+    <div id="labModal" class="modal">
+        <div class="modal-content">
+            <h3 id="labModalTitle">Add New Lab</h3>
+            <form id="labForm" onsubmit="event.preventDefault(); saveLab();">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Lab Name *</label>
+                        <input type="text" name="labName" class="form-control" required placeholder="e.g., SL1 Lab">
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Type</label>
+                        <select name="labType" class="form-control">
+                            <option value="software">Software Lab</option>
+                            <option value="ai">AI/DS Lab</option>
+                            <option value="programming">Programming Lab</option>
+                            <option value="general">General Lab</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Capacity</label>
+                        <input type="number" name="labCapacity" class="form-control" value="30" min="20" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Incharge</label>
+                        <select name="labIncharge" class="form-control">
+                            <option value="">Select Faculty</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Available Time Slots</label>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+                        <label><input type="checkbox" name="availableSlots" value="monday"> Monday</label>
+                        <label><input type="checkbox" name="availableSlots" value="tuesday"> Tuesday</label>
+                        <label><input type="checkbox" name="availableSlots" value="wednesday"> Wednesday</label>
+                        <label><input type="checkbox" name="availableSlots" value="thursday"> Thursday</label>
+                        <label><input type="checkbox" name="availableSlots" value="friday"> Friday</label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeLabModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Lab</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Import Modal -->
+    <div id="bulkImportModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <h3><i class="fas fa-file-upload"></i> Bulk Import Faculty-Subject Assignments</h3>
+            
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4>📋 Import Format</h4>
+                <p>Paste your data in the following format (one assignment per line):</p>
+                <code style="background: white; padding: 10px; display: block; border-radius: 4px; margin: 10px 0;">
+                    Faculty Name, Subject Name, Subject Code, Theory Hours, Practical Hours, Lab Hours, Class(es)
+                </code>
+                <p><strong>Example:</strong></p>
+                <code style="background: white; padding: 10px; display: block; border-radius: 4px;">
+                    Dr. V. G. Kottawar, Critical Thinking and Problem Solving, CTPS, 3, 0, 1, SE-B<br>
+                    Dr. Manish Sharma, Fundamentals of AI, FAI, 2, 0, 4, SE-B|SE-C<br>
+                    Dr. Suvarna S. Gothane, Data Base Management System, DBMS, 3, 0, 2, TE-A
+                </code>
+                <small><strong>Note:</strong> Use | to separate multiple classes</small>
+            </div>
+
+            <form id="bulkImportForm" onsubmit="event.preventDefault(); processBulkImport();">
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label>Faculty-Subject Assignment Data</label>
+                        <button type="button" class="btn btn-sm btn-info" onclick="loadSampleBulkData()">
+                            <i class="fas fa-file-alt"></i> Load Sample Data
+                        </button>
+                    </div>
+                    <textarea 
+                        id="bulkImportData" 
+                        class="form-control" 
+                        rows="12" 
+                        placeholder="Dr. V. G. Kottawar, Critical Thinking and Problem Solving, CTPS, 3, 0, 1, SE-B&#10;Dr. Manish Sharma, Fundamentals of AI, FAI, 2, 0, 4, SE-B|SE-C&#10;Dr. Suvarna S. Gothane, Data Base Management System, DBMS, 3, 0, 2, TE-A"
+                        style="font-family: monospace; font-size: 13px;"
+                    ></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="clearExistingAssignments"> Clear existing assignments first
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="createMissingSubjects" checked> Create missing subjects automatically
+                        </label>
+                    </div>
+                </div>
+
+                <div id="importPreview" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4>📊 Import Preview</h4>
+                    <div id="previewContent"></div>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeBulkImportModal()">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="previewBulkImport()">Preview Import</button>
+                    <button type="button" class="btn btn-success" onclick="directBulkImport()">Direct Import</button>
+                    <button type="submit" class="btn btn-primary">Import All</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="academic_resource_management.js?v=1773464366"></script>
+    <script>
+        // Force load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            setTimeout(() => {
+                loadTabData('faculty');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

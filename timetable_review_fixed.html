@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Timetable Review - FIXED</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        .header h1 { margin-bottom: 15px; }
+        .btn { background: white; color: #667eea; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin: 5px; }
+        .btn:hover { background: #f0f0f0; }
+        .config-card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .config-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #333; }
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .config-input-group { display: flex; align-items: center; gap: 10px; }
+        .config-input-group label { font-weight: 500; }
+        .config-input-group input { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+        .timetable-table { width: 100%; border-collapse: collapse; background: white; }
+        .timetable-table th { background: #667eea; color: white; padding: 15px; text-align: center; }
+        .timetable-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .time-cell { background: #f8f9fa; font-weight: bold; }
+        .schedule-cell { padding: 12px; border-radius: 6px; min-height: 80px; }
+        .empty { background: #f8f9fa; color: #999; }
+        .has-class { color: white; }
+        .break { background: #fff3cd; color: #856404; font-weight: bold; }
+        .subject-name { font-weight: bold; margin-bottom: 5px; }
+        .teacher-name, .room-name, .class-name { font-size: 13px; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Timetable Review - FIXED VERSION</h1>
+        <button class="btn" onclick="generateNewSchedule()">⚡ Generate New Schedule</button>
+        <button class="btn" onclick="loadTimetable()">🔄 Load Timetable</button>
+        <button class="btn" onclick="window.location.href='timetable_page.html'">← Back to Main Page</button>
+    </div>
+    
+    <!-- Generation Status -->
+    <div id="generationStatus" style="display: none; background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="spinner" style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <div>
+                <h3 style="margin: 0 0 5px 0; color: #667eea;">Generating Timetable...</h3>
+                <p id="statusText" style="margin: 0; color: #666;">Please wait while we create your schedule</p>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- TEACHING CONFIGURATION -->
+    <div class="config-card">
+        <h4 class="config-title">⚙️ Teaching Configuration</h4>
+        <div class="config-grid">
+            <div class="config-input-group">
+                <label>Hours/day:</label>
+                <input type="number" id="teachingHours" min="1" value="6" />
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <label><input type="checkbox" value="Monday" checked> Mon</label>
+                <label><input type="checkbox" value="Tuesday" checked> Tue</label>
+                <label><input type="checkbox" value="Wednesday" checked> Wed</label>
+                <label><input type="checkbox" value="Thursday" checked> Thu</label>
+                <label><input type="checkbox" value="Friday" checked> Fri</label>
+                <label><input type="checkbox" value="Saturday"> Sat</label>
+            </div>
+        </div>
+        
+        <h4 class="config-title">🥪 Lunch Break</h4>
+        <div class="config-grid">
+            <div class="config-input-group">
+                <label>From:</label>
+                <input type="time" id="lunchStart" value="12:00" />
+            </div>
+            <div class="config-input-group">
+                <label>To:</label>
+                <input type="time" id="lunchEnd" value="13:00" />
+            </div>
+        </div>
+        
+        <h4 class="config-title">⏲️ Period Settings</h4>
+        <div class="config-grid">
+            <div class="config-input-group">
+                <label>Periods/day:</label>
+                <input type="number" id="periodCount" min="1" value="7" />
+            </div>
+            <div class="config-input-group">
+                <label>Duration (min):</label>
+                <input type="number" id="periodDuration" min="10" value="60" />
+            </div>
+            <div class="config-input-group">
+                <label>Start hour:</label>
+                <input type="number" id="periodStartHour" min="0" max="23" value="9" />
+            </div>
+            <div class="config-input-group">
+                <button class="btn" onclick="applySettings()" style="background: #667eea; color: white;">Apply All Settings</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TIMETABLE DISPLAY -->
+    <div class="config-card">
+        <h4 class="config-title">📅 Weekly Timetable</h4>
+        <div id="timetableContainer" style="overflow-x: auto;">
+            <p style="text-align: center; padding: 40px; color: #999;">Click "Load Timetable" button above to display the schedule</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        const COLORS = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        ];
+        
+        async function loadTimetable() {
+            const container = document.getElementById('timetableContainer');
+            container.innerHTML = '<p style="text-align: center; padding: 40px;">Loading...</p>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/timetables/latest`);
+                if (!resp.ok) {
+                    container.innerHTML = '<p style="text-align: center; color: red;">No timetable found. Generate one first.</p>';
+                    return;
+                }
+                
+                const data = await resp.json();
+                if (!data.entries || data.entries.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: orange;">Timetable is empty.</p>';
+                    return;
+                }
+                
+                const slotsResp = await fetch(`${API_BASE}/operational/time-slots`);
+                const timeSlots = slotsResp.ok ? await slotsResp.json() : [];
+                
+                const periods = buildPeriods(timeSlots);
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                
+                const schedule = {};
+                data.entries.forEach(entry => {
+                    if (!entry.time_slot) return;
+                    const day = entry.time_slot.day;
+                    const period = entry.time_slot.period;
+                    if (!schedule[day]) schedule[day] = {};
+                    if (!schedule[day][period]) schedule[day][period] = [];
+                    schedule[day][period].push(entry);
+                });
+                
+                const subjectColors = {};
+                const subjects = [...new Set(data.entries.map(e => e.subject?.id).filter(Boolean))];
+                subjects.forEach((id, idx) => {
+                    subjectColors[id] = COLORS[idx % COLORS.length];
+                });
+                
+                let html = '<table class="timetable-table"><thead><tr><th>Time</th>';
+                days.forEach(day => html += `<th>${day}</th>`);
+                html += '</tr></thead><tbody>';
+                
+                periods.forEach(({period, time, isBreak}) => {
+                    html += `<tr><td class="time-cell">${time}</td>`;
+                    
+                    if (isBreak) {
+                        html += `<td colspan="${days.length}" class="break">☕ BREAK</td>`;
+                    } else {
+                        days.forEach(day => {
+                            const slots = schedule[day]?.[period] || [];
+                            if (slots.length === 0) {
+                                html += '<td><div class="schedule-cell empty">Free</div></td>';
+                            } else {
+                                const slot = slots[0];
+                                const color = subjectColors[slot.subject?.id] || COLORS[0];
+                                html += `<td><div class="schedule-cell has-class" style="background: ${color}">
+                                    <div class="subject-name">${slot.subject?.name || 'Unknown'}</div>
+                                    <div class="teacher-name">👨‍🏫 ${slot.teacher?.name || 'TBA'}</div>
+                                    <div class="room-name">🏫 ${slot.room?.name || 'TBA'}</div>
+                                    <div class="class-name">👥 ${slot.class_group?.name || 'All'}</div>
+                                </div></td>`;
+                            }
+                        });
+                    }
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                container.innerHTML = html;
+                
+            } catch (error) {
+                container.innerHTML = `<p style="text-align: center; color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function buildPeriods(timeSlots) {
+            if (!timeSlots || timeSlots.length === 0) {
+                return [
+                    {period: 1, time: '9:00 - 10:00', isBreak: false},
+                    {period: 2, time: '10:00 - 11:00', isBreak: false},
+                    {period: 3, time: '11:00 - 12:00', isBreak: false},
+                    {period: 4, time: '12:00 - 13:00', isBreak: true},
+                    {period: 5, time: '13:00 - 14:00', isBreak: false},
+                    {period: 6, time: '14:00 - 15:00', isBreak: false},
+                    {period: 7, time: '15:00 - 16:00', isBreak: false},
+                ];
+            }
+            
+            const mondaySlots = timeSlots.filter(s => s.day === 'Monday').sort((a, b) => {
+                const ta = a.start_time.split(':').map(Number);
+                const tb = b.start_time.split(':').map(Number);
+                return (ta[0] * 60 + ta[1]) - (tb[0] * 60 + tb[1]);
+            });
+            
+            const periods = [];
+            const seen = new Set();
+            
+            mondaySlots.forEach(slot => {
+                if (slot.is_break) {
+                    periods.push({period: slot.period || 0, time: `${slot.start_time} - ${slot.end_time}`, isBreak: true});
+                } else if (!seen.has(slot.period)) {
+                    periods.push({period: slot.period, time: `${slot.start_time} - ${slot.end_time}`, isBreak: false});
+                    seen.add(slot.period);
+                }
+            });
+            
+            return periods;
+        }
+        
+        // Auto-load on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTimetable();
+        });
+        
+        async function applySettings() {
+            const hours = document.getElementById('teachingHours').value;
+            const lunchStart = document.getElementById('lunchStart').value;
+            const lunchEnd = document.getElementById('lunchEnd').value;
+            const periodCount = document.getElementById('periodCount').value;
+            const periodDuration = document.getElementById('periodDuration').value;
+            const periodStartHour = document.getElementById('periodStartHour').value;
+            
+            // Get selected days
+            const dayCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
+            const selectedDays = Array.from(dayCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            if (selectedDays.length === 0) {
+                alert('❌ Please select at least one working day');
+                return;
+            }
+            
+            try {
+                // Calculate working minutes per day
+                const workingMinutes = parseInt(periodCount) * parseInt(periodDuration);
+                
+                // Save configuration to backend
+                const configResponse = await fetch(`${API_BASE}/operational/schedule-config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        day_start_time: `${String(periodStartHour).padStart(2, '0')}:00`,
+                        day_end_time: null,
+                        working_minutes_per_day: workingMinutes,
+                        number_of_periods: parseInt(periodCount),
+                        period_duration_minutes: parseInt(periodDuration),
+                        breaks: [],
+                        lunch_break_start: lunchStart,
+                        lunch_break_end: lunchEnd,
+                        schedule_days: selectedDays,
+                        institution: "College"
+                    })
+                });
+                
+                if (!configResponse.ok) {
+                    throw new Error('Failed to save configuration');
+                }
+                
+                const configData = await configResponse.json();
+                console.log('Configuration saved:', configData);
+                
+                // Check if timetable was auto-regenerated
+                if (configData.timetable_regenerated) {
+                    alert(`✅ Settings Applied Successfully!\n\nConfiguration:\n- Teaching Hours: ${hours}/day\n- Lunch: ${lunchStart} - ${lunchEnd}\n- Periods: ${periodCount}\n- Duration: ${periodDuration} min\n- Start Hour: ${periodStartHour}:00\n- Days: ${selectedDays.join(', ')}\n\n✨ Timetable automatically regenerated!\n\nClick "Load Timetable" to view the new schedule.`);
+                    // Auto-load the new timetable
+                    setTimeout(() => loadTimetable(), 1000);
+                } else {
+                    alert(`✅ Settings Saved!\n\nConfiguration:\n- Teaching Hours: ${hours}/day\n- Lunch: ${lunchStart} - ${lunchEnd}\n- Periods: ${periodCount}\n- Duration: ${periodDuration} min\n- Start Hour: ${periodStartHour}:00\n- Days: ${selectedDays.join(', ')}\n\nThese settings will be used for timetable generation.`);
+                }
+                
+            } catch (error) {
+                console.error('Error applying settings:', error);
+                alert(`❌ Error saving settings: ${error.message}`);
+            }
+        }
+        
+        async function generateNewSchedule() {
+            const statusDiv = document.getElementById('generationStatus');
+            const statusText = document.getElementById('statusText');
+            const container = document.getElementById('timetableContainer');
+            
+            // Show loading
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Generating timetable...';
+            container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Please wait...</p>';
+            
+            try {
+                // Call the generate API with longer timeout
+                const response = await fetch(`${API_BASE}/solvers/generate?method=csp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Generation failed');
+                }
+                
+                const result = await response.json();
+                console.log('Generation result:', result);
+                
+                // Check if timetable has entries
+                if (result.id) {
+                    // Fetch the generated timetable to verify it has entries
+                    const checkResponse = await fetch(`${API_BASE}/timetables/${result.id}`);
+                    if (checkResponse.ok) {
+                        const checkData = await checkResponse.json();
+                        const entryCount = checkData.entries ? checkData.entries.length : 0;
+                        
+                        if (entryCount === 0) {
+                            throw new Error('Generated timetable is empty. The solver could not find a valid solution. This may be due to conflicting constraints or insufficient time slots.');
+                        }
+                        
+                        // Success - has entries
+                        statusText.textContent = `Success! Generated ${entryCount} entries. Loading...`;
+                        setTimeout(() => {
+                            statusDiv.style.display = 'none';
+                            loadTimetable();
+                        }, 1000);
+                    } else {
+                        throw new Error('Could not verify generated timetable');
+                    }
+                } else {
+                    throw new Error('No timetable ID returned from generation');
+                }
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                statusDiv.style.display = 'none';
+                container.innerHTML = `<div style="background: #fee2e2; color: #991b1b; padding: 20px; border-radius: 8px; text-align: center;">
+                    <h3 style="margin: 0 0 10px 0;">❌ Generation Failed</h3>
+                    <p style="margin: 0 0 15px 0;">${error.message}</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;">The backend solver is having issues. Please contact support or try again later.</p>
+                    <button class="btn" onclick="loadTimetable()" style="margin-top: 15px; background: #667eea; color: white;">Load Existing Timetable</button>
+                </div>`;
+            }
+        }
+    </script>
+</body>
+</html>

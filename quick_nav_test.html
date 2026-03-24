@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Navigation Test</title>
+</head>
+<body>
+    <h1>Quick Navigation</h1>
+    <p>Click these links to go directly to each section:</p>
+    <ul>
+        <li><a href="http://localhost:8000/timetable_page.html#subjects">Subjects/Courses</a></li>
+        <li><a href="http://localhost:8000/timetable_page.html#teachers">Teachers</a></li>
+        <li><a href="http://localhost:8000/timetable_page.html#classes">Classes</a></li>
+        <li><a href="http://localhost:8000/timetable_page.html#rooms">Rooms</a></li>
+        <li><a href="http://localhost:8000/timetable_page.html#lessons">Lessons</a></li>
+        <li><a href="http://localhost:8000/timetable_page.html#review">Review</a></li>
+    </ul>
+    
+    <script>
+        // Add click handler to manually switch tabs
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                setTimeout(() => {
+                    const tab = document.querySelector(`[data-step="${hash}"]`);
+                    if (tab) tab.click();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
