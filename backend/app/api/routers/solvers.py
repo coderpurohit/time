@@ -29,10 +29,14 @@ def generate_timetable(background_tasks: BackgroundTasks, method: str = "csp", n
             detail=f"Insufficient data. Teachers: {teachers_count}, Subjects: {subjects_count}, Rooms: {rooms_count}, Groups: {groups_count}"
         )
     
-    if lessons_count == 0:
+    override_exists = db.query(models.WorkloadReportOverride).filter(
+        models.WorkloadReportOverride.version_id == None
+    ).first() is not None
+
+    if lessons_count == 0 and not override_exists:
         raise HTTPException(
             status_code=400,
-            detail="No lessons found. Please create lessons first using the complete setup."
+            detail="No lessons found and no DOCX workload override exists. Please create lessons or upload the load distribution first."
         )
 
     print(f"LOAD-AWARE GENERATOR API: Starting generation with {lessons_count} lessons")

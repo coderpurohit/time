@@ -40,6 +40,175 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+
+        /* Sidebar toggle icon rotation */
+        #toggleIcon {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed #toggleIcon {
+            transform: rotate(180deg);
+        }
+
+        /* Theme Toggle Button */
+        .btn-theme {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .btn-theme:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .main-content {
+            background: #0f172a;
+        }
+
+        body.dark-mode .timetable-header {
+            background: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .page-title {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .page-subtitle {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .wizard-tabs {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .wizard-tab {
+            background: #334155;
+            color: #cbd5e1;
+            border-color: #475569;
+        }
+
+        body.dark-mode .wizard-tab:hover {
+            background: #475569;
+        }
+
+        body.dark-mode .wizard-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        body.dark-mode .section-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .section-title {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .data-table {
+            background: #1e293b;
+        }
+
+        body.dark-mode .data-table th {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .data-table td {
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .data-table tr:hover {
+            background: #334155;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .form-input:focus,
+        body.dark-mode .form-select:focus {
+            border-color: #667eea;
+        }
+
+        body.dark-mode .modal-content {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .modal-header {
+            border-color: #334155;
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: #475569;
+        }
+
+        body.dark-mode .search-box input {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .config-panel {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .config-title {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .time-slot {
+            background: #334155;
+            border-color: #475569;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .time-slot:hover {
+            background: #475569;
+        }
+
+        body.dark-mode .stats-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .stats-label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .stats-value {
+            color: #f1f5f9;
+        }
     </style>
 </head>
 
@@ -52,15 +221,15 @@
                     <i class="fas fa-calendar-alt"></i>
                     <span class="logo-text">timetabler</span>
                 </div>
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <i class="fas fa-chevron-left"></i>
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                    <i class="fas fa-chevron-left" id="toggleIcon"></i>
                 </button>
             </div>
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">MAIN</div>
-                    <a href="dashboard.html" class="nav-item">
+                    <a href="index.html" class="nav-item">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
@@ -74,21 +243,7 @@
                     </a>
                 </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">MANAGEMENT</div>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-users"></i>
-                        <span>Users</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-cube"></i>
-                        <span>Master Data</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                </div>
+
             </nav>
         </aside>
 
@@ -97,10 +252,6 @@
             <!-- Header -->
             <header class="timetable-header">
                 <div class="header-left">
-                    <button class="sidebar-menu-toggle" id="desktopMenuToggle" title="Toggle Sidebar"
-                        onclick="document.querySelector('.sidebar').classList.toggle('collapsed'); document.querySelector('.main-content').classList.toggle('sidebar-collapsed');">
-                        <i class="fas fa-bars"></i>
-                    </button>
                     <h1 class="page-title">
                         <i class="fas fa-graduation-cap"></i>
                         College Timetable
@@ -108,6 +259,9 @@
                     <p class="page-subtitle">Weekly Schedule - Academic Year 2026</p>
                 </div>
                 <div class="header-actions">
+                    <button class="btn btn-theme" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
                     <button class="btn btn-primary" id="generateBtn"
                         onclick="if(typeof generateNewTimetable === 'function') generateNewTimetable(); else alert('Generate function not loaded yet');">
                         Generate New Schedule
@@ -145,7 +299,7 @@
                     <i class="fas fa-chart-bar"></i> Load Factor
                     <i class="fas fa-check-circle check-icon"></i>
                 </div>
-                <div class="wizard-tab" onclick="window.open('master_timetable.html', '_blank')"
+                <div class="wizard-tab" onclick="openMasterTimetable()"
                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer;">
                     <i class="fas fa-calendar-check"></i> View Timetable
                 </div>
@@ -190,8 +344,13 @@
                     if (step === 'teachers' && typeof loadTeachersInPage === 'function') loadTeachersInPage();
                     if (step === 'lessons' && typeof loadLessons === 'function') loadLessons();
                     if (step === 'loadfactor') {
+                        console.log('Load factor tab clicked, checking for function...');
+                        console.log('loadLoadFactorInline exists:', typeof loadLoadFactorInline);
                         if (typeof loadLoadFactorInline === 'function') {
+                            console.log('Calling loadLoadFactorInline...');
                             loadLoadFactorInline();
+                        } else {
+                            console.error('loadLoadFactorInline function not found!');
                         }
                     }
                 }
@@ -254,9 +413,6 @@
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 class="config-title">👨‍🏫 Teacher Management</h3>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-secondary" onclick="openTeacherBulkImportModal()">
-                                <i class="fas fa-file-upload"></i> Bulk Import CSV
-                            </button>
                             <button class="btn btn-primary"
                                 onclick="openTeacherModal(); console.log('Add button clicked');">
                                 <i class="fas fa-plus"></i> Add New Teacher
@@ -401,6 +557,16 @@
             <div id="step-loadfactor" class="wizard-content">
                 <div class="config-card">
                     <h4 class="config-title">📊 Enhanced Load Factor & Distribution Analysis</h4>
+
+                    <!-- UPLOAD BUTTON - ALWAYS VISIBLE -->
+                    <div style="background: #0284c7; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                        <div style="color: white; font-weight: 600; margin-bottom: 10px; font-size: 16px;">📥 Import Faculty Workload from DOCX</div>
+                        <button onclick="document.getElementById('comprehensiveDocxInput').click()" style="background: white; color: #0284c7; border: none; border-radius: 6px; padding: 12px 30px; cursor: pointer; font-weight: 700; font-size: 16px;">
+                            <i class="fas fa-file-word"></i> Upload .docx File
+                        </button>
+                        <input type="file" id="comprehensiveDocxInput" accept=".docx" style="display: none;" onchange="uploadComprehensiveDocx(event)">
+                        <div style="color: white; font-size: 12px; margin-top: 10px; opacity: 0.9;">Imports workload data as-is from your DOCX file</div>
+                    </div>
 
                     <!-- CLASS FILTER SECTION -->
                     <div
@@ -933,44 +1099,83 @@
     <script src="dashboard_script.js?v=9"></script>
     <script src="frontend/lessons_script.js?v=5"></script>
     <script>
+        // Toggle sidebar function
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const icon = document.getElementById('toggleIcon');
+            
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
+                if (mainContent) mainContent.classList.toggle('sidebar-collapsed');
+                
+                // Rotate icon based on state
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        }
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const isDark = body.classList.toggle('dark-mode');
+            
+            // Update icon
+            if (isDark) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (themeIcon) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+            }
+        }
+
         // Force sidebar expanded on load
         window.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.querySelector('.sidebar');
             const mainContent = document.querySelector('.main-content');
             if (sidebar) sidebar.classList.remove('collapsed');
             if (mainContent) mainContent.classList.remove('sidebar-collapsed');
-
-            // FORCE CLEAR ALL CACHED CONTENT
-            console.log('=== FORCING CACHE CLEAR ===');
-
-            // Hide load factor section completely
-            const loadFactorSection = document.getElementById('step-loadfactor');
-            if (loadFactorSection) {
-                loadFactorSection.style.display = 'none';
-                loadFactorSection.style.visibility = 'hidden';
-                loadFactorSection.style.position = 'absolute';
-                loadFactorSection.style.left = '-99999px';
-            }
-
-            // Ensure review section is clean
-            const reviewSection = document.getElementById('step-review');
-            if (reviewSection) {
-                reviewSection.style.padding = '0';
-                reviewSection.style.margin = '0';
-
-                // Remove any "Loading..." text that might be cached
-                const allText = reviewSection.innerText;
-                if (allText.includes('Loading teacher') || allText.includes('Loading class')) {
-                    console.log('WARNING: Found cached loading text, forcing reload...');
-                    location.reload(true);
-                }
-            }
+            
+            // Load saved theme
+            loadTheme();
         });
 
         // Force cache clear
         const timestamp = new Date().getTime();
         const script = document.createElement('script');
         script.src = `timetable_page_script.js?v=${timestamp}`;
+        script.onload = function() {
+            console.log('timetable_page_script.js loaded, initializing...');
+            // Call load functions after script loads
+            setTimeout(() => {
+                if (typeof loadSubjects === 'function') loadSubjects();
+                if (typeof loadClasses === 'function') loadClasses();
+                if (typeof loadRooms === 'function') loadRooms();
+                if (typeof loadTeachersInPage === 'function') loadTeachersInPage();
+                if (typeof loadLessons === 'function') loadLessons();
+            }, 100);
+        };
         document.head.appendChild(script);
     </script>
     <script src="subjects_management.js?v=2"></script>
@@ -1151,29 +1356,28 @@
     <div id="teacherBulkImportModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
-                <h3>📥 Bulk Import Teachers (CSV)</h3>
+                <h3>📥 Bulk Import Teachers</h3>
                 <button class="modal-close" onclick="closeTeacherBulkImportModal()">&times;</button>
             </div>
             <div style="padding: 20px;">
                 <div
                     style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-                    <strong>📋 CSV Format:</strong><br>
+                    <strong>📋 Supported Formats:</strong><br>
                     <code style="background: white; padding: 5px; display: block; margin-top: 10px;">
-                        name,email,max_hours_per_week<br>
-                        Dr. Rajesh Kumar,rajesh.kumar@college.edu,20<br>
-                        Prof. Priya Sharma,priya.sharma@college.edu,18
+                        CSV: name,email,max_hours_per_week<br>
+                        DOCX: Faculty workload table
                     </code>
                     <small style="color: #6b7280; margin-top: 10px; display: block;">
-                        • First row must be headers<br>
+                        • Upload CSV or DOCX file<br>
                         • Email will be auto-generated if missing<br>
                         • max_hours_per_week defaults to 18 if not specified
                     </small>
                 </div>
 
                 <div class="form-group">
-                    <label><strong>Upload CSV File:</strong></label>
-                    <input type="file" id="teacherCsvFile" accept=".csv,.txt"
-                        style="width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 8px;">
+                    <label><strong>Upload File (CSV or DOCX):</strong></label>
+                    <input type="file" id="teacherBulkFile" accept=".csv,.txt,.docx"
+                        style="width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 8px; cursor: pointer;">
                 </div>
 
                 <div class="form-group">

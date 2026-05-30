@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -161,6 +161,91 @@
             color: white; padding: 12px 18px; border-radius: 8px;
             font-size: 16px; font-weight: 700; margin-bottom: 10px;
         }
+        .division-config-panel {
+            background: #f8faff;
+            border: 1.5px solid #dbe4ff;
+            border-radius: 10px;
+            padding: 14px 14px 12px;
+            margin: 0 0 12px;
+        }
+        .division-config-panel.compact {
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .division-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .division-config-header h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-state {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+        .config-state.saved {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .config-state.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .division-config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .config-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .config-input label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.35px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+        .config-input input {
+            padding: 8px 10px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 13px;
+            color: #1f2937;
+            background: white;
+        }
+        .config-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102,126,234,0.12);
+        }
+        .division-config-actions {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .config-hint {
+            font-size: 12px;
+            color: #475569;
+        }
+        .config-hint.error { color: #b91c1c; }
 
         /* ── Loading / error states ── */
         .loading-box {
@@ -188,7 +273,7 @@
         /* ── Print ── */
         @media print {
             .page-header, .tabs-bar, .header-actions, .filter-bar, .class-chips,
-            .btn, .card-header .btn { display: none !important; }
+            .btn, .card-header .btn, .division-config-panel { display: none !important; }
             .content { padding: 0; }
             table.tt { font-size: 10px; }
         }
@@ -198,6 +283,177 @@
             .content { padding: 14px; }
             .tabs-bar { padding: 0 10px; }
             .tab-btn { padding: 12px 14px; font-size: 13px; }
+        }
+
+        /* ── Theme Toggle Button ── */
+        .btn-theme {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            padding: 0;
+        }
+
+        .btn-theme:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* ── Dark Mode Styles ── */
+        body.dark-mode {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .content {
+            background: #0f172a;
+        }
+
+        body.dark-mode .card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .card-header {
+            border-color: #334155;
+        }
+
+        body.dark-mode .card-header h3 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .tabs-bar {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .tab-btn {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .tab-btn:hover {
+            color: #e2e8f0;
+            background: #334155;
+        }
+
+        body.dark-mode .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        body.dark-mode table.tt {
+            background: #1e293b;
+        }
+
+        body.dark-mode table.tt th {
+            background: #334155;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode table.tt td {
+            border-color: #334155;
+            background: #1e293b;
+        }
+
+        body.dark-mode .cell-content {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .filter-bar {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .filter-bar label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode select {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .class-chip {
+            background: #334155;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .class-chip.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        body.dark-mode .stats-grid {
+            background: #1e293b;
+        }
+
+        body.dark-mode .stat-card {
+            background: #334155;
+        }
+
+        body.dark-mode .stat-label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .stat-value {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .division-config-panel {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .division-config-panel h4 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .config-input label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .config-input input,
+        body.dark-mode .config-input select {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .btn-white {
+            background: #334155;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .btn-outline:hover {
+            background: #334155;
+        }
+
+        body.dark-mode .btn-theme {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        body.dark-mode .btn-theme:hover {
+            background: rgba(255,255,255,0.2);
         }
     </style>
 </head>
@@ -210,6 +466,9 @@
         <p>Master &amp; Division-wise Timetable — Academic Year 2026</p>
     </div>
     <div class="header-actions">
+        <button class="btn btn-theme" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
         <button class="btn btn-white" onclick="refreshAll()">
             <i class="fas fa-sync-alt"></i> Refresh
         </button>
@@ -244,7 +503,7 @@
         <!-- Card -->
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-th" style="color:#667eea"></i> Master Timetable — All Classes</h3>
+                <h3><i class="fas fa-th" style="color:#667eea"></i> Master Timetable — All Sub-Batches (A1-A4, B1-B4, C1-C4)</h3>
                 <div style="display:flex;gap:8px;">
                     <button class="btn btn-white" style="border:1.5px solid #e5e7eb;color:#374151;"
                         onclick="generateNewSchedule()">
@@ -259,7 +518,7 @@
             <div class="card-body">
                 <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
                     <i class="fas fa-info-circle" style="color:#667eea"></i>
-                    All classes are shown together. Each cell lists every section scheduled at that time.
+                    Showing sub-batches (15 students each): <strong>A1-A4, B1-B4, C1-C4</strong>. Each cell lists every batch scheduled at that time.
                 </p>
                 <div class="tt-wrap" id="masterGrid">
                     <div class="loading-box">
@@ -284,6 +543,27 @@
                 onclick="document.getElementById('divisionSelect').value=''; onDivisionChange()">
                 <i class="fas fa-times"></i> Clear
             </button>
+        </div>
+
+        <!-- Batch filter -->
+        <div class="filter-bar" style="background:#f0fdf4;border-color:#bbf7d0;">
+            <label><i class="fas fa-users" style="color:#10b981"></i> Filter by Batch:</label>
+            <select id="batchSelect" onchange="onBatchChange()">
+                <option value="">All Batches</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="A3">A3</option>
+                <option value="A4">A4</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="B3">B3</option>
+                <option value="B4">B4</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+                <option value="C3">C3</option>
+                <option value="C4">C4</option>
+            </select>
+            <span style="font-size:12px;color:#6b7280;margin-left:10px;">Each batch has ~15 students</span>
         </div>
 
         <!-- Quick-select chips -->
@@ -312,12 +592,22 @@ let timetableData  = null;   // raw API response
 let timeSlots      = [];     // all time-slot objects
 let classGroups    = [];     // all class groups from API
 let currentDivision = '';    // '' = all
+let currentBatch    = '';    // '' = all batches (A1, A2, B1, etc.)
+let divisionConfigs = {};    // division-keyed timing config
 
 // ── Colour palette for class groups ──
+// Consistent division colors: TE-A=Pink, TE-B=Blue, TE-C=Green, etc.
 const PALETTES = [
-    '#667eea','#f5576c','#00c9a7','#f59e0b','#7c3aed',
-    '#0ea5e9','#ec4899','#10b981','#f97316','#6366f1',
-    '#14b8a6','#db2777','#059669','#d97706','#7c3aed'
+    '#ec4899',  // Pink (TE-A)
+    '#3b82f6',  // Blue (TE-B)
+    '#10b981',  // Green (TE-C)
+    '#f59e0b',  // Amber (TE-D)
+    '#8b5cf6',  // Purple (TE-E)
+    '#ef4444',  // Red (TE-F)
+    '#0ea5e9',  // Light Blue
+    '#f97316',  // Orange
+    '#6366f1',  // Indigo
+    '#14b8a6',  // Teal
 ];
 let groupColorMap = {};
 
@@ -344,11 +634,14 @@ async function loadData() {
 
         timeSlots   = slotsResp.ok   ? await slotsResp.json()   : [];
         classGroups = groupsResp.ok  ? await groupsResp.json()  : [];
+        await loadDivisionConfigs();
+        classGroups.forEach(g => getDivisionConfig(g.name));
 
-        // Assign colors to each class group
-        classGroups.forEach((g, i) => {
-            groupColorMap[g.id]   = PALETTES[i % PALETTES.length];
-            groupColorMap[g.name] = PALETTES[i % PALETTES.length];
+        // Assign consistent colors to each class group by division name
+        classGroups.forEach((g) => {
+            const color = getDivisionColor(g.name);
+            groupColorMap[g.id]   = color;
+            groupColorMap[g.name] = color;
         });
 
         if (!ttResp.ok) {
@@ -396,14 +689,15 @@ function renderMasterStats(data) {
     const teachers = new Set(entries.map(e => e.teacher?.id).filter(Boolean)).size;
     const classes  = new Set(entries.map(e => e.class_group?.id).filter(Boolean)).size;
     const subjects = new Set(entries.map(e => e.subject?.id).filter(Boolean)).size;
+    const batches  = new Set(entries.map(e => e.batch_label).filter(Boolean)).size;
     const periods  = entries.length;
 
     container.innerHTML = `
         <div class="stat-box" style="background:linear-gradient(135deg,#667eea,#764ba2)">
-            <div class="val">${periods}</div><div class="lbl">Total Periods</div>
+            <div class="val">${periods}</div><div class="lbl">Total Sessions</div>
         </div>
         <div class="stat-box" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
-            <div class="val">${classes}</div><div class="lbl">Divisions</div>
+            <div class="val">${batches}</div><div class="lbl">Sub-Batches</div>
         </div>
         <div class="stat-box" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
             <div class="val">${subjects}</div><div class="lbl">Subjects</div>
@@ -425,11 +719,10 @@ function renderMasterGrid(entries) {
     let html = '<table class="tt"><thead><tr><th>Time / Day</th>';
     days.forEach(d => html += `<th>${d}</th>`);
     html += '</tr></thead><tbody>';
-
-    periods.forEach(({ period, time, isBreak }) => {
+    periods.forEach(({ period, time, isBreak, label }) => {
         html += `<tr><td class="time-col">${time}</td>`;
         if (isBreak) {
-            html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+            html += `<td class="break-cell" colspan="${days.length}">${label || '☕ BREAK'}</td>`;
         } else {
             days.forEach(day => {
                 const slots = sched[day]?.[period] || [];
@@ -490,6 +783,12 @@ function onDivisionChange() {
     renderDivisionView(cls);
 }
 
+function onBatchChange() {
+    const batch = document.getElementById('batchSelect').value;
+    currentBatch = batch;
+    renderDivisionView(currentDivision);
+}
+
 function renderDivisionView(cls) {
     if (!timetableData) {
         showLoading('divisionContent');
@@ -503,9 +802,234 @@ function renderDivisionView(cls) {
     }
 }
 
+function normalizeTimeValue(value, fallback = '08:15') {
+    if (!value || typeof value !== 'string') return fallback;
+    const parts = value.trim().split(':');
+    if (parts.length < 2) return fallback;
+    const hh = Number(parts[0]);
+    const mm = Number(parts[1]);
+    if (!Number.isFinite(hh) || !Number.isFinite(mm) || hh < 0 || hh > 23 || mm < 0 || mm > 59) {
+        return fallback;
+    }
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+function normalizeBreaks(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+        .map((b, i) => ({
+            name: (b?.name || `Break ${i + 1}`).trim(),
+            start_time: normalizeTimeValue(b?.start_time, ''),
+            end_time: normalizeTimeValue(b?.end_time, ''),
+        }))
+        .filter(b => b.start_time && b.end_time && timeToMins(b.end_time) > timeToMins(b.start_time));
+}
+
+function getDefaultDivisionConfig() {
+    const classSlots = (timeSlots || [])
+        .filter(s => !s.is_break && s.start_time && s.end_time)
+        .sort((a, b) => timeToMins(a.start_time) - timeToMins(b.start_time));
+
+    const breakSlots = (timeSlots || [])
+        .filter(s => s.is_break && s.start_time && s.end_time)
+        .sort((a, b) => timeToMins(a.start_time) - timeToMins(b.start_time));
+
+    const start_time = classSlots.length ? normalizeTimeValue(classSlots[0].start_time, '08:15') : '08:15';
+    const maxEnd = classSlots.length
+        ? Math.max(...classSlots.map(s => timeToMins(s.end_time)).filter(Number.isFinite))
+        : NaN;
+    const end_time = Number.isFinite(maxEnd) ? minsToTime(maxEnd) : '17:00';
+
+    return {
+        start_time,
+        end_time,
+        lunch_start: breakSlots[0] ? normalizeTimeValue(breakSlots[0].start_time, '12:00') : '12:00',
+        lunch_end: breakSlots[0] ? normalizeTimeValue(breakSlots[0].end_time, '13:00') : '13:00',
+        breaks: breakSlots.slice(1).map((b, i) => ({
+            name: b.name || `Break ${i + 1}`,
+            start_time: normalizeTimeValue(b.start_time, '10:00'),
+            end_time: normalizeTimeValue(b.end_time, '10:15'),
+        })),
+        lecture_duration: 60,
+        lab_duration: 120,
+        is_configured: false,
+    };
+}
+
+function getDivisionConfig(division) {
+    const key = String(division || '').toUpperCase();
+    if (!key) return getDefaultDivisionConfig();
+    if (!divisionConfigs[key]) {
+        divisionConfigs[key] = getDefaultDivisionConfig();
+    }
+    return divisionConfigs[key];
+}
+
+async function loadDivisionConfigs() {
+    try {
+        const res = await fetch(`${API}/schedule-config/divisions`);
+        if (!res.ok) return;
+        const data = await res.json();
+        (data.divisions || []).forEach(div => {
+            const key = String(div.division || '').toUpperCase();
+            if (!key) return;
+            const fallback = getDefaultDivisionConfig();
+            divisionConfigs[key] = {
+                start_time: normalizeTimeValue(div.start_time, fallback.start_time),
+                end_time: normalizeTimeValue(div.end_time, fallback.end_time),
+                lunch_start: normalizeTimeValue(div.lunch_start, fallback.lunch_start),
+                lunch_end: normalizeTimeValue(div.lunch_end, fallback.lunch_end),
+                breaks: normalizeBreaks(div.breaks || []),
+                lecture_duration: div.lecture_duration || fallback.lecture_duration,
+                lab_duration: div.lab_duration || fallback.lab_duration,
+                is_configured: !!div.is_configured,
+            };
+        });
+    } catch (err) {
+        console.warn('Could not load division schedule configs:', err);
+    }
+}
+
+function renderDivisionConfigPanel(cls, compact = false) {
+    const key = String(cls || '').toUpperCase();
+    const cfg = getDivisionConfig(key);
+    const status = cfg.is_configured ? 'saved' : 'pending';
+    const statusText = cfg.is_configured ? 'Saved' : 'Unsaved';
+
+    return `
+        <div class="division-config-panel ${compact ? 'compact' : ''}">
+            <div class="division-config-header">
+                <h4><i class="fas fa-sliders-h" style="color:#667eea"></i> Timetable Configuration</h4>
+                <span class="config-state ${status}">${statusText}</span>
+            </div>
+            <div class="division-config-grid">
+                <div class="config-input">
+                    <label>Class Start</label>
+                    <input type="time" value="${cfg.start_time}" onchange="updateDivisionConfig('${key}', 'start_time', this.value)">
+                </div>
+                <div class="config-input">
+                    <label>Class End</label>
+                    <input type="time" value="${cfg.end_time}" onchange="updateDivisionConfig('${key}', 'end_time', this.value)">
+                </div>
+                <div class="config-input">
+                    <label>Lunch Start</label>
+                    <input type="time" value="${cfg.lunch_start}" onchange="updateDivisionConfig('${key}', 'lunch_start', this.value)">
+                </div>
+                <div class="config-input">
+                    <label>Lunch End</label>
+                    <input type="time" value="${cfg.lunch_end}" onchange="updateDivisionConfig('${key}', 'lunch_end', this.value)">
+                </div>
+                <div class="config-input">
+                    <label>Lecture Duration (mins)</label>
+                    <input type="number" min="30" max="120" step="5" value="${cfg.lecture_duration || 60}" onchange="updateDivisionConfig('${key}', 'lecture_duration', this.value)">
+                </div>
+                <div class="config-input">
+                    <label>Lab Duration (mins)</label>
+                    <input type="number" min="60" max="180" step="5" value="${cfg.lab_duration || 120}" onchange="updateDivisionConfig('${key}', 'lab_duration', this.value)">
+                </div>
+            </div>
+            <div class="division-config-actions">
+                <span class="config-hint" id="cfg-hint-${key}">${cfg.is_configured ? 'Saved on server' : 'Unsaved changes'}</span>
+                <button class="btn btn-white" style="border:1.5px solid #d1d5db;color:#374151;padding:8px 14px;"
+                    onclick="saveDivisionConfig('${key}', this)">
+                    <i class="fas fa-save"></i> Save Timings
+                </button>
+            </div>
+        </div>`;
+}
+
+function setConfigHint(key, msg, isError = false) {
+    const hint = document.getElementById(`cfg-hint-${key}`);
+    if (!hint) return;
+    hint.textContent = msg;
+    hint.classList.toggle('error', isError);
+}
+
+function updateDivisionConfig(key, field, value) {
+    const cfg = getDivisionConfig(key);
+    cfg[field] = normalizeTimeValue(value, cfg[field]);
+    cfg.is_configured = false;
+    setConfigHint(key, 'Unsaved changes', false);
+    renderDivisionView(currentDivision);
+}
+
+async function saveDivisionConfig(key, btn) {
+    const cfg = getDivisionConfig(key);
+    const start = timeToMins(cfg.start_time);
+    const end = timeToMins(cfg.end_time);
+    const lunchStart = timeToMins(cfg.lunch_start);
+    const lunchEnd = timeToMins(cfg.lunch_end);
+
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        setConfigHint(key, 'End time must be after start time.', true);
+        return;
+    }
+    if (Number.isFinite(lunchStart) && Number.isFinite(lunchEnd)) {
+        if (lunchEnd <= lunchStart) {
+            setConfigHint(key, 'Lunch end must be after lunch start.', true);
+            return;
+        }
+        if (lunchStart < start || lunchEnd > end) {
+            setConfigHint(key, 'Lunch must be within class timings.', true);
+            return;
+        }
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    }
+
+    try {
+        const payload = {
+            division: key,
+            start_time: cfg.start_time,
+            end_time: cfg.end_time,
+            lunch_start: cfg.lunch_start,
+            lunch_end: cfg.lunch_end,
+            breaks: cfg.breaks || [],
+            lecture_duration: cfg.lecture_duration || 60,
+            lab_duration: cfg.lab_duration || 120,
+        };
+
+        const res = await fetch(`${API}/schedule-config/division/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+            let msg = 'Failed to save configuration';
+            try {
+                const err = await res.json();
+                msg = err.detail || msg;
+            } catch {
+                const text = await res.text();
+                if (text) msg = text;
+            }
+            throw new Error(msg);
+        }
+
+        cfg.is_configured = true;
+        setConfigHint(key, 'Saved on server ✓', false);
+        renderDivisionView(currentDivision);
+    } catch (err) {
+        setConfigHint(key, err.message, true);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Timings';
+        }
+    }
+}
+
 function renderSingleDivision(cls) {
     const container = document.getElementById('divisionContent');
-    const entries   = (timetableData?.entries || []).filter(e => e.class_group?.name === cls);
+    let entries = (timetableData?.entries || []).filter(e => e.class_group?.name === cls);
+
+    // Apply batch filter if selected
+    if (currentBatch) {
+        entries = entries.filter(e => e.batch_label === currentBatch);
+    }
 
     if (entries.length === 0) {
         container.innerHTML = `
@@ -517,7 +1041,8 @@ function renderSingleDivision(cls) {
         return;
     }
 
-    const periods = buildPeriods(timeSlots);
+    const divisionConfig = getDivisionConfig(cls);
+    const periods = buildPeriods(timeSlots, divisionConfig, entries);
     const days    = getActiveDays(entries, timeSlots);
     const sched   = buildScheduleMap(entries);
 
@@ -526,14 +1051,19 @@ function renderSingleDivision(cls) {
     const uniqueTeachers = [...new Set(entries.map(e => e.teacher?.name).filter(Boolean))];
     const color = groupColorMap[cls] || '#667eea';
 
+    // Get unique batches for this division
+    const uniqueBatches = [...new Set(entries.map(e => e.batch_label).filter(Boolean))];
+    const batchDisplay = currentBatch ? ` — Batch ${currentBatch}` : ` — ${uniqueBatches.length} Batches`;
+
     let html = `
+        ${renderDivisionConfigPanel(cls)}
         <div class="division-summary" style="background:linear-gradient(135deg,${color},${adjustColor(color)})">
-            <h3><i class="fas fa-graduation-cap"></i> ${cls} — Weekly Schedule</h3>
+            <h3><i class="fas fa-graduation-cap"></i> ${cls}${batchDisplay}</h3>
             <div class="sum-grid">
-                <div class="sum-item"><div class="num">${entries.length}</div><div class="lbl">Total Periods</div></div>
+                <div class="sum-item"><div class="num">${entries.length}</div><div class="lbl">Total Sessions</div></div>
+                <div class="sum-item"><div class="num">${uniqueBatches.length}</div><div class="lbl">Sub-Batches</div></div>
                 <div class="sum-item"><div class="num">${uniqueSubjects.length}</div><div class="lbl">Subjects</div></div>
                 <div class="sum-item"><div class="num">${uniqueTeachers.length}</div><div class="lbl">Teachers</div></div>
-                <div class="sum-item"><div class="num">${days.length}</div><div class="lbl">Working Days</div></div>
             </div>
         </div>`;
 
@@ -541,11 +1071,10 @@ function renderSingleDivision(cls) {
     html += '<table class="tt"><thead><tr><th>Time / Day</th>';
     days.forEach(d => html += `<th>${d}</th>`);
     html += '</tr></thead><tbody>';
-
-    periods.forEach(({ period, time, isBreak }) => {
+    periods.forEach(({ period, time, isBreak, label }) => {
         html += `<tr><td class="time-col">${time}</td>`;
         if (isBreak) {
-            html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+            html += `<td class="break-cell" colspan="${days.length}">${label || '☕ BREAK'}</td>`;
         } else {
             days.forEach(day => {
                 const slots = sched[day]?.[period] || [];
@@ -571,33 +1100,43 @@ function renderAllDivisions() {
         return;
     }
 
-    // Get unique division names from timetable entries
+    // Filter entries by batch if selected
+    let allEntries = timetableData.entries;
+    if (currentBatch) {
+        allEntries = allEntries.filter(e => e.batch_label === currentBatch);
+    }
+
+    // Get unique division names from filtered entries
     const divNames = [...new Set(
-        timetableData.entries.map(e => e.class_group?.name).filter(Boolean)
+        allEntries.map(e => e.class_group?.name).filter(Boolean)
     )].sort();
 
     if (divNames.length === 0) {
-        showError('divisionContent', 'No division data found in timetable.');
+        showError('divisionContent', currentBatch ? `No data found for batch ${currentBatch}.` : 'No division data found in timetable.');
         return;
     }
 
     let html = '<div class="all-div-wrapper">';
 
     divNames.forEach(cls => {
-        const entries = timetableData.entries.filter(e => e.class_group?.name === cls);
-        const periods = buildPeriods(timeSlots);
+        const entries = allEntries.filter(e => e.class_group?.name === cls);
+        const batches = [...new Set(entries.map(e => e.batch_label).filter(Boolean))];
+        const divisionConfig = getDivisionConfig(cls);
+        const periods = buildPeriods(timeSlots, divisionConfig, entries);
         const days    = getActiveDays(entries, timeSlots);
         const sched   = buildScheduleMap(entries);
         const color   = groupColorMap[cls] || '#667eea';
 
+        const batchText = currentBatch ? `Batch ${currentBatch}` : `${batches.length} batches`;
         html += `
             <div>
                 <div class="div-section-header" style="background:linear-gradient(90deg,${color},${adjustColor(color)})">
                     <i class="fas fa-graduation-cap"></i> ${cls}
                     <span style="font-size:13px;font-weight:400;margin-left:12px;opacity:0.9;">
-                        ${entries.length} periods
+                        ${entries.length} sessions • ${batchText}
                     </span>
                 </div>
+                ${renderDivisionConfigPanel(cls, true)}
                 <div class="tt-wrap">
                     <table class="tt">
                         <thead><tr><th>Time / Day</th>`;
@@ -605,10 +1144,10 @@ function renderAllDivisions() {
         days.forEach(d => html += `<th>${d}</th>`);
         html += '</tr></thead><tbody>';
 
-        periods.forEach(({ period, time, isBreak }) => {
+        periods.forEach(({ period, time, isBreak, label }) => {
             html += `<tr><td class="time-col">${time}</td>`;
             if (isBreak) {
-                html += `<td class="break-cell" colspan="${days.length}">☕ BREAK</td>`;
+                html += `<td class="break-cell" colspan="${days.length}">${label || '☕ BREAK'}</td>`;
             } else {
                 days.forEach(day => {
                     const slots = sched[day]?.[period] || [];
@@ -634,16 +1173,24 @@ function renderAllDivisions() {
 // ══════════════════════════════════════════
 
 /** Build a period list from time-slot data, with fallback defaults */
-function buildPeriods(slots) {
+function buildPeriods(slots, config = null, entries = []) {
+    if (config) {
+        const configured = buildPeriodsFromConfig(config, slots, entries);
+        if (configured.length) return configured;
+    }
+    return buildPeriodsFromSlots(slots);
+}
+
+function buildPeriodsFromSlots(slots) {
     if (!slots || slots.length === 0) {
         return [
-            { period: 1, time: '09:00 – 10:00', isBreak: false },
-            { period: 2, time: '10:00 – 11:00', isBreak: false },
-            { period: 3, time: '11:00 – 12:00', isBreak: false },
-            { period: 4, time: '12:00 – 13:00', isBreak: true  },
-            { period: 5, time: '13:00 – 14:00', isBreak: false },
-            { period: 6, time: '14:00 – 15:00', isBreak: false },
-            { period: 7, time: '15:00 – 16:00', isBreak: false },
+            { period: 1, time: '09:00 – 10:00', isBreak: false, label: '' },
+            { period: 2, time: '10:00 – 11:00', isBreak: false, label: '' },
+            { period: 3, time: '11:00 – 12:00', isBreak: false, label: '' },
+            { period: 4, time: '12:00 – 13:00', isBreak: true, label: '☕ BREAK' },
+            { period: 5, time: '13:00 – 14:00', isBreak: false, label: '' },
+            { period: 6, time: '14:00 – 15:00', isBreak: false, label: '' },
+            { period: 7, time: '15:00 – 16:00', isBreak: false, label: '' },
         ];
     }
 
@@ -654,14 +1201,146 @@ function buildPeriods(slots) {
     const seen   = new Set();
     sorted.forEach(s => {
         if (s.is_break) {
-            result.push({ period: s.period || 0, time: `${s.start_time} – ${s.end_time}`, isBreak: true });
+            result.push({
+                period: s.period || 0,
+                time: `${normalizeTimeValue(s.start_time, '12:00')} – ${normalizeTimeValue(s.end_time, '13:00')}`,
+                isBreak: true,
+                label: '☕ BREAK'
+            });
         } else if (!seen.has(s.period)) {
-            result.push({ period: s.period, time: `${s.start_time} – ${s.end_time}`, isBreak: false });
+            result.push({
+                period: s.period,
+                time: `${normalizeTimeValue(s.start_time, '08:15')} – ${normalizeTimeValue(s.end_time, '09:15')}`,
+                isBreak: false,
+                label: ''
+            });
             seen.add(s.period);
         }
     });
+    return result.length ? result : buildPeriodsFromSlots([]);
+}
 
-    return result.length ? result : buildPeriods([]);
+function getOrderedPeriodIds(slots, entries = []) {
+    const fromSlots = (slots || [])
+        .filter(s => !s.is_break && Number.isFinite(Number(s.period)) && s.start_time)
+        .sort((a, b) => timeToMins(a.start_time) - timeToMins(b.start_time))
+        .map(s => Number(s.period));
+
+    const uniqueFromSlots = [...new Set(fromSlots)];
+    if (uniqueFromSlots.length) return uniqueFromSlots;
+
+    const fromEntries = [...new Set(
+        (entries || [])
+            .map(e => Number(e.time_slot?.period))
+            .filter(p => Number.isFinite(p) && p > 0)
+    )].sort((a, b) => a - b);
+
+    if (fromEntries.length) return fromEntries;
+    return [1, 2, 3, 4, 5, 6, 7];
+}
+
+function buildPeriodsFromConfig(config, slots, entries = []) {
+    const orderedPeriods = getOrderedPeriodIds(slots, entries);
+    if (!orderedPeriods.length) return [];
+
+    const start = timeToMins(config.start_time);
+    const end = timeToMins(config.end_time);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return [];
+
+    const lunchStart = timeToMins(config.lunch_start);
+    const lunchEnd = timeToMins(config.lunch_end);
+    const hasLunch = Number.isFinite(lunchStart)
+        && Number.isFinite(lunchEnd)
+        && lunchEnd > lunchStart
+        && lunchStart >= start
+        && lunchEnd <= end;
+
+    // Use configured lecture duration (default 60 mins)
+    const lectureDuration = config.lecture_duration || 60;
+    const labDuration = config.lab_duration || 120;
+
+    const rows = [];
+    let cursor = start;
+    let lunchInserted = false;
+
+    for (let i = 0; i < orderedPeriods.length; i++) {
+        // Check if we need to insert lunch break
+        if (!lunchInserted && hasLunch && cursor >= lunchStart) {
+            rows.push({
+                period: 0,
+                time: `${minsToTime(lunchStart)} – ${minsToTime(lunchEnd)}`,
+                isBreak: true,
+                label: '🍱 LUNCH BREAK'
+            });
+            cursor = lunchEnd;
+            lunchInserted = true;
+        }
+
+        // Check if this period would overlap with lunch
+        let pStart = cursor;
+        let pEnd = pStart + lectureDuration;
+
+        if (!lunchInserted && hasLunch && pEnd > lunchStart) {
+            // Insert lunch first
+            rows.push({
+                period: 0,
+                time: `${minsToTime(lunchStart)} – ${minsToTime(lunchEnd)}`,
+                isBreak: true,
+                label: '🍱 LUNCH BREAK'
+            });
+            cursor = lunchEnd;
+            lunchInserted = true;
+            pStart = cursor;
+            pEnd = pStart + lectureDuration;
+        }
+
+        // Ensure we don't exceed end time
+        if (pEnd > end) {
+            pEnd = end;
+        }
+
+        rows.push({
+            period: orderedPeriods[i],
+            time: `${minsToTime(pStart)} – ${minsToTime(pEnd)}`,
+            isBreak: false,
+            label: ''
+        });
+        cursor = pEnd;
+    }
+
+    if (!lunchInserted && hasLunch) {
+        rows.splice(Math.max(1, Math.floor(rows.length / 2)), 0, {
+            period: 0,
+            time: `${minsToTime(lunchStart)} – ${minsToTime(lunchEnd)}`,
+            isBreak: true,
+            label: '🍱 LUNCH BREAK'
+        });
+    }
+
+    const extraBreaks = normalizeBreaks(config.breaks || []);
+    extraBreaks.forEach(b => {
+        const bs = timeToMins(b.start_time);
+        const be = timeToMins(b.end_time);
+        if (!Number.isFinite(bs) || !Number.isFinite(be) || be <= bs) return;
+        if (hasLunch && bs === lunchStart && be === lunchEnd) return;
+
+        const breakRow = {
+            period: 0,
+            time: `${minsToTime(bs)} – ${minsToTime(be)}`,
+            isBreak: true,
+            label: `☕ ${b.name || 'BREAK'}`
+        };
+
+        const insertAt = rows.findIndex(r => {
+            const startPart = String(r.time || '').split('–')[0].trim();
+            const rowStart = timeToMins(startPart);
+            return Number.isFinite(rowStart) && rowStart > bs;
+        });
+        if (insertAt === -1) rows.push(breakRow);
+        else rows.splice(insertAt, 0, breakRow);
+    });
+
+    return rows;
 }
 
 /** Return ordered list of active working days */
@@ -694,15 +1373,17 @@ function buildScheduleMap(entries) {
 
 /** Render a single timetable entry as a coloured card */
 function entryCard(e, showDivision = false, overrideColor = null) {
+    // Always use division color - consistent for each class group
+    const div     = e.class_group?.name || '';
     const color = overrideColor
         || groupColorMap[e.class_group?.id]
-        || groupColorMap[e.class_group?.name]
-        || '#667eea';
+        || groupColorMap[div]
+        || getDivisionColor(div);
 
     const subj    = e.subject?.name   || 'Unknown Subject';
     const teacher = e.teacher?.name   || 'TBA';
     const room    = e.room?.name       || 'TBA';
-    const div     = e.class_group?.name || '';
+    const batch   = e.batch_label || '';
 
     return `<div class="entry-card" style="background:${color}">
         <div class="subj">${subj}</div>
@@ -710,13 +1391,43 @@ function entryCard(e, showDivision = false, overrideColor = null) {
             <span>👨‍🏫 ${teacher}</span><br>
             <span>🏫 ${room}</span>
         </div>
-        ${showDivision ? `<span class="division-badge">${div}</span>` : ''}
+        <div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;">
+            ${batch ? `<span class="division-badge" style="background:rgba(255,255,255,0.4);font-size:11px;">👥 Batch ${batch}</span>` : ''}
+            ${showDivision ? `<span class="division-badge">${div}</span>` : ''}
+        </div>
     </div>`;
 }
 
+/** Get consistent color for a division (TE-A, TE-B, TE-C, etc.) */
+function getDivisionColor(divisionName) {
+    // Consistent colors for each division - all batches in same division get same color
+    const divisionColors = {
+        'TE-A': '#ec4899',  // Pink (as requested for BE A)
+        'TE-B': '#3b82f6',  // Blue
+        'TE-C': '#10b981',  // Green
+        'TE-D': '#f59e0b',  // Amber/Orange
+        'TE-E': '#8b5cf6',  // Purple
+        'TE-F': '#ef4444',  // Red
+    };
+    return divisionColors[divisionName] || '#667eea';
+}
+
 function timeToMins(t) {
-    const [h, m] = t.split(':').map(Number);
-    return h * 60 + (m || 0);
+    if (!t || typeof t !== 'string') return NaN;
+    const parts = t.trim().split(':');
+    if (parts.length < 2) return NaN;
+    const h = Number(parts[0]);
+    const m = Number(parts[1]);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return NaN;
+    return h * 60 + m;
+}
+
+function minsToTime(mins) {
+    if (!Number.isFinite(mins)) return '00:00';
+    const total = Math.max(0, Math.round(mins));
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 /** Simple hue-shift for gradient second colour */
@@ -764,8 +1475,43 @@ async function generateNewSchedule() {
 
 function refreshAll() { loadData(); }
 
+// ── Theme Toggle Functions ──
+function toggleTheme() {
+    const body = document.body;
+    const themeIcon = document.getElementById('themeIcon');
+    const isDark = body.classList.toggle('dark-mode');
+    
+    // Update icon
+    if (isDark) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+    }
+}
+
 // ── Bootstrap on load ──
-window.addEventListener('DOMContentLoaded', loadData);
+window.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    loadTheme();
+});
 </script>
 </body>
 </html>
+

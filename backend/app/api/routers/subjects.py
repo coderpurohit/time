@@ -8,8 +8,22 @@ from ...infrastructure import models
 
 router = APIRouter()
 
+
+def apply_duration_rule(subject: SubjectCreate):
+    should_be_lab = bool(
+        subject.is_lab
+        or "lab" in (subject.name or "").lower()
+        or "laboratory" in (subject.name or "").lower()
+        or (subject.required_room_type or "").lower() == "lab"
+    )
+    subject.is_lab = should_be_lab
+    subject.duration_slots = 2 if should_be_lab else 1
+    subject.required_room_type = "Lab" if should_be_lab else "LectureHall"
+    return subject
+
 @router.post("/", response_model=Subject)
 def create_subject(subject: SubjectCreate, db: Session = Depends(get_db)):
+    subject = apply_duration_rule(subject)
     # Check for duplicate subject code
     existing = db.query(models.Subject).filter(models.Subject.code == subject.code).first()
     if existing:
@@ -66,6 +80,7 @@ def get_subject(subject_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{subject_id}", response_model=Subject)
 def update_subject(subject_id: int, subject: SubjectCreate, db: Session = Depends(get_db)):
+    subject = apply_duration_rule(subject)
     db_subject = db.query(models.Subject).filter(models.Subject.id == subject_id).first()
     if not db_subject:
         raise HTTPException(status_code=404, detail=f"Subject with id {subject_id} not found")

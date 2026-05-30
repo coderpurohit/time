@@ -1,526 +1,391 @@
-// Dashboard JavaScript
+// Dashboard Script - Core Functions
 
-// Sidebar Toggle
-const sidebarToggle = document.getElementById('sidebarToggle');
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const sidebar = document.querySelector('.sidebar');
-
-if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        const icon = sidebarToggle.querySelector('i');
-        if (sidebar.classList.contains('collapsed')) {
-            icon.classList.remove('fa-chevron-left');
-            icon.classList.add('fa-chevron-right');
-        } else {
-            icon.classList.remove('fa-chevron-right');
-            icon.classList.add('fa-chevron-left');
-        }
-    });
-}
-
-// Mobile Menu Toggle
-if (mobileMenuToggle) {
-    mobileMenuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-    });
-}
-
-// Navigation Handling
-const navItems = document.querySelectorAll('.nav-item[data-page]');
-navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        const page = item.getAttribute('data-page');
-        
-        // Remove active class from all nav items
-        navItems.forEach(nav => nav.classList.remove('active'));
-        
-        // Add active class to clicked item
-        item.classList.add('active');
-        
-        // Handle navigation based on page
-        handleNavigation(page);
-    });
-});
-
-// Quick Actions
-const actionCards = document.querySelectorAll('.action-card');
-actionCards.forEach(card => {
-    card.addEventListener('click', () => {
-        const action = card.getAttribute('data-action');
-        handleQuickAction(action);
-    });
-});
-
-// Handle Navigation
-function handleNavigation(page) {
-    switch(page) {
-        case 'dashboard':
-            // Already on dashboard
-            break;
-        case 'timetables':
-            // Navigate to timetables page
-            window.location.href = 'timetable_page.html';
-            break;
-        case 'calendar':
-            // Navigate to calendar view
-            console.log('Navigate to calendar');
-            break;
-        case 'users':
-            // Navigate to users management
-            console.log('Navigate to users');
-            break;
-        case 'master-data':
-            // Navigate to master data
-            console.log('Navigate to master data');
-            break;
-        case 'settings':
-            // Navigate to settings
-            console.log('Navigate to settings');
-            break;
-        case 'support':
-            // Open support
-            console.log('Open support');
-            break;
-        case 'help':
-            // Open help docs
-            window.open('https://docs.timetablemaster.com', '_blank');
-            break;
-        case 'demo':
-            // Schedule demo
-            console.log('Schedule demo');
-            break;
+// Initialize wizard on page load
+function initWizard() {
+    console.log('Initializing wizard...');
+    const firstTab = document.querySelector('.wizard-tab');
+    if (firstTab) {
+        firstTab.click();
     }
 }
 
-// Handle Quick Actions
-function handleQuickAction(action) {
-    switch(action) {
-        case 'timetables':
-            window.location.href = 'timetable_page.html';
-            break;
-        case 'users':
-            console.log('Open users management');
-            break;
-        case 'calendar':
-            console.log('Open calendar');
-            break;
+// Switch between tabs
+function switchTab(step) {
+    console.log('Switching to tab:', step);
+    
+    // Hide all sections
+    document.querySelectorAll('.wizard-content').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Remove active from all tabs
+    document.querySelectorAll('.wizard-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected section
+    const section = document.getElementById(`step-${step}`);
+    if (section) {
+        section.classList.add('active');
+    }
+    
+    // Mark tab as active
+    const tab = document.querySelector(`[data-step="${step}"]`);
+    if (tab) {
+        tab.classList.add('active');
     }
 }
 
-// Form Submission - Institute Profile
-const saveBtn = document.querySelector('.btn-save');
-if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-        const instituteName = document.getElementById('instituteName').value;
-        const instituteType = document.getElementById('instituteType').value;
-        const city = document.getElementById('city').value;
-        const website = document.getElementById('website').value;
-        
-        // Validate required fields
-        if (!instituteName || !instituteType || !city) {
-            alert('Please fill in all required fields (*)');
-            return;
-        }
-        
-        // Save profile data (you can integrate with your backend here)
-        const profileData = {
-            instituteName,
-            instituteType,
-            city,
-            website
-        };
-        
-        console.log('Saving profile:', profileData);
-        
-        // Show success message
-        showNotification('Profile saved successfully!', 'success');
-        
-        // You can send this to your backend API here
-        // fetch('/api/profile', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(profileData)
-        // });
-    });
-}
-
-// Request Free Trial
-const requestTrialBtn = document.getElementById('requestTrialBtn');
-if (requestTrialBtn) {
-    requestTrialBtn.addEventListener('click', () => {
-        // Handle free trial request
-        console.log('Request free trial');
-        alert('Thank you for your interest! We will contact you soon about the free trial.');
-    });
-}
-
-// Upgrade Button
-const upgradeBtn = document.querySelector('.upgrade-btn');
-if (upgradeBtn) {
-    upgradeBtn.addEventListener('click', () => {
-        handleUpgrade();
-    });
-}
-
-// Premium Upgrade Button
-const btnPremium = document.querySelector('.btn-premium');
-if (btnPremium) {
-    btnPremium.addEventListener('click', () => {
-        handleUpgrade();
-    });
-}
-
-function handleUpgrade() {
-    console.log('Navigate to upgrade page');
-    // You can redirect to upgrade page or show upgrade modal
-    alert('Redirecting to upgrade plans...');
-}
-
-// Help Buttons
-const btnWhatsapp = document.querySelector('.btn-whatsapp');
-const btnCall = document.querySelector('.btn-call');
-
-if (btnWhatsapp) {
-    btnWhatsapp.addEventListener('click', () => {
-        const phoneNumber = '919110449907';
-        window.open(`https://wa.me/${phoneNumber}`, '_blank');
-    });
-}
-
-if (btnCall) {
-    btnCall.addEventListener('click', () => {
-        window.location.href = 'tel:+919110449907';
-    });
-}
-
-// Notification System
-function showNotification(message, type = 'info') {
-    // Remove existing notification if any
-    const existing = document.querySelector('.notification');
-    if (existing) {
-        existing.remove();
-    }
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        z-index: 1000;
-        animation: slideIn 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    `;
-    
-    if (type === 'success') {
-        notification.style.background = '#10B981';
-    } else if (type === 'error') {
-        notification.style.background = '#EF4444';
-    } else {
-        notification.style.background = '#3B82F6';
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Load schedule preview
-async function loadSchedulePreview() {
-    const schedulePreview = document.getElementById('schedulePreview');
-    if (!schedulePreview) return;
-
-    schedulePreview.innerHTML = '<div class="schedule-empty"><i class="fas fa-spinner fa-spin"></i><p>Loading schedule...</p></div>';
-
-    try {
-        const response = await fetch('http://localhost:8000/api/timetables/latest');
-        if (!response.ok) {
-            throw new Error('No timetable found');
-        }
-
-        const data = await response.json();
-        if (data && data.entries && data.entries.length > 0) {
-            // Show a preview of today's schedule
-            const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const todaySlots = data.entries.filter(entry => 
-                entry.time_slot && entry.time_slot.day === today
-            ).slice(0, 3); // Show first 3 slots
-
-            if (todaySlots.length > 0) {
-                let previewHTML = '<div class="schedule-preview-content">';
-                todaySlots.forEach(slot => {
-                    const time = slot.time_slot ? `${slot.time_slot.start_time || 'N/A'}` : 'N/A';
-                    const subject = slot.subject?.name || 'Unknown';
-                    previewHTML += `
-                        <div class="schedule-preview-item">
-                            <div class="time">${time}</div>
-                            <div class="subject">${subject}</div>
-                        </div>
-                    `;
-                });
-                previewHTML += `<a href="timetable_page.html" style="display: block; text-align: center; margin-top: 1rem; color: var(--primary-purple); text-decoration: none; font-weight: 600;">View Full Schedule →</a></div>`;
-                schedulePreview.innerHTML = previewHTML;
-            } else {
-                schedulePreview.innerHTML = `
-                    <div class="schedule-empty">
-                        <i class="fas fa-calendar-check"></i>
-                        <p>No classes scheduled for today.</p>
-                        <a href="timetable_page.html" style="display: inline-block; margin-top: 1rem; color: var(--primary-purple); text-decoration: none; font-weight: 600;">View Full Timetable →</a>
-                    </div>
-                `;
-            }
-        } else {
-            throw new Error('Timetable is empty');
-        }
-    } catch (error) {
-        schedulePreview.innerHTML = `
-            <div class="schedule-empty">
-                <i class="fas fa-building"></i>
-                <p>There is no published timetable at the moment. Your schedule will appear once timetables are published.</p>
-                <button class="btn-load-schedule" onclick="loadSchedulePreview()">
-                    <i class="fas fa-sync"></i>
-                    Try Again
-                </button>
-            </div>
-        `;
+// Teacher Management Functions
+function openTeacherModal() {
+    const modal = document.getElementById('teacherModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('teacherModalTitle').textContent = 'Add New Teacher';
+        document.getElementById('teacherForm').reset();
     }
 }
 
-// Load saved profile data on page load
-window.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Dashboard page loaded');
-    
-    // Force load statistics immediately
-    setTimeout(() => {
-        console.log('📊 Force loading dashboard statistics...');
-        loadDashboardStatistics();
-    }, 100);
-    
-    // Also try again after a short delay in case of timing issues
-    setTimeout(() => {
-        console.log('📊 Retry loading dashboard statistics...');
-        loadDashboardStatistics();
-    }, 1000);
-    
-    // Optionally auto-load schedule preview
-    // loadSchedulePreview();
-    // You can load saved profile data from localStorage or API
-    const savedProfile = localStorage.getItem('instituteProfile');
-    if (savedProfile) {
-        try {
-            const profile = JSON.parse(savedProfile);
-            if (profile.instituteName) {
-                document.getElementById('instituteName').value = profile.instituteName;
-            }
-            if (profile.instituteType) {
-                document.getElementById('instituteType').value = profile.instituteType;
-            }
-            if (profile.city) {
-                document.getElementById('city').value = profile.city;
-            }
-            if (profile.website) {
-                document.getElementById('website').value = profile.website;
-            }
-        } catch (e) {
-            console.error('Error loading profile:', e);
-        }
+function closeTeacherModal() {
+    const modal = document.getElementById('teacherModal');
+    if (modal) {
+        modal.style.display = 'none';
     }
-});
+}
 
-// Load Dashboard Statistics - Fixed to work with actual API endpoints
-async function loadDashboardStatistics() {
-    console.log('📊 Starting loadDashboardStatistics...');
+function openDeleteTeacherModal(teacherId, teacherName) {
+    const modal = document.getElementById('deleteTeacherModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('deleteTeacherName').textContent = teacherName;
+        window.deleteTeacherId = teacherId;
+    }
+}
+
+function closeDeleteTeacherModal() {
+    const modal = document.getElementById('deleteTeacherModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function saveTeacher(event) {
+    event.preventDefault();
     
-    const API_BASE = 'http://localhost:8000/api';
-    
-    // Set loading state
-    const statValues = document.querySelectorAll('.stat-value');
-    console.log(`Found ${statValues.length} stat value elements`);
-    
-    statValues.forEach(val => {
-        val.classList.add('loading');
-        val.textContent = '...';
-    });
+    const name = document.getElementById('teacherName').value;
+    const email = document.getElementById('teacherEmail').value;
+    const hours = document.getElementById('teacherHours').value;
     
     try {
-        console.log('🔍 Fetching from API...');
-        
-        // Use the analytics endpoint that we know works
-        const response = await fetch(`${API_BASE}/analytics/dashboard-stats`);
-        console.log(`API response status: ${response.status}`);
+        const response = await fetch(`${API_BASE}/teachers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                max_hours_per_week: parseInt(hours)
+            })
+        });
         
         if (response.ok) {
-            const stats = await response.json();
-            console.log('📊 API Response received:', stats);
-            
-            // Update the UI with real data
-            setTimeout(() => {
-                statValues.forEach(val => val.classList.remove('loading'));
-                
-                const totalTeachersEl = document.getElementById('totalTeachers');
-                const totalClassesEl = document.getElementById('totalClasses');
-                const totalRoomsEl = document.getElementById('totalRooms');
-                const totalSubjectsEl = document.getElementById('totalSubjects');
-                const timeSlotsEl = document.getElementById('timeSlots');
-                const utilizationEl = document.getElementById('utilization');
-                
-                console.log('🎯 Updating UI elements...');
-                
-                if (totalTeachersEl) {
-                    totalTeachersEl.textContent = stats.teachers || 15;
-                    console.log(`Teachers updated: ${stats.teachers}`);
-                }
-                if (totalClassesEl) {
-                    totalClassesEl.textContent = stats.classes || 9;
-                    console.log(`Classes updated: ${stats.classes}`);
-                }
-                if (totalRoomsEl) {
-                    totalRoomsEl.textContent = stats.rooms || 10;
-                    console.log(`Rooms updated: ${stats.rooms}`);
-                }
-                if (totalSubjectsEl) {
-                    totalSubjectsEl.textContent = stats.subjects || 12;
-                    console.log(`Subjects updated: ${stats.subjects}`);
-                }
-                if (timeSlotsEl) {
-                    timeSlotsEl.textContent = stats.timeSlots || 35;
-                    console.log(`Time Slots updated: ${stats.timeSlots}`);
-                }
-                if (utilizationEl) {
-                    utilizationEl.textContent = `${stats.utilization || 67}%`;
-                    console.log(`Utilization updated: ${stats.utilization}%`);
-                }
-                
-                console.log('✅ Dashboard statistics updated successfully!');
-            }, 100);
-            
+            showStatus('Teacher added successfully!', 'success');
+            closeTeacherModal();
+            loadTeachersInPage();
         } else {
-            console.warn('⚠️ API failed, using fallback values');
-            // Fallback to hardcoded values from our setup
-            setTimeout(() => {
-                statValues.forEach(val => val.classList.remove('loading'));
-                
-                const totalTeachersEl = document.getElementById('totalTeachers');
-                const totalClassesEl = document.getElementById('totalClasses');
-                const totalRoomsEl = document.getElementById('totalRooms');
-                const totalSubjectsEl = document.getElementById('totalSubjects');
-                const timeSlotsEl = document.getElementById('timeSlots');
-                const utilizationEl = document.getElementById('utilization');
-                
-                if (totalTeachersEl) totalTeachersEl.textContent = '15';
-                if (totalClassesEl) totalClassesEl.textContent = '9';
-                if (totalRoomsEl) totalRoomsEl.textContent = '10';
-                if (totalSubjectsEl) totalSubjectsEl.textContent = '12';
-                if (timeSlotsEl) timeSlotsEl.textContent = '35';
-                if (utilizationEl) utilizationEl.textContent = '67%';
-                
-                console.log('📊 Dashboard statistics loaded (fallback values)');
-            }, 100);
+            showStatus('Failed to add teacher', 'error');
         }
-        
     } catch (error) {
-        console.error('❌ Error loading dashboard statistics:', error);
-        
-        // Show fallback values instead of 0
-        setTimeout(() => {
-            statValues.forEach(val => val.classList.remove('loading'));
-            
-            const totalTeachersEl = document.getElementById('totalTeachers');
-            const totalClassesEl = document.getElementById('totalClasses');
-            const totalRoomsEl = document.getElementById('totalRooms');
-            const totalSubjectsEl = document.getElementById('totalSubjects');
-            const timeSlotsEl = document.getElementById('timeSlots');
-            const utilizationEl = document.getElementById('utilization');
-            
-            if (totalTeachersEl) totalTeachersEl.textContent = '15';
-            if (totalClassesEl) totalClassesEl.textContent = '9';
-            if (totalRoomsEl) totalRoomsEl.textContent = '10';
-            if (totalSubjectsEl) totalSubjectsEl.textContent = '12';
-            if (timeSlotsEl) timeSlotsEl.textContent = '35';
-            if (utilizationEl) utilizationEl.textContent = '67%';
-            
-            console.log('📊 Dashboard statistics loaded (error fallback)');
-        }, 100);
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
     }
 }
 
-// Refresh statistics function
-function refreshStatistics() {
-    loadDashboardStatistics();
+async function confirmDeleteTeacher() {
+    const teacherId = window.deleteTeacherId;
+    
+    try {
+        const response = await fetch(`${API_BASE}/teachers/${teacherId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showStatus('Teacher deleted successfully!', 'success');
+            closeDeleteTeacherModal();
+            loadTeachersInPage();
+        } else {
+            showStatus('Failed to delete teacher', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
+    }
 }
 
-// Save profile to localStorage when saved
-if (saveBtn) {
-    const originalClick = saveBtn.onclick;
-    saveBtn.addEventListener('click', () => {
-        const profileData = {
-            instituteName: document.getElementById('instituteName').value,
-            instituteType: document.getElementById('instituteType').value,
-            city: document.getElementById('city').value,
-            website: document.getElementById('website').value
-        };
-        localStorage.setItem('instituteProfile', JSON.stringify(profileData));
+// Subject Management Functions
+function openSubjectModal() {
+    const modal = document.getElementById('subjectModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('subjectModalTitle').textContent = 'Add Subject';
+        document.getElementById('subjectForm').reset();
+    }
+}
+
+function closeSubjectModal() {
+    const modal = document.getElementById('subjectModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function saveSubject(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('subjectName').value;
+    const code = document.getElementById('subjectCode').value;
+    const credits = document.getElementById('subjectCredits').value;
+    const type = document.getElementById('subjectType').value === 'true';
+    const duration = document.getElementById('subjectDuration').value;
+    const roomType = document.getElementById('subjectRoomType').value;
+    
+    try {
+        const response = await fetch(`${API_BASE}/subjects`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                code: code,
+                credits: parseInt(credits),
+                is_lab: type,
+                duration_slots: parseInt(duration),
+                room_type: roomType
+            })
+        });
+        
+        if (response.ok) {
+            showStatus('Subject added successfully!', 'success');
+            closeSubjectModal();
+            loadSubjects();
+        } else {
+            showStatus('Failed to add subject', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
+    }
+}
+
+// Class Management Functions
+function openClassModal() {
+    const modal = document.getElementById('classModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('classModalTitle').textContent = 'Add Class';
+        document.getElementById('classForm').reset();
+    }
+}
+
+function closeClassModal() {
+    const modal = document.getElementById('classModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function saveClass(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('className').value;
+    const studentCount = document.getElementById('classStudentCount').value;
+    
+    try {
+        const response = await fetch(`${API_BASE}/class-groups`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                student_count: parseInt(studentCount)
+            })
+        });
+        
+        if (response.ok) {
+            showStatus('Class added successfully!', 'success');
+            closeClassModal();
+            loadClasses();
+        } else {
+            showStatus('Failed to add class', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
+    }
+}
+
+// Room Management Functions
+function openRoomModal() {
+    const modal = document.getElementById('roomModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('roomModalTitle').textContent = 'Add Room';
+        document.getElementById('roomForm').reset();
+    }
+}
+
+function closeRoomModal() {
+    const modal = document.getElementById('roomModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function saveRoom(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('roomName').value;
+    const type = document.getElementById('roomType').value;
+    const capacity = document.getElementById('roomCapacity').value;
+    const resources = document.getElementById('roomResources').value;
+    
+    try {
+        const response = await fetch(`${API_BASE}/rooms`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                room_type: type,
+                capacity: parseInt(capacity),
+                resources: resources
+            })
+        });
+        
+        if (response.ok) {
+            showStatus('Room added successfully!', 'success');
+            closeRoomModal();
+            loadRooms();
+        } else {
+            showStatus('Failed to add room', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
+    }
+}
+
+// Bulk Import Functions
+function openTeacherBulkImportModal() {
+    const modal = document.getElementById('teacherBulkImportModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeTeacherBulkImportModal() {
+    const modal = document.getElementById('teacherBulkImportModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function submitTeacherBulkImport() {
+    const fileInput = document.getElementById('teacherCsvFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showStatus('Please select a CSV file', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch(`${API_BASE}/import/teachers-csv`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            showStatus('Teachers imported successfully!', 'success');
+            closeTeacherBulkImportModal();
+            loadTeachersInPage();
+        } else {
+            const error = await response.json();
+            showStatus('Import failed: ' + (error.detail || 'Unknown error'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'error');
+    }
+}
+
+// Utility Functions
+function showStatus(message, type = 'info') {
+    const statusDiv = document.getElementById('statusMessage');
+    if (statusDiv) {
+        statusDiv.textContent = message;
+        statusDiv.className = `status-message ${type}`;
+        statusDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    }
+}
+
+function updateRoomType() {
+    const type = document.getElementById('subjectType').value;
+    const roomTypeSelect = document.getElementById('subjectRoomType');
+    if (type === 'true') {
+        roomTypeSelect.value = 'Lab';
+    } else {
+        roomTypeSelect.value = 'LectureHall';
+    }
+}
+
+function filterSubjects() {
+    const searchTerm = document.getElementById('subjectSearch').value.toLowerCase();
+    const typeFilter = document.getElementById('subjectTypeFilter').value;
+    
+    const rows = document.querySelectorAll('#subjectsTableBody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const type = row.getAttribute('data-type') || '';
+        
+        const matchesSearch = text.includes(searchTerm);
+        const matchesType = !typeFilter || type === typeFilter;
+        
+        row.style.display = (matchesSearch && matchesType) ? '' : 'none';
     });
 }
 
-// Responsive sidebar handling
-function handleResize() {
-    if (window.innerWidth <= 768) {
-        sidebar.classList.add('mobile');
-    } else {
-        sidebar.classList.remove('mobile');
-    }
+function filterClasses() {
+    const searchTerm = document.getElementById('classSearch').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#classesTableBody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
 }
 
-window.addEventListener('resize', handleResize);
-handleResize();
+function filterRooms() {
+    const searchTerm = document.getElementById('roomSearch').value.toLowerCase();
+    const typeFilter = document.getElementById('roomTypeFilter').value;
+    
+    const rows = document.querySelectorAll('#roomsTableBody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const type = row.getAttribute('data-type') || '';
+        
+        const matchesSearch = text.includes(searchTerm);
+        const matchesType = !typeFilter || type === typeFilter;
+        
+        row.style.display = (matchesSearch && matchesType) ? '' : 'none';
+    });
+}
 
-// Close sidebar on mobile when clicking outside
-document.addEventListener('click', (e) => {
-    if (window.innerWidth <= 768 && sidebar.classList.contains('mobile')) {
-        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-            sidebar.classList.remove('open');
-        }
-    }
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard script loaded');
+    initWizard();
 });

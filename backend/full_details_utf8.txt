@@ -1,0 +1,27 @@
+LESSONS FOR TARGET TEACHERS:
+Lesson ID: 1, Teachers: ['Dr. V. G. Kottawar'], Subjects: ['Critical Thinking and Problem Solving'], per_week: 3, length: 1
+Lesson ID: 2, Teachers: ['Dr. V. G. Kottawar'], Subjects: ['Critical Thinking and Problem Solving'], per_week: 1, length: 2
+Lesson ID: 3, Teachers: ['Dr. V. G. Kottawar'], Subjects: ['Mini Project'], per_week: 4, length: 2
+Lesson ID: 7, Teachers: ['Dr. Manish Sharma'], Subjects: ['Fundamentals of AI'], per_week: 2, length: 1
+Lesson ID: 8, Teachers: ['Dr. Manish Sharma'], Subjects: ['Mini Project'], per_week: 4, length: 2
+Lesson ID: 9, Teachers: ['Dr. Manish Sharma'], Subjects: ['Mini Project'], per_week: 4, length: 2
+Lesson ID: 13, Teachers: ['Dr. Suvarna S. Gothane'], Subjects: ['Data Base Management System'], per_week: 3, length: 1
+Lesson ID: 14, Teachers: ['Dr. Suvarna S. Gothane'], Subjects: ['Data Base Management System'], per_week: 1, length: 2
+Lesson ID: 15, Teachers: ['Dr. Suvarna S. Gothane'], Subjects: ['Fundamentals of AI'], per_week: 2, length: 1
+
+CHECKING SUBJECTS TABLE ASSIGNMENTS:
+Subject ID: 1, Name: 'Critical Thinking and Problem Solving', Assigned Teacher: Dr. V. G. Kottawar (ID: 1)
+Subject ID: 2, Name: 'Mini Project', Assigned Teacher: Dr. V. G. Kottawar (ID: 1)
+Subject ID: 4, Name: 'Fundamentals of AI', Assigned Teacher: Dr. Manish Sharma (ID: 2)
+Subject ID: 6, Name: 'Data Base Management System', Assigned Teacher: Dr. Suvarna S. Gothane (ID: 3)
+
+CHECKING FOR PROBLEM SUBJECTS:
+Subject ID: 3, Name: 'Professional and 
+Technical 
+Communication', Teacher: None (ID: None)
+Subject ID: 5, Name: 'Sustainable 
+Development I', Teacher: None (ID: None)
+Subject ID: 7, Name: 'Engineering Physics', Teacher: None (ID: None)
+Subject ID: 20, Name: 'Professional and Technical Communication', Teacher: None (ID: None)
+Subject ID: 29, Name: 'Seminar and Technical 
+Communication', Teacher: None (ID: None)

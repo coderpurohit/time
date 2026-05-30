@@ -119,6 +119,7 @@ class TimetableEntry(Base):
     room_id = Column(Integer, ForeignKey("rooms.id"))
     class_group_id = Column(Integer, ForeignKey("class_groups.id"))
     teacher_id = Column(Integer, ForeignKey("teachers.id"))
+    batch_label = Column(String, nullable=True, index=True)
     
     version = relationship("TimetableVersion", back_populates="entries")
     time_slot = relationship("TimeSlot")

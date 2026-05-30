@@ -292,3 +292,94 @@ async def import_enhanced_csv(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@router.post("/teachers-csv")
+async def import_teachers_csv(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """Import teachers from CSV file - Simple endpoint for bulk import modal"""
+    
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided")
+        
+    if not file.filename.lower().endswith(('.csv', '.txt')):
+        raise HTTPException(status_code=400, detail="Only CSV/TXT files are supported")
+
+    # Read file
+    try:
+        file_content = await file.read()
+        content = file_content.decode('utf-8-sig')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Cannot read file: {str(e)}")
+
+    # Parse CSV
+    try:
+        reader = csv.DictReader(io.StringIO(content))
+        rows = list(reader)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid CSV format: {str(e)}")
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="CSV file is empty")
+
+    try:
+        added_count = 0
+        updated_count = 0
+        errors = []
+        
+        for row_num, row in enumerate(rows, 1):
+            try:
+                name = (row.get('name') or '').strip()
+                email = (row.get('email') or '').strip()
+                
+                if not name:
+                    errors.append(f"Row {row_num}: Missing teacher name")
+                    continue
+                
+                # Parse max hours
+                try:
+                    max_hours = int(row.get('max_hours_per_week') or 18)
+                except:
+                    max_hours = 18
+                
+                # Generate email if missing
+                if not email:
+                    clean_name = name.lower().replace('dr.', '').replace('prof.', '').replace('mr.', '').replace('mrs.', '').strip()
+                    email = clean_name.replace(' ', '.') + '@college.edu'
+                
+                # Check if exists
+                existing = db.query(models.Teacher).filter(
+                    models.Teacher.email == email
+                ).first()
+                
+                if existing:
+                    existing.name = name
+                    existing.max_hours_per_week = max_hours
+                    updated_count += 1
+                else:
+                    teacher = models.Teacher(
+                        name=name,
+                        email=email,
+                        max_hours_per_week=max_hours
+                    )
+                    db.add(teacher)
+                    added_count += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {row_num}: {str(e)}")
+        
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": f"Imported {added_count} new teachers, updated {updated_count} existing",
+            "added": added_count,
+            "updated": updated_count,
+            "errors": errors if errors else None
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")

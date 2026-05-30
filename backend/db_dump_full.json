@@ -1,0 +1,1947 @@
+{
+  "teachers": [
+    {
+      "id": 1,
+      "name": "Dr. V. G. Kottawar"
+    },
+    {
+      "id": 2,
+      "name": "Dr. Manish Sharma"
+    },
+    {
+      "id": 3,
+      "name": "Dr. Suvarna S. Gothane"
+    },
+    {
+      "id": 4,
+      "name": "Dr. Bhaghyshri A. Tingare"
+    },
+    {
+      "id": 5,
+      "name": "Mrs. Manasi D. Karajgar"
+    },
+    {
+      "id": 6,
+      "name": "Mrs. Neeta J. Mahale"
+    },
+    {
+      "id": 7,
+      "name": "Mrs. Rasika V. Wattamwar"
+    },
+    {
+      "id": 8,
+      "name": "Mrs. Rajshri T. Ingle"
+    },
+    {
+      "id": 9,
+      "name": "Mrs. Pallavi R. Shingade"
+    },
+    {
+      "id": 10,
+      "name": "Mrs. Snehal Malpani"
+    },
+    {
+      "id": 11,
+      "name": "Dr. Mayuri Rathi"
+    },
+    {
+      "id": 12,
+      "name": "Mr. Bhushan Javare"
+    },
+    {
+      "id": 13,
+      "name": "Mrs. Vidya Bhosale"
+    },
+    {
+      "id": 14,
+      "name": "Mr. Ajit Kadam"
+    },
+    {
+      "id": 15,
+      "name": "Mrs. Shruti Sekra"
+    },
+    {
+      "id": 16,
+      "name": "Mrs. Aparna Lavangade"
+    },
+    {
+      "id": 17,
+      "name": "Mrs. Megha Mane"
+    },
+    {
+      "id": 18,
+      "name": "Mrs. Geeta Darunte"
+    },
+    {
+      "id": 19,
+      "name": "Mrs. Ashika Hirulkar"
+    },
+    {
+      "id": 20,
+      "name": "Mrs. Vaishnavi Jagtap"
+    },
+    {
+      "id": 21,
+      "name": "Mrs. Swetha Banait"
+    },
+    {
+      "id": 22,
+      "name": "Mrs. Kanchan C. Patil"
+    },
+    {
+      "id": 23,
+      "name": "Dr. Ganesh Birajadar"
+    },
+    {
+      "id": 24,
+      "name": "Mrs. Nehal Ganpule"
+    },
+    {
+      "id": 25,
+      "name": "Dr. Deepali Sale"
+    },
+    {
+      "id": 26,
+      "name": "Dr. Latika Desai"
+    },
+    {
+      "id": 27,
+      "name": "Dr. Aryani Gangadhara"
+    },
+    {
+      "id": 28,
+      "name": "Ms. Neeta Katariya"
+    }
+  ],
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Critical Thinking and Problem Solving",
+      "teacher_id": 1,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 2,
+      "name": "Mini Project",
+      "teacher_id": 1,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 3,
+      "name": "Professional and \nTechnical \nCommunication",
+      "teacher_id": null,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 4,
+      "name": "Fundamentals of AI",
+      "teacher_id": 2,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 5,
+      "name": "Sustainable \nDevelopment I",
+      "teacher_id": null,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 6,
+      "name": "Data Base Management System",
+      "teacher_id": 3,
+      "is_lab": true,
+      "duration": 2
+    },
+    {
+      "id": 7,
+      "name": "Engineering Physics",
+      "teacher_id": null,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 8,
+      "name": "Elective I- HCI",
+      "teacher_id": 4,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 9,
+      "name": "Project Management",
+      "teacher_id": 4,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 10,
+      "name": "Elective III- EAC",
+      "teacher_id": 5,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 11,
+      "name": "MOOC",
+      "teacher_id": 5,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 12,
+      "name": "Applied Mechanics",
+      "teacher_id": 5,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 13,
+      "name": "Artificial Intelligence",
+      "teacher_id": 6,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 14,
+      "name": "Elective IV- IR",
+      "teacher_id": 6,
+      "is_lab": true,
+      "duration": 2
+    },
+    {
+      "id": 15,
+      "name": "Web Technology",
+      "teacher_id": 7,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 16,
+      "name": "Machine Learning",
+      "teacher_id": 7,
+      "is_lab": true,
+      "duration": 2
+    },
+    {
+      "id": 17,
+      "name": "Design Thinking",
+      "teacher_id": 8,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 18,
+      "name": "Experiential Learning I",
+      "teacher_id": 8,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 19,
+      "name": "Fundamentals of Data Structure",
+      "teacher_id": 9,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 20,
+      "name": "Professional and Technical Communication",
+      "teacher_id": null,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 21,
+      "name": "Software Engineering",
+      "teacher_id": 10,
+      "is_lab": true,
+      "duration": 2
+    },
+    {
+      "id": 22,
+      "name": "Liberal Learning I",
+      "teacher_id": 10,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 23,
+      "name": "Computer Networks",
+      "teacher_id": 12,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 24,
+      "name": "Data Modeling & Visualization",
+      "teacher_id": 12,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 25,
+      "name": "Computer Laboratory I",
+      "teacher_id": 16,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 26,
+      "name": "Elective I- PR",
+      "teacher_id": 21,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 27,
+      "name": "Environmental Studies",
+      "teacher_id": 22,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 28,
+      "name": "Computer Laboratory II",
+      "teacher_id": 22,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 29,
+      "name": "Seminar and Technical \nCommunication",
+      "teacher_id": null,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 30,
+      "name": "Elective IV- UI/UX Design",
+      "teacher_id": 24,
+      "is_lab": true,
+      "duration": 2
+    },
+    {
+      "id": 31,
+      "name": "Programming & Problem Solving",
+      "teacher_id": 25,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 32,
+      "name": "Statistical Methods",
+      "teacher_id": 27,
+      "is_lab": false,
+      "duration": 1
+    },
+    {
+      "id": 33,
+      "name": "Linear Algebra and Differential Calculus",
+      "teacher_id": 27,
+      "is_lab": false,
+      "duration": 1
+    }
+  ],
+  "lessons": [
+    {
+      "id": 1,
+      "teacher_ids": [
+        1
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 2,
+      "teacher_ids": [
+        1
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 3,
+      "teacher_ids": [
+        1
+      ],
+      "subject_ids": [
+        2
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 7,
+      "teacher_ids": [
+        2
+      ],
+      "subject_ids": [
+        4
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 8,
+      "teacher_ids": [
+        2
+      ],
+      "subject_ids": [
+        2
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 9,
+      "teacher_ids": [
+        2
+      ],
+      "subject_ids": [
+        2
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 13,
+      "teacher_ids": [
+        3
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 14,
+      "teacher_ids": [
+        3
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 15,
+      "teacher_ids": [
+        3
+      ],
+      "subject_ids": [
+        4
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 20,
+      "teacher_ids": [
+        4
+      ],
+      "subject_ids": [
+        8
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 21,
+      "teacher_ids": [
+        4
+      ],
+      "subject_ids": [
+        8
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 22,
+      "teacher_ids": [
+        4
+      ],
+      "subject_ids": [
+        9
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 23,
+      "teacher_ids": [
+        4
+      ],
+      "subject_ids": [
+        7
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 24,
+      "teacher_ids": [
+        4
+      ],
+      "subject_ids": [
+        7
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 25,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 26,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 27,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        10
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 28,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        11
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 29,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 30,
+      "teacher_ids": [
+        5
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 31,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        13
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 32,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        14
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 33,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        14
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 34,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        14
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 35,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        14
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 36,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 37,
+      "teacher_ids": [
+        6
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 38,
+      "teacher_ids": [
+        7
+      ],
+      "subject_ids": [
+        15
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 39,
+      "teacher_ids": [
+        7
+      ],
+      "subject_ids": [
+        16
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 40,
+      "teacher_ids": [
+        7
+      ],
+      "subject_ids": [
+        16
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 41,
+      "teacher_ids": [
+        7
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 42,
+      "teacher_ids": [
+        7
+      ],
+      "subject_ids": [
+        12
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 43,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 44,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        6
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 45,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 46,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 47,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 48,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 49,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 50,
+      "teacher_ids": [
+        8
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 51,
+      "teacher_ids": [
+        9
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 52,
+      "teacher_ids": [
+        9
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 53,
+      "teacher_ids": [
+        9
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 54,
+      "teacher_ids": [
+        9
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 55,
+      "teacher_ids": [
+        10
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 56,
+      "teacher_ids": [
+        10
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 57,
+      "teacher_ids": [
+        10
+      ],
+      "subject_ids": [
+        16
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 58,
+      "teacher_ids": [
+        11
+      ],
+      "subject_ids": [
+        13
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 59,
+      "teacher_ids": [
+        11
+      ],
+      "subject_ids": [
+        13
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 60,
+      "teacher_ids": [
+        11
+      ],
+      "subject_ids": [
+        9
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 61,
+      "teacher_ids": [
+        12
+      ],
+      "subject_ids": [
+        23
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 62,
+      "teacher_ids": [
+        12
+      ],
+      "subject_ids": [
+        23
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 63,
+      "teacher_ids": [
+        12
+      ],
+      "subject_ids": [
+        24
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 64,
+      "teacher_ids": [
+        13
+      ],
+      "subject_ids": [
+        13
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 65,
+      "teacher_ids": [
+        13
+      ],
+      "subject_ids": [
+        13
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 66,
+      "teacher_ids": [
+        13
+      ],
+      "subject_ids": [
+        24
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 67,
+      "teacher_ids": [
+        14
+      ],
+      "subject_ids": [
+        23
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 68,
+      "teacher_ids": [
+        14
+      ],
+      "subject_ids": [
+        23
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 69,
+      "teacher_ids": [
+        14
+      ],
+      "subject_ids": [
+        9
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 70,
+      "teacher_ids": [
+        15
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 71,
+      "teacher_ids": [
+        15
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 72,
+      "teacher_ids": [
+        15
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 73,
+      "teacher_ids": [
+        15
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 74,
+      "teacher_ids": [
+        16
+      ],
+      "subject_ids": [
+        23
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 75,
+      "teacher_ids": [
+        16
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 76,
+      "teacher_ids": [
+        16
+      ],
+      "subject_ids": [
+        25
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 77,
+      "teacher_ids": [
+        16
+      ],
+      "subject_ids": [
+        25
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 78,
+      "teacher_ids": [
+        17
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 79,
+      "teacher_ids": [
+        17
+      ],
+      "subject_ids": [
+        19
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 80,
+      "teacher_ids": [
+        17
+      ],
+      "subject_ids": [
+        15
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 81,
+      "teacher_ids": [
+        18
+      ],
+      "subject_ids": [
+        10
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 82,
+      "teacher_ids": [
+        18
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 83,
+      "teacher_ids": [
+        18
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 84,
+      "teacher_ids": [
+        19
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 85,
+      "teacher_ids": [
+        19
+      ],
+      "subject_ids": [
+        1
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 86,
+      "teacher_ids": [
+        19
+      ],
+      "subject_ids": [
+        11
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 87,
+      "teacher_ids": [
+        19
+      ],
+      "subject_ids": [
+        11
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 88,
+      "teacher_ids": [
+        19
+      ],
+      "subject_ids": [
+        17
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 89,
+      "teacher_ids": [
+        20
+      ],
+      "subject_ids": [
+        8
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 90,
+      "teacher_ids": [
+        20
+      ],
+      "subject_ids": [
+        25
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 91,
+      "teacher_ids": [
+        21
+      ],
+      "subject_ids": [
+        26
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 92,
+      "teacher_ids": [
+        21
+      ],
+      "subject_ids": [
+        26
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 93,
+      "teacher_ids": [
+        21
+      ],
+      "subject_ids": [
+        4
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 94,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        27
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 95,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        27
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 96,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        27
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 97,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        11
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 98,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        28
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 99,
+      "teacher_ids": [
+        22
+      ],
+      "subject_ids": [
+        28
+      ],
+      "class_group_ids": [
+        10
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 100,
+      "teacher_ids": [
+        23
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 101,
+      "teacher_ids": [
+        23
+      ],
+      "subject_ids": [
+        21
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 4,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 102,
+      "teacher_ids": [
+        23
+      ],
+      "subject_ids": [
+        29
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 103,
+      "teacher_ids": [
+        23
+      ],
+      "subject_ids": [
+        29
+      ],
+      "class_group_ids": [
+        9
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 104,
+      "teacher_ids": [
+        23
+      ],
+      "subject_ids": [
+        29
+      ],
+      "class_group_ids": [
+        7
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 105,
+      "teacher_ids": [
+        24
+      ],
+      "subject_ids": [
+        15
+      ],
+      "class_group_ids": [
+        4
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 106,
+      "teacher_ids": [
+        24
+      ],
+      "subject_ids": [
+        30
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 107,
+      "teacher_ids": [
+        24
+      ],
+      "subject_ids": [
+        30
+      ],
+      "class_group_ids": [
+        11
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 2
+    },
+    {
+      "id": 108,
+      "teacher_ids": [
+        25
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 109,
+      "teacher_ids": [
+        25
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 110,
+      "teacher_ids": [
+        25
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 111,
+      "teacher_ids": [
+        25
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 112,
+      "teacher_ids": [
+        26
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 113,
+      "teacher_ids": [
+        26
+      ],
+      "subject_ids": [
+        31
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 2,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 114,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        32
+      ],
+      "class_group_ids": [
+        2
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 115,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        32
+      ],
+      "class_group_ids": [
+        3
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 116,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 117,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        5
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 118,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 119,
+      "teacher_ids": [
+        27
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 120,
+      "teacher_ids": [
+        28
+      ],
+      "subject_ids": [
+        32
+      ],
+      "class_group_ids": [
+        1
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 121,
+      "teacher_ids": [
+        28
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 122,
+      "teacher_ids": [
+        28
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        8
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 123,
+      "teacher_ids": [
+        28
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 3,
+      "length_per_lesson": 1
+    },
+    {
+      "id": 124,
+      "teacher_ids": [
+        28
+      ],
+      "subject_ids": [
+        33
+      ],
+      "class_group_ids": [
+        6
+      ],
+      "lessons_per_week": 1,
+      "length_per_lesson": 1
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 from ortools.sat.python import cp_model
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 from ..domain.entities.all_entities import Teacher, Subject, Room, ClassGroup, TimeSlot
+from collections import defaultdict
+
 
 class CspTimetableSolver:
-    def __init__(self, teachers: List[Teacher], subjects: List[Subject], 
+    def __init__(self, teachers: List[Teacher], subjects: List[Subject],
                  rooms: List[Room], groups: List[ClassGroup], slots: List[TimeSlot],
                  required_assignments: List[Dict[str, Any]] = None):
         self.teachers = teachers
@@ -13,293 +15,253 @@ class CspTimetableSolver:
         self.slots = slots
         self.required_assignments = required_assignments or []
         self.model = cp_model.CpModel()
-        self.vars = {} # (assignment_idx, room, slot) -> BoolVar
 
+        # Lookups
+        self.slot_map = {s.id: s for s in slots}
+        self.subject_map = {s.id: s for s in subjects}
+        self.active_slots = [s for s in slots if not s.is_break]
+
+        # Consecutive slot map: slot_id -> next_slot_id (same day, period n -> n+1)
+        day_slots_by_day = defaultdict(list)
+        for s in self.active_slots:
+            day_slots_by_day[s.day].append(s)
+
+        self.next_slot: Dict[int, int] = {}
+        self.day_of_slot: Dict[int, str] = {}
+        self.all_days: Set[str] = set()
+        self.slots_by_day: Dict[str, List[int]] = defaultdict(list)
+
+        for day, day_list in day_slots_by_day.items():
+            self.all_days.add(day)
+            sorted_list = sorted(day_list, key=lambda s: s.period)
+            for s in sorted_list:
+                self.day_of_slot[s.id] = day
+                self.slots_by_day[day].append(s.id)
+            for i in range(len(sorted_list) - 1):
+                curr, nxt = sorted_list[i], sorted_list[i + 1]
+                if nxt.period == curr.period + 1:
+                    self.next_slot[curr.id] = nxt.id
+
+        # Identify lab assignments (need 2 consecutive periods)
+        self._lab_ids: Set[int] = set()
+        for idx, a in enumerate(self.required_assignments):
+            subj = self.subject_map.get(a['subject_id'])
+            duration = a.get('duration', 1)
+            subj_lab = subj and subj.is_lab and (subj.duration_slots or 1) >= 2
+            if subj_lab or duration >= 2:
+                self._lab_ids.add(idx)
+
+        # Room type matching
+        self.lab_rooms = [r for r in rooms if 'lab' in (r.type or '').lower()]
+        self.lecture_rooms = [r for r in rooms if 'lab' not in (r.type or '').lower()]
+
+    # ------------------------------------------------------------------
+    def _valid_rooms(self, idx: int) -> List:
+        a = self.required_assignments[idx]
+        is_lab_assignment = a.get('duration', 1) >= 2
+        
+        if is_lab_assignment:
+            return self.lab_rooms or self.rooms
+        else:
+            return self.lecture_rooms or self.rooms
+
+    # ------------------------------------------------------------------
     def solve(self):
-        # If no required assignments provided, fall back to old behavior
         if not self.required_assignments:
-            print("WARNING: No required assignments provided, using cartesian product (may fail)")
             return self._solve_cartesian()
-        
-        print(f"CSP SOLVER: Starting with {len(self.required_assignments)} required assignments")
-        print(f"CSP SOLVER: Available resources - {len(self.rooms)} rooms, {len([s for s in self.slots if not s.is_break])} slots")
-        
-        # 1. Create Variables - one for each required assignment × room × slot
-        for idx, assignment in enumerate(self.required_assignments):
-            for r in self.rooms:
-                for t in self.slots:
-                    if t.is_break:
+
+        print(f"CSP: {len(self.required_assignments)} assignments | "
+              f"{len(self.active_slots)} slots | {len(self.rooms)} rooms | "
+              f"{len(self._lab_ids)} labs (2-period)")
+
+        # ── Build variables ──────────────────────────────────────────────────
+        # var[(idx, room_id, slot_id)] = BoolVar
+        var: Dict = {}
+        for idx in range(len(self.required_assignments)):
+            is_lab = idx in self._lab_ids
+            for r in self._valid_rooms(idx):
+                for t in self.active_slots:
+                    # Labs can only START where a consecutive next slot exists
+                    if is_lab and t.id not in self.next_slot:
                         continue
-                    
-                    # Create variable for this assignment at this room and slot
-                    self.vars[(idx, r.id, t.id)] = self.model.NewBoolVar(
-                        f'x_a{idx}_r{r.id}_t{t.id}'
-                    )
+                    var[(idx, r.id, t.id)] = self.model.NewBoolVar(
+                        f'a{idx}_r{r.id}_t{t.id}')
 
-        print(f"CSP SOLVER: Created {len(self.vars)} variables")
+        print(f"CSP: {len(var)} variables created")
 
-        # 2. Constraints
-        
-        # C1: Each assignment SHOULD be scheduled (relaxed from MUST to allow partial solutions)
-        # Instead of == 1, we use <= 1 to allow some assignments to be skipped if needed
-        for idx in range(len(self.required_assignments)):
-            assignment_vars = []
-            for r in self.rooms:
-                for t in self.slots:
-                    if not t.is_break and (idx, r.id, t.id) in self.vars:
-                        assignment_vars.append(self.vars[(idx, r.id, t.id)])
-            if assignment_vars:
-                # RELAXED: Allow assignment to be scheduled 0 or 1 times (not forcing exactly 1)
-                self.model.Add(sum(assignment_vars) <= 1)
-        print(f"CSP SOLVER: Added {len(self.required_assignments)} assignment constraints (relaxed)")
+        # ── Pre-build indexes for fast constraint generation ─────────────────
+        # idx -> list of its vars
+        idx_vars: Dict[int, list] = defaultdict(list)
+        # (group_id, slot_id) -> list of vars whose assignment OCCUPIES that slot
+        group_slot_vars: Dict[tuple, list] = defaultdict(list)
+        # (room_id, slot_id) -> list of vars whose assignment OCCUPIES that slot
+        room_slot_vars: Dict[tuple, list] = defaultdict(list)
+        # (teacher_id, slot_id) -> list of vars whose assignment OCCUPIES that slot
+        teacher_slot_vars: Dict[tuple, list] = defaultdict(list)
+        # (group_id, subject_id, day) -> list of vars that START on that day
+        group_subj_day_vars: Dict[tuple, list] = defaultdict(list)
+        # (group_id, day) -> list of (var, weight) for daily load
+        group_day_load: Dict[tuple, list] = defaultdict(list)
+        # (group_id, subject_id, slot_id) -> list of vars that START this subject/group here
+        group_subj_slot_vars: Dict[tuple, list] = defaultdict(list)
 
-        # C2: Group No Overlaps - a group can't have multiple classes at same time
-        overlap_count = 0
-        for t in self.slots:
-            if t.is_break:
-                continue
-            for group_id in set(a['group_id'] for a in self.required_assignments):
-                group_vars = []
-                for idx, assignment in enumerate(self.required_assignments):
-                    if assignment['group_id'] == group_id:
-                        for r in self.rooms:
-                            if (idx, r.id, t.id) in self.vars:
-                                group_vars.append(self.vars[(idx, r.id, t.id)])
-                if group_vars:
-                    self.model.Add(sum(group_vars) <= 1)
-                    overlap_count += 1
-        print(f"CSP SOLVER: Added {overlap_count} group overlap constraints")
+        for (idx, rid, sid), v in var.items():
+            a = self.required_assignments[idx]
+            group_id = a['group_id']
+            teacher_id = a.get('teacher_id')
+            subject_id = a['subject_id']
+            day = self.day_of_slot[sid]
+            is_lab = idx in self._lab_ids
+            weight = 2 if is_lab else 1
 
-        # C3: Room No Overlaps - a room can't have multiple classes at same time
-        room_overlap_count = 0
-        for r in self.rooms:
-            for t in self.slots:
-                if t.is_break:
-                    continue
-                room_vars = []
-                for idx in range(len(self.required_assignments)):
-                    if (idx, r.id, t.id) in self.vars:
-                        room_vars.append(self.vars[(idx, r.id, t.id)])
-                if room_vars:
-                    self.model.Add(sum(room_vars) <= 1)
-                    room_overlap_count += 1
-        print(f"CSP SOLVER: Added {room_overlap_count} room overlap constraints")
+            idx_vars[idx].append(v)
+            group_subj_day_vars[(group_id, subject_id, day)].append(v)
+            group_day_load[(group_id, day)].append((v, weight))
 
-        # C4: Teacher No Overlaps - a teacher can't teach multiple classes at same time
-        teacher_overlap_count = 0
-        for t in self.slots:
-            if t.is_break:
-                continue
-            for teacher_id in set(a['teacher_id'] for a in self.required_assignments if a['teacher_id']):
-                teacher_vars = []
-                for idx, assignment in enumerate(self.required_assignments):
-                    if assignment.get('teacher_id') == teacher_id:
-                        for r in self.rooms:
-                            if (idx, r.id, t.id) in self.vars:
-                                teacher_vars.append(self.vars[(idx, r.id, t.id)])
-                if teacher_vars:
-                    self.model.Add(sum(teacher_vars) <= 1)
-                    teacher_overlap_count += 1
-        print(f"CSP SOLVER: Added {teacher_overlap_count} teacher overlap constraints")
+            # Occupied slots = start slot + next slot (for labs)
+            occupied = [sid]
+            if is_lab:
+                nxt = self.next_slot.get(sid)
+                if nxt:
+                    occupied.append(nxt)
 
-        # OPTIMIZATION: Maximize number of assignments scheduled
-        # This helps the solver find partial solutions if full solution is impossible
-        all_assignment_vars = []
-        for idx in range(len(self.required_assignments)):
-            for r in self.rooms:
-                for t in self.slots:
-                    if not t.is_break and (idx, r.id, t.id) in self.vars:
-                        all_assignment_vars.append(self.vars[(idx, r.id, t.id)])
-        
-        if all_assignment_vars:
-            self.model.Maximize(sum(all_assignment_vars))
-            print(f"CSP SOLVER: Added optimization objective to maximize scheduled assignments")
+            for occ_slot in occupied:
+                group_slot_vars[(group_id, occ_slot)].append(v)
+                room_slot_vars[(rid, occ_slot)].append(v)
+                if teacher_id:
+                    teacher_slot_vars[(teacher_id, occ_slot)].append(v)
+            
+            # C7 Pre-indexing: group_subj_slot_vars
+            # Track which variables START a specific subject for a group in a slot
+            group_subj_slot_vars[(group_id, subject_id, sid)].append(v)
 
-        # 3. Solve
-        print("CSP SOLVER: Starting solver (max 120 seconds)...")
+        # ── C1: Each assignment scheduled AT MOST ONCE (Relaxed for feasibility) ──
+        for idx, v_list in idx_vars.items():
+            if v_list:
+                # Use <= 1 so solver can skip assignments it can't fit without conflicts
+                self.model.Add(sum(v_list) <= 1)
+        print(f"CSP: C1 – {len(idx_vars)} at-most-once constraints")
+
+        # ── C2: Group no-overlap (including lab 2nd period) ───────────────────
+        c2 = 0
+        for v_list in group_slot_vars.values():
+            if len(v_list) > 1:
+                self.model.Add(sum(v_list) <= 1)
+                c2 += 1
+        print(f"CSP: C2 – {c2} group-timeslot constraints")
+
+        # ── C3: Room no-overlap ───────────────────────────────────────────────
+        c3 = 0
+        for v_list in room_slot_vars.values():
+            if len(v_list) > 1:
+                self.model.Add(sum(v_list) <= 1)
+                c3 += 1
+        print(f"CSP: C3 – {c3} room-timeslot constraints")
+
+        # ── C4: Teacher no-overlap ────────────────────────────────────────────
+        c4 = 0
+        for v_list in teacher_slot_vars.values():
+            if len(v_list) > 1:
+                self.model.Add(sum(v_list) <= 1)
+                c4 += 1
+        print(f"CSP: C4 – {c4} teacher-timeslot constraints")
+
+        # ── C5: Same subject ≤ 1 per day per group (Theory/General) ───────────
+        c5 = 0
+        for (gid, subid, day), v_list in group_subj_day_vars.items():
+            if len(v_list) > 1:
+                self.model.Add(sum(v_list) <= 1)
+                c5 += 1
+        print(f"CSP: C5 – {c5} same-subject-per-day constraints")
+
+        # ── C7: No consecutive same-subject lectures (same group) ───────────
+        c7 = 0
+        for (gid, subid, day) in group_subj_day_vars.keys():
+            day_slots = self.slots_by_day.get(day, [])
+            for i in range(len(day_slots) - 1):
+                s1 = day_slots[i]
+                s2 = day_slots[i+1]
+                
+                vars_s1 = group_subj_slot_vars.get((gid, subid, s1), [])
+                vars_s2 = group_subj_slot_vars.get((gid, subid, s2), [])
+                
+                if vars_s1 and vars_s2:
+                    # If we have assignments starting at s1 AND s2, they can't both be true
+                    self.model.Add(sum(vars_s1) + sum(vars_s2) <= 1)
+                    c7 += 1
+        print(f"CSP: C7 – {c7} consecutive-subject constraints")
+
+        # ── C6: Max 5 periods per group per day (labs = 2 periods) ───────────
+        MAX_PERIODS = 5
+        c6 = 0
+        for (group_id, day), load_list in group_day_load.items():
+            if load_list:
+                terms = [v * w for v, w in load_list]
+                self.model.Add(sum(terms) <= MAX_PERIODS)
+                c6 += 1
+        print(f"CSP: C6 – {c6} daily-load constraints (max {MAX_PERIODS})")
+
+        # ── Objective: Maximize scheduled assignments ─────────────────────────
+        self.model.Maximize(sum(var.values()))
+
+        # ── Solve ─────────────────────────────────────────────────────────────
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = 120.0  # Increased timeout
-        solver.parameters.num_search_workers = 4  # Parallel search
+        solver.parameters.max_time_in_seconds = 60.0
+        solver.parameters.num_search_workers = 8  # Use more workers
+        solver.parameters.log_search_progress = True
+        print(f"CSP: Solving {len(var)} variables (timeout 60 s)…")
         status = solver.Solve(self.model)
 
-        print(f"CSP SOLVER: Solver finished with status: {status}")
-        if status == cp_model.OPTIMAL:
-            print("CSP SOLVER: Found OPTIMAL solution")
-        elif status == cp_model.FEASIBLE:
-            print("CSP SOLVER: Found FEASIBLE solution")
-        else:
-            print(f"CSP SOLVER: No solution found (status={status})")
+        names = {cp_model.OPTIMAL: "OPTIMAL", cp_model.FEASIBLE: "FEASIBLE",
+                 cp_model.INFEASIBLE: "INFEASIBLE", cp_model.UNKNOWN: "UNKNOWN"}
+        print(f"CSP: Status = {names.get(status, status)}")
 
-        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-            solution = self._extract_solution_from_assignments(solver)
-            print(f"CSP SOLVER: Extracted {len(solution) if solution else 0} entries")
-            return solution
-        else:
-            print(f"CSP SOLVER: Returning None (no solution)")
-            return None
-    
-    def _extract_solution_from_assignments(self, solver):
-        """Extract solution from assignment-based variables"""
+        if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+            schedule = self._extract(solver, var)
+            print(f"CSP: {len(schedule)} entries extracted")
+            return schedule
+
+        return None
+
+    # ------------------------------------------------------------------
+    def _extract(self, solver, var: Dict) -> List[Dict]:
         schedule = []
-        slot_info = {t.id: t for t in self.slots}
-        
-        for key, var in self.vars.items():
-            if solver.Value(var) == 1:
-                idx, rid, tid = key
-                assignment = self.required_assignments[idx]
-                slot = slot_info.get(tid)
-                
-                schedule.append({
-                    "class_group_id": assignment['group_id'],
-                    "subject_id": assignment['subject_id'],
-                    "room_id": rid,
-                    "time_slot_id": tid,
-                    "teacher_id": assignment['teacher_id'],
-                    "day": slot.day,
-                    "period": slot.period
-                })
-        
+        seen: Set[tuple] = set()
+
+        for (idx, rid, start_sid), v in var.items():
+            if solver.Value(v) != 1:
+                continue
+            a = self.required_assignments[idx]
+
+            def add(slot_id):
+                key = (a['group_id'], a['subject_id'], slot_id)
+                if key in seen:
+                    return
+                seen.add(key)
+                slot = self.slot_map.get(slot_id)
+                if slot:
+                    schedule.append({
+                        "class_group_id": a['group_id'],
+                        "subject_id": a['subject_id'],
+                        "room_id": rid,
+                        "time_slot_id": slot_id,
+                        "teacher_id": a.get('teacher_id'),
+                        "batch_label": a.get('batch_label'),
+                        "day": slot.day,
+                        "period": slot.period,
+                    })
+
+            add(start_sid)
+            if idx in self._lab_ids:
+                nxt = self.next_slot.get(start_sid)
+                if nxt:
+                    add(nxt)
+
         return schedule
-    
+
+    # ------------------------------------------------------------------
+    # Fallback (rarely used)
+    # ------------------------------------------------------------------
     def _solve_cartesian(self):
-        """Old cartesian product method - fallback only"""
-        # 1. Create Variables - create for ALL combinations
-        print("DEBUG: Creating variables...")
-        for g in self.groups:
-            for s in self.subjects:
-                for r in self.rooms:
-                    for t in self.slots:
-                        if t.is_break: 
-                            continue
-                        
-                        # Create variables for ALL non-break slots
-                        self.vars[(g.id, s.id, r.id, t.id)] = self.model.NewBoolVar(
-                            f'x_g{g.id}_s{s.id}_r{r.id}_t{t.id}'
-                        )
-
-        print(f"DEBUG: Created {len(self.vars)} variables")
-        print(f"DEBUG: Groups: {len(self.groups)}, Subjects: {len(self.subjects)}, Rooms: {len(self.rooms)}, Non-break slots: {len([t for t in self.slots if not t.is_break])}")
-
-        # 2. Constraints
-        print(f"DEBUG: Applying constraints...")
-        
-        # Helper: Get all variables for a group at a specific slot
-        def get_group_slot_vars(group_id, slot_id):
-            vars_list = []
-            for s in self.subjects:
-                for r in self.rooms:
-                    if (group_id, s.id, r.id, slot_id) in self.vars:
-                        vars_list.append(self.vars[(group_id, s.id, r.id, slot_id)])
-            return vars_list
-
-        # C1: REQUIREMENT - Each group must have each subject exactly once
-        req_count = 0
-        for g in self.groups:
-            for s in self.subjects:
-                # All time slots for this group + subject combination
-                subject_vars = []
-                for r in self.rooms:
-                    for t in self.slots:
-                        if not t.is_break and (g.id, s.id, r.id, t.id) in self.vars:
-                            subject_vars.append(self.vars[(g.id, s.id, r.id, t.id)])
-                if subject_vars:
-                    # Group must have subject exactly once (across all slots)
-                    self.model.Add(sum(subject_vars) == 1)
-                    req_count += 1
-        print(f"DEBUG: Added {req_count} requirement constraints (each group-subject once)")
-
-        # C2: Group No Overlaps (at slot level)
-        overlap_count = 0
-        for g in self.groups:
-            for t in self.slots:
-                if t.is_break: continue
-                g_vars = get_group_slot_vars(g.id, t.id)
-                if g_vars:
-                    self.model.Add(sum(g_vars) <= 1)
-                    overlap_count += 1
-        print(f"DEBUG: Added {overlap_count} group overlap constraints")
-
-        # C3: Room No Overlaps
-        room_overlap_count = 0
-        for r in self.rooms:
-            for t in self.slots:
-                if t.is_break: continue
-                r_vars = []
-                for g in self.groups:
-                    for s in self.subjects:
-                        if (g.id, s.id, r.id, t.id) in self.vars:
-                            r_vars.append(self.vars[(g.id, s.id, r.id, t.id)])
-                if r_vars:
-                    self.model.Add(sum(r_vars) <= 1)
-                    room_overlap_count += 1
-        print(f"DEBUG: Added {room_overlap_count} room overlap constraints")
-
-        # C4: Teacher No Overlaps
-        teacher_map = {s.id: s.teacher_id for s in self.subjects if s.teacher_id}
-        teacher_overlap_count = 0
-        for tid in set(teacher_map.values()):
-            for t in self.slots:
-                if t.is_break: continue
-                t_vars = []
-                for s in self.subjects:
-                    if s.teacher_id == tid:
-                        for g in self.groups:
-                            for r in self.rooms:
-                                if (g.id, s.id, r.id, t.id) in self.vars:
-                                    t_vars.append(self.vars[(g.id, s.id, r.id, t.id)])
-                if t_vars:
-                    self.model.Add(sum(t_vars) <= 1)
-                    teacher_overlap_count += 1
-        print(f"DEBUG: Added {teacher_overlap_count} teacher overlap constraints")
-
-        # 3. Solve
-        print("DEBUG: Solving...")
-        solver = cp_model.CpSolver()
-        solver.parameters.log_search_progress = True  # Enable logging
-        status = solver.Solve(self.model)
-
-        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-            return self._extract_solution(solver)
-        else:
-            print("DEBUG: No solution found.")
-            return None
-
-    def _extract_solution(self, solver):
-        schedule = []
-        subject_to_teacher = {s.id: s.teacher_id for s in self.subjects}
-        subject_info = {s.id: s for s in self.subjects}
-        slot_info = {t.id: t for t in self.slots}
-        
-        for key, var in self.vars.items():
-            if solver.Value(var) == 1:
-                gid, sid, rid, tid = key
-                subject = subject_info.get(sid)
-                slot = slot_info.get(tid)
-                
-                # Add the main entry
-                schedule.append({
-                    "class_group_id": gid,
-                    "subject_id": sid,
-                    "room_id": rid,
-                    "time_slot_id": tid,
-                    "teacher_id": subject_to_teacher.get(sid),
-                    "day": slot.day,
-                    "period": slot.period
-                })
-                
-                # If Lab, add the implicit following slot (Period 6)
-                if subject.is_lab and subject.duration_slots > 1 and slot.period == 5:
-                    # Find period 6 slot
-                    p6_slot = next((t for t in self.slots if t.day == slot.day and t.period == 6), None)
-                    if p6_slot:
-                        schedule.append({
-                            "class_group_id": gid,
-                            "subject_id": sid,
-                            "room_id": rid,
-                            "time_slot_id": p6_slot.id,
-                            "teacher_id": subject_to_teacher.get(sid),
-                            "day": slot.day,
-                            "period": 6
-                        })
-        
-        return schedule
+        print("WARNING: No assignments – cartesian fallback")
+        return None

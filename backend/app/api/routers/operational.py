@@ -12,6 +12,91 @@ from fastapi import BackgroundTasks
 
 router = APIRouter()
 
+
+def _upsert_room(db: Session, name: str, room_type: str, capacity: int, resources: List[str]):
+    room = db.query(models.Room).filter(models.Room.name == name).first()
+    if not room:
+        room = models.Room(name=name)
+        db.add(room)
+    room.type = room_type
+    room.capacity = capacity
+    room.resources = resources
+    return room
+
+
+def _upsert_group(db: Session, name: str, student_count: int):
+    group = db.query(models.ClassGroup).filter(models.ClassGroup.name == name).first()
+    if not group:
+        group = models.ClassGroup(name=name, student_count=student_count)
+        db.add(group)
+    else:
+        group.student_count = student_count
+    return group
+
+
+@router.post("/department-layouts/aids")
+def apply_aids_department_layout(
+    replace_rooms: bool = False,
+    replace_groups: bool = False,
+    db: Session = Depends(get_db),
+):
+    """
+    Apply the default AIDS department layout.
+    Rooms and class groups remain editable afterwards through normal CRUD screens.
+    """
+    aids_groups = [
+        ("BE-A", 60),
+        ("BE-B", 60),
+        ("SE-A", 60),
+        ("SE-B", 60),
+        ("SE-C", 60),
+        ("TE-A", 60),
+        ("TE-B", 60),
+        ("TE-C", 60),
+    ]
+
+    aids_rooms = [
+        ("11", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("12", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("21", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("22", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("23", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("24", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("25", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("32", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("33", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("34", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("35", "LectureHall", 60, ["Projector", "Whiteboard"]),
+        ("SL1", "Lab", 30, ["Computers", "Projector", "Network"]),
+        ("SL2", "Lab", 30, ["Computers", "Projector", "Network"]),
+        ("SL3", "Lab", 30, ["Computers", "Projector", "Network"]),
+        ("SL4", "Lab", 30, ["Computers", "Projector", "Network"]),
+        ("AI Lab", "Lab", 30, ["Computers", "Projector", "GPU"]),
+        ("Project Lab", "Lab", 30, ["Computers", "Projector", "Network"]),
+        ("Tutorial Room", "LectureHall", 40, ["Projector", "Whiteboard"]),
+        ("Board Room", "LectureHall", 30, ["Projector", "Whiteboard"]),
+    ]
+
+    if replace_groups:
+        db.query(models.ClassGroup).delete()
+
+    if replace_rooms:
+        db.query(models.Room).delete()
+
+    for name, count in aids_groups:
+        _upsert_group(db, name, count)
+
+    for name, room_type, capacity, resources in aids_rooms:
+        _upsert_room(db, name, room_type, capacity, resources)
+
+    db.commit()
+
+    return {
+        "message": "AIDS department layout applied",
+        "class_groups": [name for name, _ in aids_groups],
+        "rooms": [name for name, _, _, _ in aids_rooms],
+    }
+
 @router.get('/time-slots', response_model=List[schemas.TimeSlot])
 def get_time_slots(db: Session = Depends(get_db)):
     """Get all configured time slots"""
@@ -171,6 +256,80 @@ def _minutes_to_hhmm(m: int) -> str:
     return f"{h:02d}:{mm:02d}"
 
 
+def _normalize_schedule_config(config: schemas.ScheduleConfigBase) -> Dict[str, Any]:
+    days = config.schedule_days or []
+    if not days:
+        raise HTTPException(status_code=400, detail="Invalid configuration: No working days provided.")
+
+    available = None
+    if config.working_minutes_per_day:
+        try:
+            available = int(config.working_minutes_per_day)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid working_minutes_per_day")
+    elif config.day_end_time and config.day_start_time:
+        try:
+            start_min = _hhmm_to_minutes(config.day_start_time)
+            end_min = _hhmm_to_minutes(config.day_end_time)
+            available = (end_min - start_min) if end_min >= start_min else (24 * 60 - start_min + end_min)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid day_start_time/day_end_time format")
+
+    if not config.number_of_periods and not config.period_duration_minutes:
+        raise HTTPException(status_code=400, detail="Invalid configuration: number_of_periods or period_duration_minutes required")
+
+    num_periods = int(config.number_of_periods) if config.number_of_periods else None
+    period_dur = int(config.period_duration_minutes) if config.period_duration_minutes else None
+
+    if num_periods and not period_dur:
+        if not available:
+            raise HTTPException(status_code=400, detail="Invalid configuration: cannot derive period duration")
+        period_dur = max(1, int(available) // num_periods)
+    elif period_dur and not num_periods:
+        if not available:
+            raise HTTPException(status_code=400, detail="Invalid configuration: cannot derive number_of_periods")
+        num_periods = max(1, int(available) // period_dur)
+
+    if not num_periods or not period_dur:
+        raise HTTPException(status_code=400, detail="Invalid configuration: number_of_periods and period_duration_minutes required")
+
+    breaks = [b.model_dump() if hasattr(b, 'model_dump') else b for b in (config.breaks or [])]
+    total_break_minutes = 0
+    for b in breaks:
+        try:
+            total_break_minutes += int(b.get("duration", 0))
+        except Exception:
+            pass
+
+    lunch_minutes = 0
+    try:
+        if config.lunch_break_start and config.lunch_break_end:
+            lunch_minutes = _hhmm_to_minutes(config.lunch_break_end) - _hhmm_to_minutes(config.lunch_break_start)
+            if lunch_minutes < 0:
+                lunch_minutes = 0
+    except Exception:
+        lunch_minutes = 0
+
+    required_minutes = num_periods * period_dur + total_break_minutes + lunch_minutes
+    adjusted_working_minutes = int(available) if available else required_minutes
+    if required_minutes > adjusted_working_minutes:
+        adjusted_working_minutes = required_minutes
+        print(f"[schedule-config] Auto-adjusting working_minutes_per_day to {adjusted_working_minutes}")
+
+    return {
+        "day_start_time": config.day_start_time,
+        "day_end_time": config.day_end_time,
+        "working_minutes_per_day": adjusted_working_minutes,
+        "number_of_periods": num_periods,
+        "period_duration_minutes": period_dur,
+        "breaks": breaks,
+        "lunch_break_start": config.lunch_break_start,
+        "lunch_break_end": config.lunch_break_end,
+        "schedule_days": days,
+        "institution": config.institution,
+    }
+
+
 def generate_time_slots_from_config(cfg: models.ScheduleConfig, db: Session):
     """Generate TimeSlot rows from a ScheduleConfig instance.
     Supports: explicit number_of_periods + period_duration_minutes OR period_duration + working_minutes/day (auto-calc periods).
@@ -322,17 +481,17 @@ def update_schedule_config(config: schemas.ScheduleConfigBase, db: Session = Dep
     if not cfg:
         cfg = models.ScheduleConfig()
 
-    cfg.day_start_time = config.day_start_time
-    cfg.day_end_time = config.day_end_time
-    cfg.working_minutes_per_day = config.working_minutes_per_day
-    cfg.number_of_periods = config.number_of_periods
-    cfg.period_duration_minutes = config.period_duration_minutes
-    # convert breaks to plain list of dicts
-    cfg.breaks = [b.model_dump() if hasattr(b, 'model_dump') else b for b in config.breaks]
-    cfg.lunch_break_start = config.lunch_break_start
-    cfg.lunch_break_end = config.lunch_break_end
-    cfg.schedule_days = config.schedule_days
-    cfg.institution = config.institution
+    normalized = _normalize_schedule_config(config)
+    cfg.day_start_time = normalized["day_start_time"]
+    cfg.day_end_time = normalized["day_end_time"]
+    cfg.working_minutes_per_day = normalized["working_minutes_per_day"]
+    cfg.number_of_periods = normalized["number_of_periods"]
+    cfg.period_duration_minutes = normalized["period_duration_minutes"]
+    cfg.breaks = normalized["breaks"]
+    cfg.lunch_break_start = normalized["lunch_break_start"]
+    cfg.lunch_break_end = normalized["lunch_break_end"]
+    cfg.schedule_days = normalized["schedule_days"]
+    cfg.institution = normalized["institution"]
 
     db.add(cfg)
     db.commit()
@@ -433,73 +592,23 @@ def apply_config(config: schemas.ScheduleConfigBase, db: Session = Depends(get_d
     It validates the basic time math, saves the configuration, deletes old timetable data,
     regenerates time slots, runs the timetable generator synchronously, and returns the new version.
     """
-    # 1. Basic validation: schedule days present
-    days = config.schedule_days or []
-    if not days:
-        raise HTTPException(status_code=400, detail="Invalid configuration: No working days provided.")
-
-    # 2. Compute available_time (minutes)
-    available = None
-    if config.working_minutes_per_day:
-        try:
-            available = int(config.working_minutes_per_day)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid working_minutes_per_day")
-    elif config.day_end_time and config.day_start_time:
-        try:
-            start_min = _hhmm_to_minutes(config.day_start_time)
-            end_min = _hhmm_to_minutes(config.day_end_time)
-            available = (end_min - start_min) if end_min >= start_min else (24*60 - start_min + end_min)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid day_start_time/day_end_time format")
-    else:
-        raise HTTPException(status_code=400, detail="Invalid configuration: provide working_minutes_per_day or day_end_time/day_start_time")
-
-    # 3. Ensure number_of_periods and period_duration available for validation
-    if not config.number_of_periods or not config.period_duration_minutes:
-        # If missing one, try to derive so we can validate; if impossible, reject
-        if config.number_of_periods and not config.period_duration_minutes:
-            # derive duration as floor(available / number_of_periods)
-            try:
-                derived = max(1, int(available) // int(config.number_of_periods))
-                period_dur = derived
-            except Exception:
-                raise HTTPException(status_code=400, detail="Invalid configuration: cannot derive period duration")
-        elif config.period_duration_minutes and not config.number_of_periods:
-            try:
-                derived_n = max(1, int(available) // int(config.period_duration_minutes))
-                period_dur = int(config.period_duration_minutes)
-                # set number for validation
-                config.number_of_periods = derived_n
-            except Exception:
-                raise HTTPException(status_code=400, detail="Invalid configuration: cannot derive number_of_periods")
-        else:
-            raise HTTPException(status_code=400, detail="Invalid configuration: number_of_periods and period_duration_minutes required")
-
-    total_required = int(config.number_of_periods) * int(config.period_duration_minutes)
-
-    # 4. Auto-adjust working_minutes_per_day if needed (flexibility for admin)
-    # If admin wants more periods/duration, accept it and auto-adjust the working_minutes_per_day
-    adjusted_working_minutes = int(available)
-    if total_required > int(available):
-        adjusted_working_minutes = total_required
-        print(f"[apply-config] Auto-adjusting working_minutes_per_day from {available} to {adjusted_working_minutes} to accommodate {config.number_of_periods} periods x {config.period_duration_minutes} minutes")
+    normalized = _normalize_schedule_config(config)
 
     # 5. Save the config with adjusted working_minutes if necessary
     cfg = db.query(models.ScheduleConfig).first()
     if not cfg:
         cfg = models.ScheduleConfig()
 
-    cfg.day_start_time = config.day_start_time
-    cfg.day_end_time = config.day_end_time
-    cfg.working_minutes_per_day = adjusted_working_minutes  # Use adjusted value
-    cfg.number_of_periods = config.number_of_periods
-    cfg.period_duration_minutes = config.period_duration_minutes
-    cfg.breaks = [b.model_dump() if hasattr(b, 'model_dump') else b for b in config.breaks]
-    cfg.lunch_break_start = config.lunch_break_start
-    cfg.lunch_break_end = config.lunch_break_end
-    cfg.schedule_days = config.schedule_days
-    cfg.institution = config.institution
+    cfg.day_start_time = normalized["day_start_time"]
+    cfg.day_end_time = normalized["day_end_time"]
+    cfg.working_minutes_per_day = normalized["working_minutes_per_day"]
+    cfg.number_of_periods = normalized["number_of_periods"]
+    cfg.period_duration_minutes = normalized["period_duration_minutes"]
+    cfg.breaks = normalized["breaks"]
+    cfg.lunch_break_start = normalized["lunch_break_start"]
+    cfg.lunch_break_end = normalized["lunch_break_end"]
+    cfg.schedule_days = normalized["schedule_days"]
+    cfg.institution = normalized["institution"]
 
     db.add(cfg)
     db.commit()

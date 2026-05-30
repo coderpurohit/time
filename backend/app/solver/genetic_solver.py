@@ -6,12 +6,13 @@ from ..domain.entities.all_entities import Teacher, Subject, Room, ClassGroup, T
 
 class GeneticTimetableSolver:
     def __init__(self, teachers, subjects, rooms, groups, slots, 
-                 pop_size=50, generations=100, mutation_rate=0.1):
+                 required_assignments=None, pop_size=50, generations=100, mutation_rate=0.1):
         self.teachers = teachers
         self.subjects = subjects
         self.rooms = rooms
         self.groups = groups
         self.slots = [s for s in slots if not s.is_break]
+        self.required_assignments = required_assignments or []
         self.pop_size = pop_size
         self.generations = generations
         self.mutation_rate = mutation_rate

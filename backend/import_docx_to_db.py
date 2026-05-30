@@ -110,6 +110,26 @@ def parse_docx(filepath):
                 if v > current_teacher.get("total_periods", 0):
                     current_teacher["total_periods"] = v
         
+        # ── [PERSISTENT FIX] Apply User-Restricted Subject & Load Rules ──
+        if current_teacher:
+            name_norm = current_teacher["name"].lower()
+            subj_norm = course.lower()
+            
+            # Rule 1: Dr. V. G. Kottawar
+            if "kottawar" in name_norm and ("professional" in subj_norm and "communication" in subj_norm):
+                print(f"DOCX SCRIPT: Persistent Filter - Removed '{course}' from {current_teacher['name']}")
+                continue
+            
+            # Rule 2: Dr. Manish Sharma
+            if "manish sharma" in name_norm and ("sustainable" in subj_norm or "energy" in subj_norm):
+                print(f"DOCX SCRIPT: Persistent Filter - Removed '{course}' from {current_teacher['name']}")
+                continue
+            
+            # Rule 3: Dr. Suvarna Gothane
+            if "suvarna" in name_norm and ("physics" in subj_norm):
+                print(f"DOCX SCRIPT: Persistent Filter - Removed '{course}' from {current_teacher['name']}")
+                continue
+
         if current_teacher:
             # Parse class divisions
             raw_div = cls_div.replace(" ", "")
@@ -124,9 +144,10 @@ def parse_docx(filepath):
             elif raw_div:
                 class_names.append(raw_div)
             
-            # Detect lab type
-            prac_upper = str(practical).upper()
-            is_lab = any(kw in prac_upper for kw in ["SL1","SL2","CL1","CL2","MP"])
+            # Detect lab type: If practical hours exist, it's a lab
+            prac_str = str(practical).strip()
+            prac_upper = prac_str.upper()
+            is_lab = bool(re.search(r'[1-9]', prac_str)) or any(kw in prac_upper for kw in ["SL1","SL2","CL1","CL2","MP"])
             
             current_teacher["courses"].append({
                 "name": course,
@@ -203,10 +224,19 @@ def import_to_db(docx_path):
             email_parts = cleaned.strip().split()
             email = '.'.join(email_parts) + '@college.edu'
             
+            # ── [PERSISTENT FIX] Force Load Factors ──
+            name_norm = name.lower()
             max_hours = t.get("total_periods", 20)
             if max_hours < 5:
                 max_hours = 20
             
+            if "kottawar" in name_norm:
+                max_hours = 8
+            elif "manish sharma" in name_norm:
+                max_hours = 10
+            elif "suvarna" in name_norm and "gothane" in name_norm:
+                max_hours = 13
+
             teacher = models.Teacher(
                 name=name,
                 email=email,
@@ -247,12 +277,20 @@ def import_to_db(docx_path):
         subject_db_map = {}
         seen_codes = set()
         
-        # Find first teacher for each subject
+        # Find first teacher and class levels for each subject
         subject_first_teacher = {}
+        subject_class_levels = {}
         for t in teachers_data:
             for c in t["courses"]:
                 if c["name"] not in subject_first_teacher:
                     subject_first_teacher[c["name"]] = t["name"]
+                if c["name"] not in subject_class_levels:
+                    subject_class_levels[c["name"]] = set()
+                for cls_name in c["class_names"]:
+                    if "FE" in cls_name.upper():
+                        subject_class_levels[c["name"]].add("FE")
+                    else:
+                        subject_class_levels[c["name"]].add("OTHER")
         
         for subj_name, is_lab in sorted(all_subjects.items()):
             # Generate unique code
@@ -271,13 +309,16 @@ def import_to_db(docx_path):
             teacher_name = subject_first_teacher.get(subj_name)
             teacher_id = teacher_db_map[teacher_name].id if teacher_name and teacher_name in teacher_db_map else None
             
+            # Lab subjects are ALWAYS 2 hours as per user request
+            duration = 2 if is_lab else 1
+            
             subj = models.Subject(
                 name=subj_name,
                 code=code,
                 is_lab=is_lab,
                 credits=2 if is_lab else 3,
                 required_room_type="Lab" if is_lab else "LectureHall",
-                duration_slots=2 if is_lab else 1,
+                duration_slots=duration,
                 teacher_id=teacher_id
             )
             db.add(subj)
@@ -306,30 +347,78 @@ def import_to_db(docx_path):
                     if not cg:
                         continue
                     
-                    key = (teacher.id, subj.id, cg.id)
-                    if key in lesson_keys_seen:
-                        continue
-                    lesson_keys_seen.add(key)
+                    base_key = (teacher.id, subj.id, cg.id)
                     
-                    lesson = models.Lesson(
-                        lessons_per_week=1,
-                        length_per_lesson=2 if c["is_lab"] else 1
-                    )
-                    db.add(lesson)
-                    db.flush()
-                    
-                    # Add associations
-                    db.execute(models.lesson_teachers.insert().values(
-                        lesson_id=lesson.id, teacher_id=teacher.id
-                    ))
-                    db.execute(models.lesson_class_groups.insert().values(
-                        lesson_id=lesson.id, class_group_id=cg.id
-                    ))
-                    db.execute(models.lesson_subjects.insert().values(
-                        lesson_id=lesson.id, subject_id=subj.id
-                    ))
-                    lessons_created += 1
-        
+                    # 1. Check and create Theory Lesson
+                    theory_val = str(c["theory"]).strip()
+                    if theory_val and theory_val != "-":
+                        t_match = re.search(r'\d+', theory_val)
+                        if t_match:
+                            t_lessons = int(t_match.group())
+                            t_key = base_key + ("theory",)
+                            if t_key not in lesson_keys_seen:
+                                lesson_keys_seen.add(t_key)
+                                t_lesson = models.Lesson(
+                                    lessons_per_week=t_lessons,
+                                    length_per_lesson=1
+                                )
+                                db.add(t_lesson)
+                                db.flush()
+                                
+                                db.execute(models.lesson_teachers.insert().values(
+                                    lesson_id=t_lesson.id, teacher_id=teacher.id
+                                ))
+                                db.execute(models.lesson_class_groups.insert().values(
+                                    lesson_id=t_lesson.id, class_group_id=cg.id
+                                ))
+                                db.execute(models.lesson_subjects.insert().values(
+                                    lesson_id=t_lesson.id, subject_id=subj.id
+                                ))
+                                lessons_created += 1
+
+                    # 2. Check and create Practical/Lab Lesson
+                    prac_val = str(c["practical"]).strip()
+                    if prac_val and prac_val != "-":
+                        p_lessons = 0
+                        
+                        if "*" in prac_val or "x" in prac_val.lower():
+                            parts = re.split(r'\*|x|X', prac_val)
+                            if len(parts) >= 2:
+                                p_match = re.search(r'\d+', parts[1]) # Get batch count
+                                if p_match:
+                                    p_lessons = int(p_match.group())
+                        else:
+                            p_match = re.search(r'\d+', prac_val)
+                            if p_match:
+                                num = int(p_match.group())
+                                if num > 0:
+                                    # If length_per_lesson is 2, and it says 3, assume 3 batches
+                                    # (Or if it's 1 it's 1 batch).
+                                    p_lessons = num
+                        
+                        if p_lessons > 0:
+                            p_key = base_key + ("practical",)
+                            if p_key not in lesson_keys_seen:
+                                lesson_keys_seen.add(p_key)
+                                # Practical sessions are ALWAYS length 2 as per user request
+                                p_lesson = models.Lesson(
+                                    lessons_per_week=p_lessons,
+                                    length_per_lesson=2
+                                )
+                                db.add(p_lesson)
+                                db.flush()
+                                
+                                db.execute(models.lesson_teachers.insert().values(
+                                    lesson_id=p_lesson.id, teacher_id=teacher.id
+                                ))
+                                db.execute(models.lesson_class_groups.insert().values(
+                                    lesson_id=p_lesson.id, class_group_id=cg.id
+                                ))
+                                db.execute(models.lesson_subjects.insert().values(
+                                    lesson_id=p_lesson.id, subject_id=subj.id
+                                ))
+                                lessons_created += 1
+
         print(f"  Created {lessons_created} lessons")
         
         # ── Ensure time slots exist

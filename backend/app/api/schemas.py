@@ -142,6 +142,7 @@ class TimetableEntry(BaseModel):
     room_id: Optional[int] = None
     class_group_id: Optional[int] = None
     teacher_id: Optional[int] = None
+    batch_label: Optional[str] = None
     
     time_slot: Optional[TimeSlot] = None
     subject: Optional[Subject] = None

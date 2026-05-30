@@ -1,0 +1,45 @@
+--- SCHEDULE CONFIG ---
+ID: 1, Number of Periods: 7, Duration: 60
+Days: ['Monday', 'Tuesday', 'Wednesday', 'Friday']
+Breaks: []
+
+--- TEACHER WORKLOAD ASPECTS ---
+
+--- SUBJECTS WITH TEACHER_ID ---
+ID: 1, Name: 'Critical Thinking and Problem Solving', Teacher: Dr. V. G. Kottawar (ID: 1), IsLab: False, Duration: 1
+ID: 2, Name: 'Mini Project', Teacher: Dr. V. G. Kottawar (ID: 1), IsLab: False, Duration: 1
+ID: 3, Name: 'Professional and 
+Technical 
+Communication', Teacher: None (ID: None), IsLab: False, Duration: 1
+ID: 4, Name: 'Fundamentals of AI', Teacher: Dr. Manish Sharma (ID: 2), IsLab: False, Duration: 1
+ID: 5, Name: 'Sustainable 
+Development I', Teacher: None (ID: None), IsLab: False, Duration: 1
+ID: 6, Name: 'Data Base Management System', Teacher: Dr. Suvarna S. Gothane (ID: 3), IsLab: True, Duration: 2
+ID: 7, Name: 'Engineering Physics', Teacher: None (ID: None), IsLab: False, Duration: 1
+ID: 8, Name: 'Elective I- HCI', Teacher: Dr. Bhaghyshri A. Tingare (ID: 4), IsLab: False, Duration: 1
+ID: 9, Name: 'Project Management', Teacher: Dr. Bhaghyshri A. Tingare (ID: 4), IsLab: False, Duration: 1
+ID: 10, Name: 'Elective III- EAC', Teacher: Mrs. Manasi D. Karajgar (ID: 5), IsLab: False, Duration: 1
+ID: 11, Name: 'MOOC', Teacher: Mrs. Manasi D. Karajgar (ID: 5), IsLab: False, Duration: 1
+ID: 12, Name: 'Applied Mechanics', Teacher: Mrs. Manasi D. Karajgar (ID: 5), IsLab: False, Duration: 1
+ID: 13, Name: 'Artificial Intelligence', Teacher: Mrs. Neeta J. Mahale (ID: 6), IsLab: False, Duration: 1
+ID: 14, Name: 'Elective IV- IR', Teacher: Mrs. Neeta J. Mahale (ID: 6), IsLab: True, Duration: 2
+ID: 15, Name: 'Web Technology', Teacher: Mrs. Rasika V. Wattamwar (ID: 7), IsLab: False, Duration: 1
+ID: 16, Name: 'Machine Learning', Teacher: Mrs. Rasika V. Wattamwar (ID: 7), IsLab: True, Duration: 2
+ID: 17, Name: 'Design Thinking', Teacher: Mrs. Rajshri T. Ingle (ID: 8), IsLab: False, Duration: 1
+ID: 18, Name: 'Experiential Learning I', Teacher: Mrs. Rajshri T. Ingle (ID: 8), IsLab: False, Duration: 1
+ID: 19, Name: 'Fundamentals of Data Structure', Teacher: Mrs. Pallavi R. Shingade (ID: 9), IsLab: False, Duration: 1
+ID: 20, Name: 'Professional and Technical Communication', Teacher: None (ID: None), IsLab: False, Duration: 1
+ID: 21, Name: 'Software Engineering', Teacher: Mrs. Snehal Malpani (ID: 10), IsLab: True, Duration: 2
+ID: 22, Name: 'Liberal Learning I', Teacher: Mrs. Snehal Malpani (ID: 10), IsLab: False, Duration: 1
+ID: 23, Name: 'Computer Networks', Teacher: Mr. Bhushan Javare (ID: 12), IsLab: False, Duration: 1
+ID: 24, Name: 'Data Modeling & Visualization', Teacher: Mr. Bhushan Javare (ID: 12), IsLab: False, Duration: 1
+ID: 25, Name: 'Computer Laboratory I', Teacher: Mrs. Aparna Lavangade (ID: 16), IsLab: False, Duration: 1
+ID: 26, Name: 'Elective I- PR', Teacher: Mrs. Swetha Banait (ID: 21), IsLab: False, Duration: 1
+ID: 27, Name: 'Environmental Studies', Teacher: Mrs. Kanchan C. Patil (ID: 22), IsLab: False, Duration: 1
+ID: 28, Name: 'Computer Laboratory II', Teacher: Mrs. Kanchan C. Patil (ID: 22), IsLab: False, Duration: 1
+ID: 29, Name: 'Seminar and Technical 
+Communication', Teacher: None (ID: None), IsLab: False, Duration: 1
+ID: 30, Name: 'Elective IV- UI/UX Design', Teacher: Mrs. Nehal Ganpule (ID: 24), IsLab: True, Duration: 2
+ID: 31, Name: 'Programming & Problem Solving', Teacher: Dr. Deepali Sale (ID: 25), IsLab: False, Duration: 1
+ID: 32, Name: 'Statistical Methods', Teacher: Dr. Aryani Gangadhara (ID: 27), IsLab: False, Duration: 1
+ID: 33, Name: 'Linear Algebra and Differential Calculus', Teacher: Dr. Aryani Gangadhara (ID: 27), IsLab: False, Duration: 1

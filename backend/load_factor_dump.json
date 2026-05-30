@@ -1,0 +1,2780 @@
+{
+  "summary": {
+    "total_teachers": 28,
+    "total_classes": 20,
+    "total_periods": 248,
+    "avg_teacher_load": 9,
+    "classroom_utilization": 0,
+    "lab_utilization": 0,
+    "timetable_id": 24,
+    "timetable_name": "New Generation",
+    "debug_marker": "Timer-Safety-Active-v4-Final255Sync"
+  },
+  "teacher_load": [
+    {
+      "name": "Dr. V. G. Kottawar",
+      "designation": "HOD",
+      "email": "v..g..kottawar@college.edu",
+      "total_periods": 10,
+      "courses_detail": [
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Mini Project",
+          "class_division": "SE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Professional and  Technical  Communication",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "2 * 12",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Manish Sharma",
+      "designation": "Professor",
+      "email": "manish.sharma@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-B",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Mini Project",
+          "class_division": "SE-B, SE-C",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (B-1,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Sustainable  Development I",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "2 * 3",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Suvarna S. Gothane",
+      "designation": "Associate Professor",
+      "email": "suvarna.s..gothane@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "SL1  \n2 * 4",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-A",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Engineering Physics",
+          "class_division": "FE-A, FE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "2 * 6",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Bhaghyshri A. Tingare",
+      "designation": "Assistant Professor",
+      "email": "bhaghyshri.a..tingare@college.edu",
+      "total_periods": 12,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- HCI",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 5 (A-1,C-4)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-C",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Engineering Physics",
+          "class_division": "FE-C",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2 * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Manasi D. Karajgar",
+      "designation": "Assistant Professor",
+      "email": "manasi.d..karajgar@college.edu",
+      "total_periods": 14,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective III- EAC",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A",
+          "theory_hours": "-",
+          "practical_hours": "2 * 2",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-A",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Neeta J. Mahale",
+      "designation": "Assistant Professor",
+      "email": "neeta.j..mahale@college.edu",
+      "total_periods": 13,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective IV- IR",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "3",
+          "practical_hours": "CL2\n4 * 3 (B)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-B",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Rasika V. Wattamwar",
+      "designation": "Assistant Professor",
+      "email": "rasika.v..wattamwar@college.edu",
+      "total_periods": 12,
+      "courses_detail": [
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Machine Learning",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "CL1\n4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-C",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Rajshri T. Ingle",
+      "designation": "Assistant Professor",
+      "email": "rajshri.t..ingle@college.edu",
+      "total_periods": 13,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 5 (B-1,C-4)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "2 * 1  \n( C)",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Experiential Learning I",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Pallavi R. Shingade",
+      "designation": "Assistant Professor",
+      "email": "pallavi.r..shingade@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of Data Structure",
+          "class_division": "SE-A, SE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "2 * 6 (A-4,B-2)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Professional and Technical Communication",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Snehal Malpani",
+      "designation": "Assistant Professor",
+      "email": "snehal.malpani@college.edu",
+      "total_periods": 16,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "MP\n4 * 3 (2-B,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Machine Learning",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Liberal Learning I",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Mayuri Rathi",
+      "designation": "Assistant Professor",
+      "email": "mayuri.rathi@college.edu",
+      "total_periods": 6,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 6 (B-4,C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-B",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mr. Bhushan Javare",
+      "designation": "Assistant Professor",
+      "email": "bhushan.javare@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "2 * 6 (A-2,B-3,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Data Modeling & Visualization",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Vidya Bhosale",
+      "designation": "Assistant Professor",
+      "email": "vidya.bhosale@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 6 (A-4,C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Data Modeling & Visualization",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mr. Ajit Kadam",
+      "designation": "Assistant Professor",
+      "email": "ajit.kadam@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 6 (A-2,B-1,C-3)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-A",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Shruti Sekra",
+      "designation": "Assistant Professor",
+      "email": "shruti.sekra@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-A",
+          "theory_hours": "3",
+          "practical_hours": "4 * 3 (A-2,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Aparna Lavangade",
+      "designation": "",
+      "email": "aparna.lavangade@college.edu",
+      "total_periods": 9,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-B",
+          "theory_hours": "-",
+          "practical_hours": "2 * 4",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory I",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (A-1,B-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Megha Mane",
+      "designation": "",
+      "email": "megha.mane@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of Data Structure",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 4 (C)\n2 * 2 (B-2)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Geeta Darunte",
+      "designation": "",
+      "email": "geeta.darunte@college.edu",
+      "total_periods": 5,
+      "courses_detail": [
+        {
+          "course_name": "Elective III- EAC",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-A, SE-C",
+          "theory_hours": "-",
+          "practical_hours": "2 * 6 (A-4, C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Ashika Hirulkar",
+      "designation": "",
+      "email": "ashika.hirulkar@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-A",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "2 * 5(A-1,B-4)",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-C",
+          "theory_hours": "-",
+          "practical_hours": "2 * 1 (c )",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Vaishnavi Jagtap",
+      "designation": "",
+      "email": "vaishnavi.jagtap@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- HCI",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory I",
+          "class_division": "BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Swetha Banait",
+      "designation": "",
+      "email": "swetha.banait@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- PR",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "2 * 7 (A-3,B-4)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-C",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Kanchan C. Patil",
+      "designation": "",
+      "email": "kanchan.c..patil@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Environmental Studies",
+          "class_division": "TE-A, TE-B, TE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 1,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A",
+          "theory_hours": "-",
+          "practical_hours": "2 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory II",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (A-1,B-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Ganesh Birajadar",
+      "designation": "",
+      "email": "ganesh.birajadar@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "MP\n4 * 3 (2-A,1-C)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Seminar and Technical  Communication",
+          "class_division": "TE-A, TE-B, TE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 1,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Nehal Ganpule",
+      "designation": "",
+      "email": "nehal.ganpule@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective IV- UI/UX Design",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "CL2\n4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Deepali Sale",
+      "designation": "",
+      "email": "deepali.sale@college.edu",
+      "total_periods": 4,
+      "courses_detail": [
+        {
+          "course_name": "Programming & Problem Solving",
+          "class_division": "FE-B, FE-C",
+          "theory_hours": "2 * 2",
+          "practical_hours": "2 * 4(C-3,B-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Latika Desai",
+      "designation": "",
+      "email": "latika.desai@college.edu",
+      "total_periods": 4,
+      "courses_detail": [
+        {
+          "course_name": "Programming & Problem Solving",
+          "class_division": "FE-A",
+          "theory_hours": "2",
+          "practical_hours": "2 * 5 (A-3,B-2)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Aryani Gangadhara",
+      "designation": "",
+      "email": "aryani.gangadhara@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Statistical Methods",
+          "class_division": "SE-A, SE-C",
+          "theory_hours": "3 * 2",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Linear Algebra and Differential Calculus",
+          "class_division": "FE-A, FE-B",
+          "theory_hours": "3",
+          "practical_hours": "1 * 2 (A-1,B-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Ms. Neeta Katariya",
+      "designation": "",
+      "email": "neeta.katariya@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Statistical Methods",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Linear Algebra and Differential Calculus",
+          "class_division": "FE-C, FE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "1 * 1 (C-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    }
+  ],
+  "class_load": [
+    {
+      "id": 1,
+      "name": "BE-A",
+      "student_count": 60,
+      "total_periods": 19,
+      "theory_periods": 19,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 63,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "MOOC": 4,
+        "Machine Learning": 4,
+        "Data Modeling & Visualization": 3,
+        "Elective III- EAC": 3,
+        "Elective IV- UI/UX Design": 5
+      }
+    },
+    {
+      "id": 1714,
+      "name": "BE-A,BE-B",
+      "student_count": 60,
+      "total_periods": 15,
+      "theory_periods": 7,
+      "practical_periods": 8,
+      "lab_periods": 8,
+      "load_percentage": 50,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective IV- IR": 5,
+        "Computer Laboratory I": 4,
+        "MOOC": 2,
+        "Computer Laboratory II": 4
+      }
+    },
+    {
+      "id": 2,
+      "name": "BE-B",
+      "student_count": 60,
+      "total_periods": 13,
+      "theory_periods": 9,
+      "practical_periods": 4,
+      "lab_periods": 4,
+      "load_percentage": 43,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective III- EAC": 3,
+        "Machine Learning": 3,
+        "Data Modeling & Visualization": 3,
+        "Computer Laboratory I": 4
+      }
+    },
+    {
+      "id": 3,
+      "name": "FE-A",
+      "student_count": 60,
+      "total_periods": 9,
+      "theory_periods": 9,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 30,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Applied Mechanics": 5,
+        "Programming & Problem Solving": 4
+      }
+    },
+    {
+      "id": 1994,
+      "name": "FE-A,FE-B",
+      "student_count": 60,
+      "total_periods": 9,
+      "theory_periods": 9,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 30,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Engineering Physics": 5,
+        "Linear Algebra and Differential Calculus": 4
+      }
+    },
+    {
+      "id": 4,
+      "name": "FE-B",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Applied Mechanics": 5
+      }
+    },
+    {
+      "id": 1088,
+      "name": "FE-B,FE-C",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Programming & Problem Solving": 4
+      }
+    },
+    {
+      "id": 5,
+      "name": "FE-C",
+      "student_count": 60,
+      "total_periods": 10,
+      "theory_periods": 10,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 33,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Engineering Physics": 5,
+        "Applied Mechanics": 5
+      }
+    },
+    {
+      "id": 9417,
+      "name": "FE-C,FE-B",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Linear Algebra and Differential Calculus": 4
+      }
+    },
+    {
+      "id": 6,
+      "name": "SE-A",
+      "student_count": 60,
+      "total_periods": 15,
+      "theory_periods": 15,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 50,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Fundamentals of AI": 2,
+        "Project Management": 2,
+        "Software Engineering": 7,
+        "Critical Thinking and Problem Solving": 4
+      }
+    },
+    {
+      "id": 5423,
+      "name": "SE-A,SE-B",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Fundamentals of Data Structure": 5
+      }
+    },
+    {
+      "id": 8606,
+      "name": "SE-A,SE-B,SE-C",
+      "student_count": 60,
+      "total_periods": 7,
+      "theory_periods": 7,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 23,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Professional and  Technical  Communication": 2,
+        "Sustainable  Development I": 2,
+        "Design Thinking": 3
+      }
+    },
+    {
+      "id": 4401,
+      "name": "SE-A,SE-C",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Design Thinking": 2,
+        "Statistical Methods": 3
+      }
+    },
+    {
+      "id": 7,
+      "name": "SE-B",
+      "student_count": 60,
+      "total_periods": 24,
+      "theory_periods": 24,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 80,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Critical Thinking and Problem Solving": 4,
+        "Mini Project": 4,
+        "Fundamentals of AI": 2,
+        "Software Engineering": 7,
+        "Project Management": 2,
+        "Design Thinking": 2,
+        "Statistical Methods": 3
+      }
+    },
+    {
+      "id": 2217,
+      "name": "SE-B,SE-C",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Mini Project": 4
+      }
+    },
+    {
+      "id": 8,
+      "name": "SE-C",
+      "student_count": 60,
+      "total_periods": 22,
+      "theory_periods": 22,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 73,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Project Management": 2,
+        "Critical Thinking and Problem Solving": 4,
+        "Fundamentals of Data Structure": 5,
+        "Design Thinking": 2,
+        "Fundamentals of AI": 2,
+        "Software Engineering": 7
+      }
+    },
+    {
+      "id": 9,
+      "name": "TE-A",
+      "student_count": 60,
+      "total_periods": 17,
+      "theory_periods": 17,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 57,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Data Base Management System": 4,
+        "Artificial Intelligence": 4,
+        "Computer Networks": 3,
+        "Elective I- HCI": 3,
+        "Web Technology": 3
+      }
+    },
+    {
+      "id": 3139,
+      "name": "TE-A,TE-B,TE-C",
+      "student_count": 60,
+      "total_periods": 2,
+      "theory_periods": 2,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 7,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Environmental Studies": 1,
+        "Seminar and Technical  Communication": 1
+      }
+    },
+    {
+      "id": 10,
+      "name": "TE-B",
+      "student_count": 60,
+      "total_periods": 21,
+      "theory_periods": 21,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 70,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Data Base Management System": 4,
+        "Artificial Intelligence": 4,
+        "Computer Networks": 5,
+        "Web Technology": 3,
+        "Elective I- PR": 5
+      }
+    },
+    {
+      "id": 11,
+      "name": "TE-C",
+      "student_count": 60,
+      "total_periods": 20,
+      "theory_periods": 20,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 67,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective I- HCI": 5,
+        "Artificial Intelligence": 3,
+        "Web Technology": 3,
+        "Data Base Management System": 4,
+        "Computer Networks": 5
+      }
+    }
+  ],
+  "teachers": [
+    {
+      "name": "Dr. V. G. Kottawar",
+      "designation": "HOD",
+      "email": "v..g..kottawar@college.edu",
+      "total_periods": 10,
+      "courses_detail": [
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Mini Project",
+          "class_division": "SE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Professional and  Technical  Communication",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "2 * 12",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Manish Sharma",
+      "designation": "Professor",
+      "email": "manish.sharma@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-B",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Mini Project",
+          "class_division": "SE-B, SE-C",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (B-1,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Sustainable  Development I",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "2 * 3",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Suvarna S. Gothane",
+      "designation": "Associate Professor",
+      "email": "suvarna.s..gothane@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "SL1  \n2 * 4",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-A",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Engineering Physics",
+          "class_division": "FE-A, FE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "2 * 6",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Bhaghyshri A. Tingare",
+      "designation": "Assistant Professor",
+      "email": "bhaghyshri.a..tingare@college.edu",
+      "total_periods": 12,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- HCI",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 5 (A-1,C-4)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-C",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Engineering Physics",
+          "class_division": "FE-C",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2 * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Manasi D. Karajgar",
+      "designation": "Assistant Professor",
+      "email": "manasi.d..karajgar@college.edu",
+      "total_periods": 14,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective III- EAC",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A",
+          "theory_hours": "-",
+          "practical_hours": "2 * 2",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-A",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Neeta J. Mahale",
+      "designation": "Assistant Professor",
+      "email": "neeta.j..mahale@college.edu",
+      "total_periods": 13,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective IV- IR",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "3",
+          "practical_hours": "CL2\n4 * 3 (B)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-B",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Rasika V. Wattamwar",
+      "designation": "Assistant Professor",
+      "email": "rasika.v..wattamwar@college.edu",
+      "total_periods": 12,
+      "courses_detail": [
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Machine Learning",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "CL1\n4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Applied Mechanics",
+          "class_division": "FE-C",
+          "theory_hours": "3 * 1",
+          "practical_hours": "2  * 3",
+          "project_hours": "-",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Rajshri T. Ingle",
+      "designation": "Assistant Professor",
+      "email": "rajshri.t..ingle@college.edu",
+      "total_periods": 13,
+      "courses_detail": [
+        {
+          "course_name": "Data Base Management System",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 5 (B-1,C-4)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-A, SE-B, SE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "2 * 1  \n( C)",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Experiential Learning I",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Pallavi R. Shingade",
+      "designation": "Assistant Professor",
+      "email": "pallavi.r..shingade@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of Data Structure",
+          "class_division": "SE-A, SE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "2 * 6 (A-4,B-2)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Professional and Technical Communication",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Snehal Malpani",
+      "designation": "Assistant Professor",
+      "email": "snehal.malpani@college.edu",
+      "total_periods": 16,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "MP\n4 * 3 (2-B,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Machine Learning",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Liberal Learning I",
+          "class_division": "",
+          "theory_hours": "-",
+          "practical_hours": "6 + 1(T)",
+          "project_hours": "-",
+          "total_load": 6,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Mayuri Rathi",
+      "designation": "Assistant Professor",
+      "email": "mayuri.rathi@college.edu",
+      "total_periods": 6,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 6 (B-4,C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-B",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mr. Bhushan Javare",
+      "designation": "Assistant Professor",
+      "email": "bhushan.javare@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "2 * 6 (A-2,B-3,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Data Modeling & Visualization",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Vidya Bhosale",
+      "designation": "Assistant Professor",
+      "email": "vidya.bhosale@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Artificial Intelligence",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "SL1\n2 * 6 (A-4,C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "Data Modeling & Visualization",
+          "class_division": "BE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mr. Ajit Kadam",
+      "designation": "Assistant Professor",
+      "email": "ajit.kadam@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 6 (A-2,B-1,C-3)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Project Management",
+          "class_division": "SE-A",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Shruti Sekra",
+      "designation": "Assistant Professor",
+      "email": "shruti.sekra@college.edu",
+      "total_periods": 11,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-A",
+          "theory_hours": "3",
+          "practical_hours": "4 * 3 (A-2,C-1)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Aparna Lavangade",
+      "designation": "",
+      "email": "aparna.lavangade@college.edu",
+      "total_periods": 9,
+      "courses_detail": [
+        {
+          "course_name": "Computer Networks",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-B",
+          "theory_hours": "-",
+          "practical_hours": "2 * 4",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory I",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (A-1,B-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Megha Mane",
+      "designation": "",
+      "email": "megha.mane@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Fundamentals of Data Structure",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "2 * 4 (C)\n2 * 2 (B-2)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Geeta Darunte",
+      "designation": "",
+      "email": "geeta.darunte@college.edu",
+      "total_periods": 5,
+      "courses_detail": [
+        {
+          "course_name": "Elective III- EAC",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-A, SE-C",
+          "theory_hours": "-",
+          "practical_hours": "2 * 6 (A-4, C-2)",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Ashika Hirulkar",
+      "designation": "",
+      "email": "ashika.hirulkar@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Critical Thinking and Problem Solving",
+          "class_division": "SE-A",
+          "theory_hours": "3",
+          "practical_hours": "1 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "2 * 5(A-1,B-4)",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Design Thinking",
+          "class_division": "SE-C",
+          "theory_hours": "-",
+          "practical_hours": "2 * 1 (c )",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Vaishnavi Jagtap",
+      "designation": "",
+      "email": "vaishnavi.jagtap@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- HCI",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory I",
+          "class_division": "BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Swetha Banait",
+      "designation": "",
+      "email": "swetha.banait@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Elective I- PR",
+          "class_division": "TE-B",
+          "theory_hours": "3",
+          "practical_hours": "2 * 7 (A-3,B-4)",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        },
+        {
+          "course_name": "Fundamentals of AI",
+          "class_division": "SE-C",
+          "theory_hours": "2",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Kanchan C. Patil",
+      "designation": "",
+      "email": "kanchan.c..patil@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Environmental Studies",
+          "class_division": "TE-A, TE-B, TE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 1,
+          "is_custom": true
+        },
+        {
+          "course_name": "MOOC",
+          "class_division": "BE-A",
+          "theory_hours": "-",
+          "practical_hours": "2 * 1",
+          "project_hours": "2 * 1",
+          "total_load": 2,
+          "is_custom": true
+        },
+        {
+          "course_name": "Computer Laboratory II",
+          "class_division": "BE-A, BE-B",
+          "theory_hours": "-",
+          "practical_hours": "4 * 2 (A-1,B-1)",
+          "project_hours": "2 * 1",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Ganesh Birajadar",
+      "designation": "",
+      "email": "ganesh.birajadar@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Software Engineering",
+          "class_division": "SE-C",
+          "theory_hours": "3",
+          "practical_hours": "MP\n4 * 3 (2-A,1-C)",
+          "project_hours": "2 * 1",
+          "total_load": 7,
+          "is_custom": true
+        },
+        {
+          "course_name": "Seminar and Technical  Communication",
+          "class_division": "TE-A, TE-B, TE-C",
+          "theory_hours": "1 * 3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 1,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Mrs. Nehal Ganpule",
+      "designation": "",
+      "email": "nehal.ganpule@college.edu",
+      "total_periods": 8,
+      "courses_detail": [
+        {
+          "course_name": "Web Technology",
+          "class_division": "TE-A",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "2 * 1",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Elective IV- UI/UX Design",
+          "class_division": "BE-A",
+          "theory_hours": "3",
+          "practical_hours": "CL2\n4 * 3",
+          "project_hours": "2 * 1",
+          "total_load": 5,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Deepali Sale",
+      "designation": "",
+      "email": "deepali.sale@college.edu",
+      "total_periods": 4,
+      "courses_detail": [
+        {
+          "course_name": "Programming & Problem Solving",
+          "class_division": "FE-B, FE-C",
+          "theory_hours": "2 * 2",
+          "practical_hours": "2 * 4(C-3,B-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Latika Desai",
+      "designation": "",
+      "email": "latika.desai@college.edu",
+      "total_periods": 4,
+      "courses_detail": [
+        {
+          "course_name": "Programming & Problem Solving",
+          "class_division": "FE-A",
+          "theory_hours": "2",
+          "practical_hours": "2 * 5 (A-3,B-2)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Dr. Aryani Gangadhara",
+      "designation": "",
+      "email": "aryani.gangadhara@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Statistical Methods",
+          "class_division": "SE-A, SE-C",
+          "theory_hours": "3 * 2",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Linear Algebra and Differential Calculus",
+          "class_division": "FE-A, FE-B",
+          "theory_hours": "3",
+          "practical_hours": "1 * 2 (A-1,B-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    },
+    {
+      "name": "Ms. Neeta Katariya",
+      "designation": "",
+      "email": "neeta.katariya@college.edu",
+      "total_periods": 7,
+      "courses_detail": [
+        {
+          "course_name": "Statistical Methods",
+          "class_division": "SE-B",
+          "theory_hours": "3",
+          "practical_hours": "-",
+          "project_hours": "-",
+          "total_load": 3,
+          "is_custom": true
+        },
+        {
+          "course_name": "Linear Algebra and Differential Calculus",
+          "class_division": "FE-C, FE-B",
+          "theory_hours": "3 * 2",
+          "practical_hours": "1 * 1 (C-1)",
+          "project_hours": "-",
+          "total_load": 4,
+          "is_custom": true
+        }
+      ]
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "name": "BE-A",
+      "student_count": 60,
+      "total_periods": 19,
+      "theory_periods": 19,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 63,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "MOOC": 4,
+        "Machine Learning": 4,
+        "Data Modeling & Visualization": 3,
+        "Elective III- EAC": 3,
+        "Elective IV- UI/UX Design": 5
+      }
+    },
+    {
+      "id": 1714,
+      "name": "BE-A,BE-B",
+      "student_count": 60,
+      "total_periods": 15,
+      "theory_periods": 7,
+      "practical_periods": 8,
+      "lab_periods": 8,
+      "load_percentage": 50,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective IV- IR": 5,
+        "Computer Laboratory I": 4,
+        "MOOC": 2,
+        "Computer Laboratory II": 4
+      }
+    },
+    {
+      "id": 2,
+      "name": "BE-B",
+      "student_count": 60,
+      "total_periods": 13,
+      "theory_periods": 9,
+      "practical_periods": 4,
+      "lab_periods": 4,
+      "load_percentage": 43,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective III- EAC": 3,
+        "Machine Learning": 3,
+        "Data Modeling & Visualization": 3,
+        "Computer Laboratory I": 4
+      }
+    },
+    {
+      "id": 3,
+      "name": "FE-A",
+      "student_count": 60,
+      "total_periods": 9,
+      "theory_periods": 9,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 30,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Applied Mechanics": 5,
+        "Programming & Problem Solving": 4
+      }
+    },
+    {
+      "id": 1994,
+      "name": "FE-A,FE-B",
+      "student_count": 60,
+      "total_periods": 9,
+      "theory_periods": 9,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 30,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Engineering Physics": 5,
+        "Linear Algebra and Differential Calculus": 4
+      }
+    },
+    {
+      "id": 4,
+      "name": "FE-B",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Applied Mechanics": 5
+      }
+    },
+    {
+      "id": 1088,
+      "name": "FE-B,FE-C",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Programming & Problem Solving": 4
+      }
+    },
+    {
+      "id": 5,
+      "name": "FE-C",
+      "student_count": 60,
+      "total_periods": 10,
+      "theory_periods": 10,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 33,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Engineering Physics": 5,
+        "Applied Mechanics": 5
+      }
+    },
+    {
+      "id": 9417,
+      "name": "FE-C,FE-B",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Linear Algebra and Differential Calculus": 4
+      }
+    },
+    {
+      "id": 6,
+      "name": "SE-A",
+      "student_count": 60,
+      "total_periods": 15,
+      "theory_periods": 15,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 50,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Fundamentals of AI": 2,
+        "Project Management": 2,
+        "Software Engineering": 7,
+        "Critical Thinking and Problem Solving": 4
+      }
+    },
+    {
+      "id": 5423,
+      "name": "SE-A,SE-B",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Fundamentals of Data Structure": 5
+      }
+    },
+    {
+      "id": 8606,
+      "name": "SE-A,SE-B,SE-C",
+      "student_count": 60,
+      "total_periods": 7,
+      "theory_periods": 7,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 23,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Professional and  Technical  Communication": 2,
+        "Sustainable  Development I": 2,
+        "Design Thinking": 3
+      }
+    },
+    {
+      "id": 4401,
+      "name": "SE-A,SE-C",
+      "student_count": 60,
+      "total_periods": 5,
+      "theory_periods": 5,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 17,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Design Thinking": 2,
+        "Statistical Methods": 3
+      }
+    },
+    {
+      "id": 7,
+      "name": "SE-B",
+      "student_count": 60,
+      "total_periods": 24,
+      "theory_periods": 24,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 80,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Critical Thinking and Problem Solving": 4,
+        "Mini Project": 4,
+        "Fundamentals of AI": 2,
+        "Software Engineering": 7,
+        "Project Management": 2,
+        "Design Thinking": 2,
+        "Statistical Methods": 3
+      }
+    },
+    {
+      "id": 2217,
+      "name": "SE-B,SE-C",
+      "student_count": 60,
+      "total_periods": 4,
+      "theory_periods": 4,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 13,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Mini Project": 4
+      }
+    },
+    {
+      "id": 8,
+      "name": "SE-C",
+      "student_count": 60,
+      "total_periods": 22,
+      "theory_periods": 22,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 73,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Project Management": 2,
+        "Critical Thinking and Problem Solving": 4,
+        "Fundamentals of Data Structure": 5,
+        "Design Thinking": 2,
+        "Fundamentals of AI": 2,
+        "Software Engineering": 7
+      }
+    },
+    {
+      "id": 9,
+      "name": "TE-A",
+      "student_count": 60,
+      "total_periods": 17,
+      "theory_periods": 17,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 57,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Data Base Management System": 4,
+        "Artificial Intelligence": 4,
+        "Computer Networks": 3,
+        "Elective I- HCI": 3,
+        "Web Technology": 3
+      }
+    },
+    {
+      "id": 3139,
+      "name": "TE-A,TE-B,TE-C",
+      "student_count": 60,
+      "total_periods": 2,
+      "theory_periods": 2,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 7,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Environmental Studies": 1,
+        "Seminar and Technical  Communication": 1
+      }
+    },
+    {
+      "id": 10,
+      "name": "TE-B",
+      "student_count": 60,
+      "total_periods": 21,
+      "theory_periods": 21,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 70,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Data Base Management System": 4,
+        "Artificial Intelligence": 4,
+        "Computer Networks": 5,
+        "Web Technology": 3,
+        "Elective I- PR": 5
+      }
+    },
+    {
+      "id": 11,
+      "name": "TE-C",
+      "student_count": 60,
+      "total_periods": 20,
+      "theory_periods": 20,
+      "practical_periods": 0,
+      "lab_periods": 0,
+      "load_percentage": 67,
+      "daily_load": {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0
+      },
+      "subject_distribution": {
+        "Elective I- HCI": 5,
+        "Artificial Intelligence": 3,
+        "Web Technology": 3,
+        "Data Base Management System": 4,
+        "Computer Networks": 5
+      }
+    }
+  ],
+  "conflicts": {
+    "faculty_timing_clashes": [],
+    "classroom_conflicts": [],
+    "lab_conflicts": [],
+    "missing_entries": [],
+    "overloaded_faculty": [],
+    "underloaded_faculty": []
+  },
+  "validation": {
+    "total_conflicts": 0,
+    "critical_issues": 0,
+    "warnings": 0
+  },
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Applied Mechanics",
+      "code": "AM",
+      "is_lab": false
+    },
+    {
+      "id": 2,
+      "name": "Artificial Intelligence",
+      "code": "AI",
+      "is_lab": true
+    },
+    {
+      "id": 3,
+      "name": "Computer Laboratory I",
+      "code": "CLI",
+      "is_lab": false
+    },
+    {
+      "id": 4,
+      "name": "Computer Laboratory II",
+      "code": "CLI1",
+      "is_lab": false
+    },
+    {
+      "id": 5,
+      "name": "Computer Networks",
+      "code": "CN",
+      "is_lab": false
+    },
+    {
+      "id": 6,
+      "name": "Critical Thinking and Problem Solving",
+      "code": "CTAPS",
+      "is_lab": false
+    },
+    {
+      "id": 7,
+      "name": "Data Base Management System",
+      "code": "DBMS",
+      "is_lab": true
+    },
+    {
+      "id": 8,
+      "name": "Data Modeling & Visualization",
+      "code": "DMV",
+      "is_lab": false
+    },
+    {
+      "id": 9,
+      "name": "Design Thinking",
+      "code": "DT",
+      "is_lab": false
+    },
+    {
+      "id": 10,
+      "name": "Elective I- HCI",
+      "code": "EIH",
+      "is_lab": false
+    },
+    {
+      "id": 11,
+      "name": "Elective I- PR",
+      "code": "EIP",
+      "is_lab": false
+    },
+    {
+      "id": 12,
+      "name": "Elective III- EAC",
+      "code": "EIE",
+      "is_lab": false
+    },
+    {
+      "id": 13,
+      "name": "Elective IV- IR",
+      "code": "EII",
+      "is_lab": true
+    },
+    {
+      "id": 14,
+      "name": "Elective IV- UI/UX Design",
+      "code": "EIUD",
+      "is_lab": true
+    },
+    {
+      "id": 15,
+      "name": "Engineering Physics",
+      "code": "EP",
+      "is_lab": false
+    },
+    {
+      "id": 16,
+      "name": "Environmental Studies",
+      "code": "ES",
+      "is_lab": false
+    },
+    {
+      "id": 17,
+      "name": "Experiential Learning I",
+      "code": "ELI",
+      "is_lab": false
+    },
+    {
+      "id": 18,
+      "name": "Fundamentals of AI",
+      "code": "FOA",
+      "is_lab": false
+    },
+    {
+      "id": 19,
+      "name": "Fundamentals of Data Structure",
+      "code": "FODS",
+      "is_lab": false
+    },
+    {
+      "id": 20,
+      "name": "Liberal Learning I",
+      "code": "LLI",
+      "is_lab": false
+    },
+    {
+      "id": 21,
+      "name": "Linear Algebra and Differential Calculus",
+      "code": "LAADC",
+      "is_lab": false
+    },
+    {
+      "id": 22,
+      "name": "MOOC",
+      "code": "M",
+      "is_lab": false
+    },
+    {
+      "id": 23,
+      "name": "Machine Learning",
+      "code": "ML",
+      "is_lab": true
+    },
+    {
+      "id": 24,
+      "name": "Mini Project",
+      "code": "MP",
+      "is_lab": false
+    },
+    {
+      "id": 25,
+      "name": "Professional and  Technical  Communication",
+      "code": "PATC",
+      "is_lab": false
+    },
+    {
+      "id": 26,
+      "name": "Professional and Technical Communication",
+      "code": "PATC1",
+      "is_lab": false
+    },
+    {
+      "id": 27,
+      "name": "Programming & Problem Solving",
+      "code": "PPS",
+      "is_lab": false
+    },
+    {
+      "id": 28,
+      "name": "Project Management",
+      "code": "PM",
+      "is_lab": false
+    },
+    {
+      "id": 29,
+      "name": "Seminar and Technical  Communication",
+      "code": "SATC",
+      "is_lab": false
+    },
+    {
+      "id": 30,
+      "name": "Software Engineering",
+      "code": "SE",
+      "is_lab": true
+    },
+    {
+      "id": 31,
+      "name": "Statistical Methods",
+      "code": "SM",
+      "is_lab": false
+    },
+    {
+      "id": 32,
+      "name": "Sustainable  Development I",
+      "code": "SDI",
+      "is_lab": false
+    },
+    {
+      "id": 33,
+      "name": "Web Technology",
+      "code": "WT",
+      "is_lab": false
+    },
+    {
+      "id": 34,
+      "name": "Advanced AI",
+      "code": "AI_1774444232",
+      "is_lab": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  "R0: ['Sr No', 'Name of the Faculty \\\\nWith Designation ', 'Name of the Course', 'Class & Division', 'Course Load per week ', 'Course Load per week ', 'Total Load ', 'Project ']",
+  "R1: ['Sr No', 'Name of the Faculty \\\\nWith Designation ', 'Name of the Course', 'Class & Division', 'Theory', 'Practical', 'Total Load ', 'Project ']",
+  "R2: ['1', 'Dr. V. G. Kottawar- HOD', 'Critical Thinking and Problem Solving', 'SE- B', '3', '1 * 1', '8', '2 * 1']",
+  "R3: ['1', 'Dr. V. G. Kottawar- HOD', 'Mini Project', 'SE- B', '-', '4 * 1', '8', '2 * 1']",
+  "R4: ['2', 'Dr. Manish Sharma- Professor', 'Fundamentals of AI', 'SE- B', '2 ', '', '10', '2 * 1']",
+  "R5: ['2', 'Dr. Manish Sharma- Professor', 'Mini Project', 'SE- B,C', '', '4 * 2 (B-1,C-1)', '10', '2 * 1']",
+  "R6: ['3', 'Dr. Suvarna S. Gothane-\\\\n Associate Professor', 'Data Base Management System', 'TE- A', '3', 'SL1  \\\\n2 * 4', '13', '2 * 1']",
+  "R7: ['3', 'Dr. Suvarna S. Gothane-\\\\n Associate Professor', 'Fundamentals of AI', 'SE- A', '2', '', '13', '2 * 1']",
+  "R8: ['4', 'Dr. Bhaghyshri A. Tingare-\\\\n Assistant Professor', 'Elective I- HCI', 'TE- C', '3', '2 * 5 (A-1,C-4)', '15', '2 * 1']",
+  "R9: ['4', 'Dr. Bhaghyshri A. Tingare-\\\\n Assistant Professor', 'Project Management', 'SE- C', '2', '', '15', '2 * 1']",
+  "R10: ['5', 'Mrs. Manasi D. Karajgar- \\\\nAssistant Professor', 'Data Base Management System', 'TE- B', '3', 'SL1\\\\n2 * 3', '16', '2 * 1']",
+  "R11: ['5', 'Mrs. Manasi D. Karajgar- \\\\nAssistant Professor', 'Elective III- EAC', 'BE- B', '3', '', '16', '2 * 1']",
+  "R12: ['5', 'Mrs. Manasi D. Karajgar- \\\\nAssistant Professor', 'MOOC', 'BE- A', '', '2 * 2', '16', '2 * 1']",
+  "R13: ['6', 'Mrs. Neeta J. Mahale- Assistant Professor', 'Artificial Intelligence', 'TE- C', '3', '', '18', '2 * 1']",
+  "R14: ['6', 'Mrs. Neeta J. Mahale- Assistant Professor', 'Elective IV- IR', 'BE- A,B', '3', 'CL2\\\\n4 * 3 (B)', '18', '2 * 1']",
+  "R15: ['7', 'Mrs. Rasika V. Wattamwar- \\\\nAssistant Professor', 'Web Technology', 'TE- C', '3', '', '18', '2 * 1']",
+  "R16: ['7', 'Mrs. Rasika V. Wattamwar- \\\\nAssistant Professor', 'Machine Learning', 'BE- A', '3', 'CL1\\\\n4 * 3', '18', '2 * 1']",
+  "R17: ['8', 'Mrs. Rajshri T. Ingle- Assistant Professor', 'Data Base Management System', 'TE- C', '3', 'SL1\\\\n2 * 5 (B-1,C-4)', '\\\\n18', '2 * 1']",
+  "R18: ['8', 'Mrs. Rajshri T. Ingle- Assistant Professor', 'Design Thinking', 'SE- A,B,C', '1 * 3', '2 * 1  \\\\n( C)', '\\\\n18', '2 * 1']",
+  "R19: ['9', 'Mrs. Pallavi R. Shingade- \\\\nAssistant Professor', 'Fundamentals of Data Structure', 'SE- A,B', '3 * 2', '2 * 6 (A-4,B-2)', '18', '2 * 1']"
+]

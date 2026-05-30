@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetabler - Intelligent Timetable Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.75rem 5%;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo i {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-large {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            border-radius: 16px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 5% 5rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--primary-light);
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .timetable-preview {
+            background: var(--dark-light);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(99, 102, 241, 0.1);
+            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .timetable-preview:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .preview-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+        }
+
+        .preview-cell {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            animation: cellPulse 3s infinite;
+        }
+
+        @keyframes cellPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .cell-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .cell-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .cell-green { background: linear-gradient(135deg, #10b981, #047857); }
+        .cell-purple { background: linear-gradient(135deg, #8b5cf6, #5b21b6); }
+        .cell-empty { background: rgba(99, 102, 241, 0.1); }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--dark-light);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            animation: countUp 2s ease;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 5%;
+            text-align: center;
+        }
+
+        .cta-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 32px;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.02));
+            color: var(--gray);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+            justify-content: flex-start;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-column h4 {
+            color: var(--white);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-column a {
+            display: block;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .timetable-preview {
+                transform: none;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-links {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dashboard Preview Section */
+        .dashboard-preview {
+            padding: 6rem 5%;
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--dark-light);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .stat-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .stat-icon.cyan {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        .stat-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .stat-trend {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .stat-trend.up {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Charts Row */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--dark-light);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .chart-card.large {
+            min-height: 350px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .legend-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-item .dot.blue { background: #3b82f6; }
+        .legend-item .dot.purple { background: #8b5cf6; }
+        .legend-item .dot.pink { background: #ec4899; }
+        .legend-item .dot.green { background: #10b981; }
+
+        /* Schedule Bars */
+        .schedule-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .day-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .day-label {
+            width: 40px;
+            font-size: 0.875rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 32px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .bar {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .bar.lecture {
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+        }
+
+        .bar.lab {
+            background: linear-gradient(90deg, #8b5cf6, #a855f7);
+        }
+
+        .bar-value {
+            width: 30px;
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        /* Donut Chart */
+        .chart-content.center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100% - 60px);
+        }
+
+        .donut-chart {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 1.5rem;
+        }
+
+        .donut {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .donut-bg {
+            fill: none;
+            stroke: rgba(99, 102, 241, 0.1);
+            stroke-width: 12;
+        }
+
+        .donut-segment {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: all 0.3s ease;
+        }
+
+        .donut-segment.pink { stroke: #ec4899; }
+        .donut-segment.blue { stroke: #3b82f6; }
+        .donut-segment.green { stroke: #10b981; }
+        .donut-segment.purple { stroke: #8b5cf6; }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-value {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .donut-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .donut-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Activity Card */
+        .activity-card {
+            background: var(--dark-light);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .view-all {
+            font-size: 0.875rem;
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .view-all:hover {
+            color: var(--primary-light);
+        }
+
+        .activity-table {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.05);
+            font-size: 0.875rem;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row .session {
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .table-row .teacher {
+            color: var(--gray);
+        }
+
+        .table-row .division {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .table-row .room {
+            color: var(--gray);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .status.ongoing {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .status.scheduled {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-light);
+        }
+
+        /* Responsive Dashboard */
+        @media (max-width: 968px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+
+            .table-header span:nth-child(2),
+            .table-row .teacher {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .table-header span:nth-child(4),
+            .table-row .room {
+                display: none;
+            }
+        }
+
+        /* Scroll animations */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="logo">
+            <i class="fas fa-calendar-alt"></i>
+            Timetabler
+        </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#stats">Stats</a>
+            <a href="timetable_page.html" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Timetable
+            </a>
+            <a href="login.html" class="btn btn-outline">
+                <i class="fas fa-user"></i> Sign In
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="badge">
+                    <i class="fas fa-sparkles"></i>
+                    AI-Powered Scheduling
+                </div>
+                <h1>
+                    Generate Perfect
+                    <span>Timetables</span>
+                    in Seconds
+                </h1>
+                <p>
+                    Intelligent college timetable generator using advanced CSP algorithms. 
+                    Automatically handles sub-batches, teacher preferences, and room allocations.
+                </p>
+                <div class="hero-buttons">
+                    <a href="timetable_page.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-magic"></i>
+                        Generate Timetable
+                    </a>
+                    <a href="master_timetable.html" class="btn btn-outline btn-large">
+                        <i class="fas fa-eye"></i>
+                        View Master Timetable
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="timetable-preview">
+                    <div class="preview-header">
+                        <span class="preview-title">Master Timetable</span>
+                        <div class="preview-dots">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                    </div>
+                    <div class="preview-grid">
+                        <div class="preview-cell cell-empty">Mon</div>
+                        <div class="preview-cell cell-pink">A1</div>
+                        <div class="preview-cell cell-blue">B1</div>
+                        <div class="preview-cell cell-green">C1</div>
+                        <div class="preview-cell cell-purple">A2</div>
+                        <div class="preview-cell cell-blue">B2</div>
+                        <div class="preview-cell cell-pink">A3</div>
+                        <div class="preview-cell cell-green">C2</div>
+                        <div class="preview-cell cell-purple">B3</div>
+                        <div class="preview-cell cell-pink">A4</div>
+                        <div class="preview-cell cell-green">C3</div>
+                        <div class="preview-cell cell-blue">B4</div>
+                        <div class="preview-cell cell-purple">C4</div>
+                        <div class="preview-cell cell-pink">A1</div>
+                        <div class="preview-cell cell-blue">B1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="stats-grid">
+            <div class="stat-item scroll-reveal">
+                <span class="stat-number">12</span>
+                <div class="stat-label">Sub-Batches</div>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <span class="stat-number">30+</span>
+                <div class="stat-label">Subjects</div>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <span class="stat-number">28</span>
+                <div class="stat-label">Teachers</div>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <span class="stat-number">368</span>
+                <div class="stat-label">Sessions/Week</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header scroll-reveal">
+            <h2>Powerful <span>Features</span></h2>
+            <p>Everything you need to create perfect timetables automatically</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>AI-Powered CSP Solver</h3>
+                <p>Advanced constraint satisfaction algorithms ensure conflict-free schedules while optimizing for teacher preferences and room utilization.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Sub-Batch Management</h3>
+                <p>Automatically handles lab divisions with 15 students per batch. Supports A1-A4, B1-B4, C1-C4 batch structures seamlessly.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3>Teacher Workload Balance</h3>
+                <p>Intelligent load distribution ensures fair teaching hours across all faculty members with automatic substitution handling.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-door-open"></i>
+                </div>
+                <h3>Smart Room Allocation</h3>
+                <p>Automatically assigns classrooms and labs based on capacity, equipment requirements, and proximity preferences.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Responsive Design</h3>
+                <p>Access and manage timetables from any device. Mobile-friendly interface for on-the-go schedule adjustments.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <h3>Export & Print</h3>
+                <p>Export timetables in multiple formats. Print-ready master schedules and division-wise timetables with one click.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview Section -->
+    <section class="dashboard-preview" id="dashboard">
+        <div class="section-header scroll-reveal">
+            <h2>See It in <span>Action</span></h2>
+            <p>A unified dashboard for managing timetables, teachers, rooms, and analytics — all powered by AI.</p>
+        </div>
+        
+        <div class="dashboard-container scroll-reveal">
+            <!-- Stats Cards -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <span class="stat-trend up">+12.5%</span>
+                    </div>
+                    <div class="stat-value">368</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="stat-trend up">+8.2%</span>
+                    </div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">Active Teachers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon cyan">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <span class="stat-trend down">-2.4%</span>
+                    </div>
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Rooms Utilized</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="stat-trend up">+24.5%</span>
+                    </div>
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Efficiency Rate</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card large">
+                    <div class="chart-header">
+                        <h3>Weekly Schedule Overview</h3>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="dot blue"></span> Lectures</span>
+                            <span class="legend-item"><span class="dot purple"></span> Labs</span>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div class="schedule-bars">
+                            <div class="day-bar">
+                                <span class="day-label">Mon</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 75%"></div>
+                                    <div class="bar lab" style="width: 25%"></div>
+                                </div>
+                                <span class="bar-value">8</span>
+                            </div>
+                            <div class="day-bar">
+                                <span class="day-label">Tue</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 70%"></div>
+                                    <div class="bar lab" style="width: 30%"></div>
+                                </div>
+                                <span class="bar-value">8</span>
+                            </div>
+                            <div class="day-bar">
+                                <span class="day-label">Wed</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 80%"></div>
+                                    <div class="bar lab" style="width: 20%"></div>
+                                </div>
+                                <span class="bar-value">7</span>
+                            </div>
+                            <div class="day-bar">
+                                <span class="day-label">Thu</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 65%"></div>
+                                    <div class="bar lab" style="width: 35%"></div>
+                                </div>
+                                <span class="bar-value">9</span>
+                            </div>
+                            <div class="day-bar">
+                                <span class="day-label">Fri</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 72%"></div>
+                                    <div class="bar lab" style="width: 28%"></div>
+                                </div>
+                                <span class="bar-value">8</span>
+                            </div>
+                            <div class="day-bar">
+                                <span class="day-label">Sat</span>
+                                <div class="bar-container">
+                                    <div class="bar lecture" style="width: 60%"></div>
+                                    <div class="bar lab" style="width: 40%"></div>
+                                </div>
+                                <span class="bar-value">6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Division Distribution</h3>
+                    </div>
+                    <div class="chart-content center">
+                        <div class="donut-chart">
+                            <svg viewBox="0 0 100 100" class="donut">
+                                <circle class="donut-bg" cx="50" cy="50" r="40"/>
+                                <circle class="donut-segment pink" cx="50" cy="50" r="40" stroke-dasharray="75 251"/>
+                                <circle class="donut-segment blue" cx="50" cy="50" r="40" stroke-dasharray="50 251" stroke-dashoffset="-75"/>
+                                <circle class="donut-segment green" cx="50" cy="50" r="40" stroke-dasharray="50 251" stroke-dashoffset="-125"/>
+                                <circle class="donut-segment purple" cx="50" cy="50" r="40" stroke-dasharray="76 251" stroke-dashoffset="-175"/>
+                            </svg>
+                            <div class="donut-center">
+                                <span class="donut-value">12</span>
+                                <span class="donut-label">Batches</span>
+                            </div>
+                        </div>
+                        <div class="donut-legend">
+                            <div class="legend-item">
+                                <span class="dot pink"></span>
+                                <span>TE-A (4)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="dot blue"></span>
+                                <span>TE-B (4)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="dot green"></span>
+                                <span>TE-C (4)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Table -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h3>Recent Activity</h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="activity-table">
+                    <div class="table-header">
+                        <span>Session</span>
+                        <span>Teacher</span>
+                        <span>Division</span>
+                        <span>Room</span>
+                        <span>Status</span>
+                    </div>
+                    <div class="table-row">
+                        <span class="session">Machine Learning</span>
+                        <span class="teacher">Mrs. Rasika V. Wattamwar</span>
+                        <span class="division">TE-A</span>
+                        <span class="room">Lab 1</span>
+                        <span class="status completed">Completed</span>
+                    </div>
+                    <div class="table-row">
+                        <span class="session">Data Modeling</span>
+                        <span class="teacher">Mr. Bhushan Javare</span>
+                        <span class="division">TE-B</span>
+                        <span class="room">Room 201</span>
+                        <span class="status ongoing">In Progress</span>
+                    </div>
+                    <div class="table-row">
+                        <span class="session">UI/UX Design</span>
+                        <span class="teacher">Mrs. Nehal Ganpule</span>
+                        <span class="division">TE-A</span>
+                        <span class="room">Lab 2</span>
+                        <span class="status scheduled">Scheduled</span>
+                    </div>
+                    <div class="table-row">
+                        <span class="session">Information Retrieval</span>
+                        <span class="teacher">Mrs. Neeta J. Mahale</span>
+                        <span class="division">TE-C</span>
+                        <span class="room">Room 305</span>
+                        <span class="status completed">Completed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-box scroll-reveal">
+            <div class="cta-content">
+                <h2>Ready to Generate Your Timetable?</h2>
+                <p>Create conflict-free, optimized schedules for your entire institution in minutes, not days.</p>
+                <a href="timetable_page.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-rocket"></i>
+                    Get Started Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="fas fa-calendar-alt"></i>
+                    Timetabler
+                </div>
+                <p>Intelligent timetable generation for educational institutions.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="timetable_page.html">Create Timetable</a>
+                    <a href="master_timetable.html">View Master</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Developers</h4>
+                    <a href="http://localhost:8000/docs">API Docs</a>
+                    <a href="#">Documentation</a>
+                    <a href="#">GitHub</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Security</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Timetabler. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

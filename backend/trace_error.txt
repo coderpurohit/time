@@ -1,0 +1,31 @@
+﻿python : Traceback (most recent call last):
+At line:1 char:1
++ python trace_generation.py > trace_output.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback ( 
+   most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-
+Generator\backend\trace_generation.py", line 15, in trace
+    version = TimetableService.generate_and_save(db, 
+method="csp", version_name="Trace Version")
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-
+Generator\backend\app\services\timetable_service.py", 
+line 47, in generate_and_save
+    subject_map = {norm(s.name): s.id for s in 
+db_subjects}
+                   ~~~~^^^^^^^^
+  File "C:\Users\bhara\Documents\trae_projects\TimeTable-
+Generator\backend\app\services\timetable_service.py", 
+line 45, in norm
+    def norm(s): return re.sub(r'\s+', ' ', 
+str(s).lower()).strip() if s else ""
+                        ^^
+NameError: cannot access free variable 're' where it is 
+not associated with a value in enclosing scope. Did you 
+forget to import 're'?
+Tracing Timetable Generation...
+GENERATOR: Found 114 lessons, 35 slots, method: csp
+GENERATOR: Using WorkloadReportOverride (DOCX) data for generation.
+ERROR: cannot access free variable 're' where it is not associated with a value in enclosing scope

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division Schedule Configuration — TimeTabler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f0f2ff;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
+            --card-shadow: 0 4px 24px rgba(102,126,234,0.10);
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── HEADER ─────────────────────────────────────────── */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 28px 40px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.35);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-header .back-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.35);
+            color: white;
+            padding: 9px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all .25s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .page-header .back-btn:hover { background: rgba(255,255,255,0.28); }
+
+        .page-header .title-area h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.3px;
+        }
+        .page-header .title-area p {
+            font-size: 13px;
+            opacity: .82;
+            margin-top: 2px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            background: rgba(255,255,255,0.18);
+            border: 1.5px solid rgba(255,255,255,0.3);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ── MAIN LAYOUT ─────────────────────────────────────── */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 32px 28px;
+        }
+
+        /* ── TOOLBAR ─────────────────────────────────────────── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: var(--surface);
+            transition: border-color .2s;
+            outline: none;
+        }
+        .search-box input:focus { border-color: var(--primary); }
+
+        .filter-select {
+            padding: 11px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .filter-select:focus { border-color: var(--primary); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all .22s;
+            outline: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,.4); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        /* ── SUMMARY BAR ─────────────────────────────────────── */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--card-shadow);
+            border: 1.5px solid var(--border);
+        }
+        .summary-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .summary-card .icon.blue { background: #eff6ff; color: #3b82f6; }
+        .summary-card .icon.green { background: #f0fdf4; color: var(--success); }
+        .summary-card .icon.orange { background: #fff7ed; color: var(--warning); }
+        .summary-card .icon.purple { background: #faf5ff; color: var(--secondary); }
+        .summary-card .info .label { font-size: 12px; color: var(--muted); font-weight: 500; }
+        .summary-card .info .value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.2; }
+
+        /* ── DIVISION GRID ───────────────────────────────────── */
+        .divisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 22px;
+        }
+
+        /* ── DIVISION CARD ───────────────────────────────────── */
+        .div-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border: 2px solid var(--border);
+            overflow: hidden;
+            transition: border-color .25s, box-shadow .25s;
+        }
+        .div-card.configured {
+            border-color: rgba(102,126,234,.35);
+        }
+        .div-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 32px rgba(102,126,234,.18);
+        }
+
+        .div-card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+        }
+        .div-card-header .div-icon {
+            width: 46px;
+            height: 46px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .div-card-header .div-meta { flex: 1; }
+        .div-card-header .div-name { font-size: 18px; font-weight: 800; }
+        .div-card-header .div-sub { font-size: 12px; opacity: .82; margin-top: 2px; }
+        .div-card-header .cfg-badge {
+            background: rgba(255,255,255,0.22);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .div-card-header .cfg-badge.saved {
+            background: rgba(16,185,129,.25);
+            border-color: rgba(16,185,129,.5);
+            color: #a7f3d0;
+        }
+
+        /* collapsible body */
+        .div-card-body {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease, padding .25s;
+        }
+        .div-card-body.open {
+            max-height: 900px;
+            padding: 22px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.85);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: transform .25s;
+        }
+        .toggle-btn.open { transform: rotate(180deg); }
+
+        /* ── FORM FIELDS ─────────────────────────────────────── */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+        .field-row.single { grid-template-columns: 1fr; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .form-group input[type="time"],
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            padding: 10px 13px;
+            border: 2px solid var(--border);
+            border-radius: 9px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102,126,234,.13);
+        }
+
+        /* section separator inside card */
+        .section-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin: 18px 0 10px;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1.5px;
+            background: rgba(102,126,234,.15);
+        }
+
+        /* ── BREAKS SECTION ─────────────────────────────────── */
+        .breaks-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .break-item {
+            background: #f8faff;
+            border: 1.5px solid #d8e0f0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        .break-item .remove-break {
+            background: #fee2e2;
+            color: var(--danger);
+            border: none;
+            border-radius: 7px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all .2s;
+        }
+        .break-item .remove-break:hover { background: var(--danger); color: white; }
+
+        .add-break-btn {
+            background: #f0f4ff;
+            color: var(--primary);
+            border: 2px dashed rgba(102,126,234,.4);
+            border-radius: 10px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: all .2s;
+        }
+        .add-break-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-style: solid;
+        }
+
+        /* ── SAVE FOOTER ─────────────────────────────────────── */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1.5px solid var(--border);
+            gap: 10px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 11px 26px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .save-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,.4); }
+        .save-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+        .preview-text {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ── TOAST ───────────────────────────────────────────── */
+        .toast-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            animation: slideUp .3s ease;
+            min-width: 280px;
+        }
+        .toast .toast-icon { font-size: 18px; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── LOADING STATE ───────────────────────────────────── */
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 18px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── EMPTY STATE ─────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+        .empty-state i { font-size: 48px; color: #cbd5e1; margin-bottom: 14px; }
+        .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 6px; }
+
+        /* ── APPLY ALL MODAL ─────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+        }
+        .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+        .modal p { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+
+        @media (max-width: 640px) {
+            .container { padding: 18px 14px; }
+            .page-header { padding: 18px 18px; }
+            .divisions-grid { grid-template-columns: 1fr; }
+            .break-item { grid-template-columns: 1fr 1fr; }
+            .break-item .remove-break { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+    <a href="timetable_page.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <div class="title-area">
+        <h1><i class="fas fa-sliders-h"></i> Division Schedule Configuration</h1>
+        <p>Set independent start time, end time, lunch break and custom breaks for every division</p>
+    </div>
+    <div class="header-badge" id="lastSavedBadge" style="display:none;">
+        <i class="fas fa-check-circle"></i> Changes saved
+    </div>
+    <button class="btn btn-outline" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);color:white;" onclick="openApplyAllModal()">
+        <i class="fas fa-magic"></i> Apply to All
+    </button>
+</div>
+
+<div class="container">
+    <!-- SUMMARY -->
+    <div class="summary-bar" id="summaryBar">
+        <div class="summary-card">
+            <div class="icon blue"><i class="fas fa-layer-group"></i></div>
+            <div class="info">
+                <div class="label">Total Divisions</div>
+                <div class="value" id="sumTotal">—</div>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="icon green"><i class="fas fa-check-circle"></i></div>
+            <div class="info">
+                <div class="label">Configured</div>
+                <div class="value" id="sumConfigured">—</div>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="icon orange"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="info">
+                <div class="label">Pending</div>
+                <div class="value" id="sumPending">—</div>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="icon purple"><i class="fas fa-users"></i></div>
+            <div class="info">
+                <div class="label">Total Students</div>
+                <div class="value" id="sumStudents">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search divisions (e.g. BE-A, SE-B)…" oninput="filterDivisions()">
+        </div>
+        <select class="filter-select" id="filterStatus" onchange="filterDivisions()">
+            <option value="">All Divisions</option>
+            <option value="configured">✅ Configured</option>
+            <option value="unconfigured">⚠️ Not Configured</option>
+        </select>
+        <select class="filter-select" id="filterYear" onchange="filterDivisions()">
+            <option value="">All Years</option>
+            <option value="FE">FE (First Year)</option>
+            <option value="SE">SE (Second Year)</option>
+            <option value="TE">TE (Third Year)</option>
+            <option value="BE">BE (Final Year)</option>
+        </select>
+        <button class="btn btn-success" onclick="saveAllConfigs()">
+            <i class="fas fa-save"></i> Save All
+        </button>
+    </div>
+
+    <!-- GRID -->
+    <div id="divisionsGrid" class="divisions-grid">
+        <div class="loading-state" style="grid-column:1/-1">
+            <div class="spinner"></div>
+            <p>Loading divisions…</p>
+        </div>
+    </div>
+</div>
+
+<!-- APPLY ALL MODAL -->
+<div class="modal-overlay" id="applyAllModal">
+    <div class="modal">
+        <h3><i class="fas fa-magic" style="color:var(--primary)"></i> Apply to All Divisions</h3>
+        <p>Set a common schedule that will be copied to every division. You can still override individual divisions after applying.</p>
+        <div class="field-row">
+            <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" id="applyStart" value="08:15">
+            </div>
+            <div class="form-group">
+                <label>End Time</label>
+                <input type="time" id="applyEnd" value="17:00">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="form-group">
+                <label>Lunch Start</label>
+                <input type="time" id="applyLunchStart" value="12:00">
+            </div>
+            <div class="form-group">
+                <label>Lunch End</label>
+                <input type="time" id="applyLunchEnd" value="13:00">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeApplyAllModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="applyToAll()">
+                <i class="fas fa-check"></i> Apply to All
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    const API_BASE = 'http://localhost:8000/api';
+
+    // Global state
+    let allDivisions = [];    // raw from API
+    let divisionConfigs = {}; // key: division name (upper) => live config object
+
+    // ── BOOT ─────────────────────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', loadDivisions);
+
+    async function loadDivisions() {
+        try {
+            const res = await fetch(`${API_BASE}/schedule-config/divisions`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            allDivisions = data.divisions || [];
+
+            // Populate configs
+            allDivisions.forEach(d => {
+                divisionConfigs[d.division.toUpperCase()] = {
+                    start_time: d.start_time,
+                    end_time: d.end_time,
+                    lunch_start: d.lunch_start,
+                    lunch_end: d.lunch_end,
+                    breaks: d.breaks || [],
+                    is_configured: d.is_configured,
+                    student_count: d.student_count,
+                };
+            });
+
+            updateSummary();
+            renderGrid(allDivisions);
+        } catch (e) {
+            document.getElementById('divisionsGrid').innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1">
+                    <i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i>
+                    <h3>Could not load divisions</h3>
+                    <p>${e.message}</p>
+                    <p style="margin-top:10px;font-size:12px;">Make sure the backend server is running at <strong>localhost:8000</strong></p>
+                    <button class="btn btn-primary" style="margin-top:16px;" onclick="loadDivisions()">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>`;
+        }
+    }
+
+    // ── SUMMARY ───────────────────────────────────────────────────────────────
+    function updateSummary() {
+        const total = allDivisions.length;
+        const configured = allDivisions.filter(d => {
+            const cfg = divisionConfigs[d.division.toUpperCase()];
+            return cfg && cfg.is_configured;
+        }).length;
+        const students = allDivisions.reduce((s, d) => s + (d.student_count || 0), 0);
+
+        document.getElementById('sumTotal').textContent = total;
+        document.getElementById('sumConfigured').textContent = configured;
+        document.getElementById('sumPending').textContent = total - configured;
+        document.getElementById('sumStudents').textContent = students.toLocaleString();
+    }
+
+    // ── FILTER ────────────────────────────────────────────────────────────────
+    function filterDivisions() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('filterStatus').value;
+        const year = document.getElementById('filterYear').value;
+
+        const filtered = allDivisions.filter(d => {
+            const key = d.division.toUpperCase();
+            const cfg = divisionConfigs[key];
+            const matchQ = d.division.toLowerCase().includes(q);
+            const matchStatus = !status
+                || (status === 'configured' && cfg && cfg.is_configured)
+                || (status === 'unconfigured' && !(cfg && cfg.is_configured));
+            const matchYear = !year || d.division.toUpperCase().startsWith(year);
+            return matchQ && matchStatus && matchYear;
+        });
+        renderGrid(filtered);
+    }
+
+    // ── RENDER GRID ───────────────────────────────────────────────────────────
+    function renderGrid(list) {
+        const grid = document.getElementById('divisionsGrid');
+        if (list.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1">
+                    <i class="fas fa-search"></i>
+                    <h3>No divisions found</h3>
+                    <p>Try adjusting your search or filters.</p>
+                </div>`;
+            return;
+        }
+        grid.innerHTML = list.map(d => buildCard(d)).join('');
+    }
+
+    // ── BUILD CARD HTML ───────────────────────────────────────────────────────
+    function buildCard(d) {
+        const key = d.division.toUpperCase();
+        const cfg = divisionConfigs[key];
+        const isCfg = cfg && cfg.is_configured;
+
+        const breaks = cfg.breaks || [];
+        const breaksHtml = breaks.map((b, i) => breakItemHtml(key, i, b)).join('');
+
+        return `
+        <div class="div-card ${isCfg ? 'configured' : ''}" id="card-${key}">
+            <div class="div-card-header" onclick="toggleCard('${key}')">
+                <div class="div-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="div-meta">
+                    <div class="div-name">${d.division}</div>
+                    <div class="div-sub"><i class="fas fa-users"></i> ${cfg.student_count || 0} students</div>
+                </div>
+                <div class="cfg-badge ${isCfg ? 'saved' : ''}">
+                    ${isCfg ? '✓ Configured' : '⚠ Not set'}
+                </div>
+                <button class="toggle-btn" id="toggle-${key}">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="div-card-body" id="body-${key}">
+                <!-- Time Range -->
+                <div class="section-label"><i class="fas fa-clock"></i> Working Hours</div>
+                <div class="field-row">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="time" id="start-${key}" value="${cfg.start_time || '08:15'}"
+                            oninput="livePreview('${key}')">
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="time" id="end-${key}" value="${cfg.end_time || '17:00'}"
+                            oninput="livePreview('${key}')">
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="section-label"><i class="fas fa-utensils"></i> Lunch Break</div>
+                <div class="field-row">
+                    <div class="form-group">
+                        <label>Lunch Start</label>
+                        <input type="time" id="lunchStart-${key}" value="${cfg.lunch_start || '12:00'}"
+                            oninput="livePreview('${key}')">
+                    </div>
+                    <div class="form-group">
+                        <label>Lunch End</label>
+                        <input type="time" id="lunchEnd-${key}" value="${cfg.lunch_end || '13:00'}"
+                            oninput="livePreview('${key}')">
+                    </div>
+                </div>
+
+                <!-- Custom Breaks -->
+                <div class="section-label"><i class="fas fa-pause-circle"></i> Additional Breaks</div>
+                <div class="breaks-list" id="breaks-${key}">${breaksHtml}</div>
+                <button class="add-break-btn" style="margin-top:10px;" onclick="addBreak('${key}')">
+                    <i class="fas fa-plus"></i> Add Another Break
+                </button>
+
+                <!-- Footer -->
+                <div class="card-footer">
+                    <span class="preview-text" id="preview-${key}"></span>
+                    <button class="save-btn" id="saveBtn-${key}" onclick="saveDivision('${key}')">
+                        <i class="fas fa-save"></i> Save ${d.division}
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function breakItemHtml(key, index, b) {
+        return `
+        <div class="break-item" id="break-${key}-${index}">
+            <div class="form-group">
+                <label>Break Name</label>
+                <input type="text" id="break-name-${key}-${index}" value="${b.name || 'Break'}"
+                    oninput="syncBreak('${key}')">
+            </div>
+            <div class="form-group">
+                <label>Start</label>
+                <input type="time" id="break-start-${key}-${index}" value="${b.start_time || '10:00'}"
+                    oninput="syncBreak('${key}')">
+            </div>
+            <div class="form-group">
+                <label>End</label>
+                <input type="time" id="break-end-${key}-${index}" value="${b.end_time || '10:15'}"
+                    oninput="syncBreak('${key}')">
+            </div>
+            <button class="remove-break" onclick="removeBreak('${key}', ${index})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>`;
+    }
+
+    // ── CARD TOGGLE ───────────────────────────────────────────────────────────
+    function toggleCard(key) {
+        const body = document.getElementById(`body-${key}`);
+        const toggleIcon = document.getElementById(`toggle-${key}`);
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        toggleIcon.classList.toggle('open', !isOpen);
+        if (!isOpen) livePreview(key);
+    }
+
+    // ── BREAKS ────────────────────────────────────────────────────────────────
+    function addBreak(key) {
+        const cfg = divisionConfigs[key];
+        cfg.breaks.push({ name: `Break ${cfg.breaks.length + 1}`, start_time: '10:00', end_time: '10:15' });
+        rerenderBreaks(key);
+    }
+
+    function removeBreak(key, index) {
+        divisionConfigs[key].breaks.splice(index, 1);
+        rerenderBreaks(key);
+    }
+
+    function rerenderBreaks(key) {
+        const cfg = divisionConfigs[key];
+        const container = document.getElementById(`breaks-${key}`);
+        container.innerHTML = cfg.breaks.map((b, i) => breakItemHtml(key, i, b)).join('');
+    }
+
+    function syncBreak(key) {
+        const cfg = divisionConfigs[key];
+        cfg.breaks.forEach((b, i) => {
+            const name = document.getElementById(`break-name-${key}-${i}`);
+            const start = document.getElementById(`break-start-${key}-${i}`);
+            const end = document.getElementById(`break-end-${key}-${i}`);
+            if (name) b.name = name.value;
+            if (start) b.start_time = start.value;
+            if (end) b.end_time = end.value;
+        });
+    }
+
+    // ── LIVE PREVIEW ─────────────────────────────────────────────────────────
+    function livePreview(key) {
+        const start = document.getElementById(`start-${key}`)?.value;
+        const end   = document.getElementById(`end-${key}`)?.value;
+        const ls    = document.getElementById(`lunchStart-${key}`)?.value;
+        const le    = document.getElementById(`lunchEnd-${key}`)?.value;
+        const el    = document.getElementById(`preview-${key}`);
+        if (el && start && end) {
+            el.innerHTML = `<i class="fas fa-clock"></i> ${start}–${end} &nbsp;|&nbsp; 🥗 ${ls}–${le}`;
+        }
+    }
+
+    // ── SAVE SINGLE ───────────────────────────────────────────────────────────
+    async function saveDivision(key) {
+        const btn = document.getElementById(`saveBtn-${key}`);
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+        // Sync all field values into config
+        const start = document.getElementById(`start-${key}`)?.value;
+        const end   = document.getElementById(`end-${key}`)?.value;
+        const ls    = document.getElementById(`lunchStart-${key}`)?.value;
+        const le    = document.getElementById(`lunchEnd-${key}`)?.value;
+        syncBreak(key);
+
+        const cfg = divisionConfigs[key];
+        cfg.start_time = start;
+        cfg.end_time   = end;
+        cfg.lunch_start = ls;
+        cfg.lunch_end   = le;
+
+        const payload = {
+            division:    key,
+            start_time:  start,
+            end_time:    end,
+            lunch_start: ls,
+            lunch_end:   le,
+            breaks:      cfg.breaks,
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/schedule-config/division/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Server error'); }
+
+            cfg.is_configured = true;
+            // Update card header badge
+            const badge = document.querySelector(`#card-${key} .cfg-badge`);
+            if (badge) { badge.textContent = '✓ Configured'; badge.classList.add('saved'); }
+            const card = document.getElementById(`card-${key}`);
+            if (card) card.classList.add('configured');
+
+            showToast(`${key} configuration saved!`, 'success');
+            updateSummary();
+        } catch (e) {
+            showToast(`Error saving ${key}: ${e.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fas fa-save"></i> Save ${key}`;
+        }
+    }
+
+    // ── SAVE ALL ──────────────────────────────────────────────────────────────
+    async function saveAllConfigs() {
+        const keys = Object.keys(divisionConfigs);
+        let ok = 0, fail = 0;
+        for (const key of keys) {
+            try {
+                const start = document.getElementById(`start-${key}`)?.value;
+                const end   = document.getElementById(`end-${key}`)?.value;
+                const ls    = document.getElementById(`lunchStart-${key}`)?.value;
+                const le    = document.getElementById(`lunchEnd-${key}`)?.value;
+                syncBreak(key);
+                const cfg = divisionConfigs[key];
+                if (start) cfg.start_time = start;
+                if (end) cfg.end_time = end;
+                if (ls) cfg.lunch_start = ls;
+                if (le) cfg.lunch_end = le;
+
+                const payload = {
+                    division: key,
+                    start_time: cfg.start_time,
+                    end_time: cfg.end_time,
+                    lunch_start: cfg.lunch_start,
+                    lunch_end: cfg.lunch_end,
+                    breaks: cfg.breaks,
+                };
+                const res = await fetch(`${API_BASE}/schedule-config/division/save`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                if (!res.ok) throw new Error();
+                cfg.is_configured = true;
+                ok++;
+            } catch { fail++; }
+        }
+        showToast(
+            fail === 0 ? `All ${ok} divisions saved! ✓` : `Saved ${ok}, failed ${fail}`,
+            fail === 0 ? 'success' : 'error'
+        );
+        updateSummary();
+    }
+
+    // ── APPLY ALL MODAL ───────────────────────────────────────────────────────
+    function openApplyAllModal() {
+        document.getElementById('applyAllModal').classList.add('open');
+    }
+    function closeApplyAllModal() {
+        document.getElementById('applyAllModal').classList.remove('open');
+    }
+    function applyToAll() {
+        const start = document.getElementById('applyStart').value;
+        const end   = document.getElementById('applyEnd').value;
+        const ls    = document.getElementById('applyLunchStart').value;
+        const le    = document.getElementById('applyLunchEnd').value;
+
+        Object.keys(divisionConfigs).forEach(key => {
+            divisionConfigs[key].start_time  = start;
+            divisionConfigs[key].end_time    = end;
+            divisionConfigs[key].lunch_start = ls;
+            divisionConfigs[key].lunch_end   = le;
+
+            // Update DOM inputs if visible
+            const sEl = document.getElementById(`start-${key}`);
+            const eEl = document.getElementById(`end-${key}`);
+            const lsEl = document.getElementById(`lunchStart-${key}`);
+            const leEl = document.getElementById(`lunchEnd-${key}`);
+            if (sEl) sEl.value = start;
+            if (eEl) eEl.value = end;
+            if (lsEl) lsEl.value = ls;
+            if (leEl) leEl.value = le;
+            livePreview(key);
+        });
+
+        closeApplyAllModal();
+        showToast('Common schedule applied to all divisions. Remember to Save All!', 'success');
+    }
+
+    // ── TOAST ─────────────────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const icon = type === 'success' ? '✅' : '❌';
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span class="toast-icon">${icon}</span> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+</script>
+</body>
+</html>
